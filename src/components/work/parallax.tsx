@@ -138,10 +138,8 @@ export const ElasticGridWrapper: React.FC<ElasticGridWrapperProps> = ({
           }
         });
 
-        // Continue animation if there's movement or scrolling
-        if (hasMovement || isScrollingRef.current) {
-          animationFrameRef.current = requestAnimationFrame(animate);
-        }
+        // Always continue animation loop - this ensures it never gets stuck
+        animationFrameRef.current = requestAnimationFrame(animate);
       };
 
       // Lenis scroll handler
