@@ -89,7 +89,7 @@ export const ElasticGridWrapper: React.FC<ElasticGridWrapperProps> = ({
         const lag = baseLag + distance * lagScale;
 
         // Generate random offset for initial positioning
-        const randomY = (Math.random() - 0.5) * randomOffset;
+        const randomY = (Math.random() - 1.5) * randomOffset;
 
         const columnContainer = document.createElement("div");
         columnContainer.className = "elastic-grid-column";

@@ -68,14 +68,14 @@ export const neueMontreal = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "Rohit",
-    template: "%s | Rohit",
+    default: "Rohit Patnala",
+    template: "%s | Rohit Patnala",
   },
-  description: "Rohit",
+  description: "Rohit Patnala - A multidisciplinary visual artist, creative director",
   keywords: [""],
   authors: [
     {
-      name: "Rohit",
+      name: "Rohit Patnala",
       url: "https://rohit.solithix.com",
     },
   ],
@@ -83,11 +83,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://rohit.solithix.com",
-    siteName: "Rohit",
+    siteName: "Rohit Patnala",
   },
   twitter: {
     card: "summary_large_image",
     creator: "@Rohit",
+    title: "Rohit Patnala",
+    description: "Rohit Patnala - A multidisciplinary visual artist, creative director",
   },
 };
 

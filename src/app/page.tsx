@@ -9,13 +9,13 @@ const Home = () => {
       <div className="flex flex-col items-center justify-center gap-3">
         <p className="text-lg font-medium uppercase">[Rohit Patnala]</p>
         <div className="flex justify-center items-center">
-          <h1 className="text-[250px] leading-0 font-medium uppercase">RO</h1>
-          <HoverGif staticSrc="/home.png" gifSrc="/home.gif" className="w-[230px] h-[200px] object-cover" alt="" />
-          <h1 className="text-[250px] leading-0 font-medium uppercase">6IT</h1>
+          <h1 className="md:text-[250px] text-8xl leading-0 font-medium uppercase">RO</h1>
+          <HoverGif staticSrc="/home.png" gifSrc="/home.gif" className="w-[100px] h-[80px] md:w-[230px] md:h-[200px] object-cover" alt="" />
+          <h1 className="md:text-[250px] text-8xl leading-0 font-medium uppercase">6IT</h1>
         </div>
-        <p className="text-lg max-w-[280px] text-center font-medium uppercase">a multidisciplinary visual artist, creative director,</p>
+        <p className="text-lg max-w-[280px] text-center font-medium uppercase">a multidisciplinary visual artist, creative director</p>
       </div>
-      <div className="absolute flex flex-col bottom-5 ">
+      <div className="absolute flex flex-col bottom-28 md:bottom-1 ">
         <ArcLabels
           liveClock
           useWeekdayLabels
