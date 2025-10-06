@@ -26,7 +26,7 @@ const SoundsPage = () => {
             </p>
           </div>
         </div>
-        <Carousel className="max-w-[565px]">
+        <Carousel opts={{ loop: true }} className="max-w-[565px]">
           <CarouselContent>
             {Array.from({ length: 15 }).map((_, index) => (
               <CarouselItem className="basis-1/4 md:basis-1/5" key={index}>
