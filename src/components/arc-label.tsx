@@ -125,7 +125,7 @@ export default function ArcLabel({
               opacity,
             }}
           >
-            <span className={`text-sm ${isTop ? "font-neue font-medium text-black" : "font-neue text-black/70"}`}>{useLabels[i]}</span>
+            <span className={`text-xs md:text-sm ${isTop ? "font-neue font-medium text-black" : "font-neue text-black/70"}`}>{useLabels[i]}</span>
           </div>
         );
       })}
