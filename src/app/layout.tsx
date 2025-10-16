@@ -8,6 +8,7 @@ import Navbar from "@/components/layout/navbar";
 import Lenis from "@/components/layout/lenis";
 import { Toaster } from "sonner";
 import { ViewTransitions } from "next-view-transitions";
+import { ThemeProvider } from "next-themes";
 
 const DM_mono = DM_Mono({
   subsets: ["latin"],
@@ -103,9 +104,11 @@ export default function RootLayout({
       <html lang="en" className="">
         <body className={`${DM_mono.variable} ${inter.variable} ${neueMontreal.variable} antialiased`}>
           <Lenis>
-            <Navbar />
-            {children}
-            <Toaster />
+            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+              <Navbar />
+              {children}
+              <Toaster />
+            </ThemeProvider>
           </Lenis>
         </body>
       </html>

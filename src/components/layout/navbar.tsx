@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "@/components/navigations/link";
-import { Moon, Sparkle, Sparkles, WandSparkles } from "lucide-react";
+import { Sparkle, Sparkles, WandSparkles } from "lucide-react";
 
 import { Button } from "../ui/button";
 import { usePathname } from "next/navigation";
-import ThemeSlider from "../theme-slider";
+import ThemeSelectors from "../theme/theme-selectors";
 
 const items = [
   { title: "Home", href: "/" },
@@ -86,9 +86,7 @@ const Navbar = () => {
           </Button>
         </div>
 
-        <div className="">
-          <Moon />
-        </div>
+        <ThemeSelectors />
       </div>
 
       {/* Mobile nav */}

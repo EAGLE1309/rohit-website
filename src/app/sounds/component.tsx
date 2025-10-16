@@ -323,7 +323,7 @@ const SoundsComponent = ({ TRACKS }: { TRACKS: any }) => {
           <Image src="/tape.png" alt="Tape" fill className="object-contain" priority />
 
           <img
-            src={currentTrack?.thumb}
+            src={currentTrack?.thumb || "/discs.png"}
             className={`w-[59px] h-[59px] absolute top-[38%] rounded-full left-1/2 -translate-x-1/2 -translate-y-1/2 ${
               isPlaying ? "animate-spin" : ""
             }`}
