@@ -8,20 +8,22 @@ const AboutPage = () => {
     <MaxWidthWrapper className="mt-28">
       <div className="w-full flex flex-col-reverse md:flex-row justify-between gap-y-16 h-full">
         <div className="w-full max-w-[575px] self-end flex flex-col gap-5">
-          <TextAnimate className="text-lg font-normal" animation="slideUp" once>
-            Rohit Patnala (b. 2004, Houston, TX), known as ro6it, is a multidisciplinary visual artist, creative director, and DJ. His work merges
-            visual art, music, and technology to explore themes of memory, identity, and culture.
+          <TextAnimate className="text-md font-normal" animation="slideUp" once>
+            I am a visual artist, DJ, and creative director (b. June 30, 2004 - Houston, Texas). I began my creative practice at nine years old making
+            sports edits on Vine, which grew into a deep love for culture and cultural movements. Over time this expanded into an affinity for pop
+            culture, music, fashion, art, philosophy, and the pursuit of seamlessness.
           </TextAnimate>
           <Separator />
-          <TextAnimate className="text-lg font-normal" animation="slideUp" delay={0.2} once>
-            He began his creative journey in 2015 by making sports edits on Vine, later transitioning into shooting sports and expanding into broader
-            artistic practices. Over time, his work has evolved into a fusion of visual and sonic experiences that reflect his interdisciplinary
-            approach.
+          <TextAnimate className="text-md font-normal" animation="slideUp" delay={0.3} once>
+            My work focuses on blending audio and visuals into one experience. I draw inspiration from the fast paced style of Vine edits from 2014 to
+            2017 and have since evolved that foundation into my own distinct approach across mediums and musical genres. I am especially drawn to
+            loopable videos that feel infinite, where the viewer cannot tell where the cut begins or ends. That subtle continuity and slyness is what
+            I love.
           </TextAnimate>
           <Separator />
-          <TextAnimate className="text-lg font-normal" animation="slideUp" delay={0.3} once>
-            As both an artist and student, Rohit continues to push the boundaries of digital culture and contemporary storytelling, crafting projects
-            that blend design, performance, and experimentation.
+          <TextAnimate className="text-md font-normal" animation="slideUp" delay={0.5} once>
+            I am currently wrapping up my undergraduate studies in Texas while moving between Houston, Dallas, Austin and New York, and I take on
+            select projects worldwide.
           </TextAnimate>
         </div>
 

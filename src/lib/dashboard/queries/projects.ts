@@ -27,10 +27,14 @@ export const getProjects = async () => {
 // Fetch single project by ID
 export const getProjectById = async (id: string): Promise<Project | null> => {
   const req = await sanityFetch({
-    query: '*[_type == "projects" && _id == $id][0]',
+    query: `*[_type == "projects" && _id == $id][0]{
+      ...,
+      "videoUrl": video.asset->url
+    }`,
     params: { id },
     revalidate: 30,
     tags: [],
   });
+
   return req || null;
 };

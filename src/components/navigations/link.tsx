@@ -20,38 +20,30 @@ const Link: React.FC<TransitionLinkProps> = ({ href, children, className, ref, o
   const currentPath = usePathname();
   const lenis = useLenis();
 
-  function slideInOut() {
+  function improvedSlideInOut() {
+    // Animate old page fading and sliding up slightly
     document.documentElement.animate(
       [
-        {
-          opacity: 1,
-          transform: "translateY(0)",
-        },
-        {
-          opacity: 0.1,
-          transform: "translateY(-35%)",
-        },
+        { opacity: 1, transform: "translateY(0) scale(1)" },
+        { opacity: 0, transform: "translateY(-25%) scale(0.98)" },
       ],
       {
-        duration: 750,
-        easing: "cubic-bezier(0.87, 0, 0.13, 1)",
+        duration: 600,
+        easing: "cubic-bezier(0.86, 0, 0.07, 1)",
         fill: "forwards",
         pseudoElement: "::view-transition-old(root)",
       }
     );
 
+    // Animate new page appearing with a subtle slide from bottom and fade in
     document.documentElement.animate(
       [
-        {
-          clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
-        },
-        {
-          clipPath: "polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%)",
-        },
+        { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)", opacity: 0.95 },
+        { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)", opacity: 1 },
       ],
       {
-        duration: 750,
-        easing: "cubic-bezier(0.87, 0, 0.13, 1)",
+        duration: 650,
+        easing: "cubic-bezier(0.86, 0, 0.07, 1)",
         fill: "forwards",
         pseudoElement: "::view-transition-new(root)",
       }
@@ -66,10 +58,11 @@ const Link: React.FC<TransitionLinkProps> = ({ href, children, className, ref, o
 
     router.push(url, {
       onTransitionReady: () => {
-        slideInOut();
+        improvedSlideInOut();
         lenis?.scrollTo(0, { immediate: true });
       },
     });
+
     if (onClick) onClick(e);
   };
 
