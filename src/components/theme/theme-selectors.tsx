@@ -31,7 +31,9 @@ const ThemeSlider = () => {
       {/* Toggle button */}
       <CurrentIcon
         onClick={() => setThemeOpen(!themeOpen)}
-        className={`size-8 p-1 cursor-pointer hover:bg-black/5 rounded-full transition-colors ${themeOpen ? "bg-black/5" : ""}`}
+        className={`size-8 p-1 cursor-pointer hover:bg-black/5 rounded-full transition-colors ${
+          themeOpen ? (theme === "dark" ? "bg-white/10" : "bg-black/5") : ""
+        }`}
       />
 
       {/* Dropdown with other themes */}

@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "@/components/navigations/link";
-import { Sparkle, Sparkles, WandSparkles } from "lucide-react";
+import { WandSparkles } from "lucide-react";
 
 import { Button } from "../ui/button";
 import ThemeSelectors from "../theme/theme-selectors";
 import { usePathname } from "next/navigation";
+import { IconMenu, IconX } from "@tabler/icons-react";
+import { useTheme } from "next-themes";
 
 const items = [
   { title: "Home.", href: "/" },
@@ -17,16 +19,10 @@ const items = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState("Home.");
+
+  const { theme } = useTheme();
 
   const pathname = usePathname();
-
-  useEffect(() => {
-    const title = items.find((item) => item.href === pathname)?.title;
-    if (title) {
-      setActive(title);
-    }
-  }, [pathname]);
 
   return (
     <nav className={`fixed transition-all bg-background ease-in-out w-full top-0 z-50 px-3`}>
@@ -50,18 +46,25 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-4 md:hidden">
-          <Button className={`!px-1.5`} onClick={() => setOpen(!open)} variant="outline">
-            {open ? <Sparkles className="size-6" /> : <Sparkle className="size-6" />}
+          <ThemeSelectors />
+          <Button
+            className={`!px-1.5 rounded-full ${open ? (theme === "dark" ? "!bg-white/5" : "!bg-black/5") : ""}`}
+            onClick={() => setOpen(!open)}
+            variant="ghost"
+          >
+            {open ? <IconX className="size-6" /> : <IconMenu className="size-6" />}
           </Button>
         </div>
 
-        <ThemeSelectors />
+        <div className="hidden md:flex items-center gap-2">
+          <ThemeSelectors />
+        </div>
       </div>
 
       {/* Mobile nav */}
 
       <div
-        className={`md:hidden transition-all absolute z-[-1] top-0 pt-24 py-12 flex h-screen flex-col items-center gap-2 px-3 duration-300 ${
+        className={`md:hidden transition-all bg-background absolute z-[-1] top-0 pt-24 py-12 flex h-screen flex-col items-center gap-2 px-3 duration-300 ${
           open ? "left-0 w-full" : "left-[-100%] w-0"
         }`}
       >

@@ -40,8 +40,8 @@ function Slider({
       </SliderPrimitive.Track>
 
       <SliderPrimitive.Thumb
-        className={`pointer-events-none transition-transform duration-100 bg-background size-[33px] flex items-center justify-center shrink-0 rounded-full focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50 ${
-          theme === "dark" ? "bg-white/15" : ""
+        className={`pointer-events-none transition-transform duration-100 size-[33px] flex items-center justify-center shrink-0 rounded-full focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50 ${
+          theme === "dark" ? "bg-white/15" : "bg-foreground text-background"
         }`}
       >
         {icons[value[0]]}
