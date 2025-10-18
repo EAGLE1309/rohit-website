@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+
 "use client";
 
 import { useState } from "react";
@@ -27,7 +29,11 @@ const Navbar = () => {
     <nav className={`fixed transition-all bg-background ease-in-out w-full top-0 z-50 px-3`}>
       <div className="h-auto w-full py-3 lg:mx-auto max-w-screen-xl flex justify-between items-center">
         <Link href="/" className={`flex leading-5 items-center text-lg font-medium font-neue gap-3`}>
-          Ro6it
+          {theme === "dark" ? (
+            <img src="/logo-white.svg" className="h-full w-24" alt="Logo" />
+          ) : (
+            <img src="/logo.svg" className="h-full w-24" alt="Logo" />
+          )}
         </Link>
 
         <div className="gap-2 py-4 hidden md:flex items-center">

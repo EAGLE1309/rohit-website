@@ -319,19 +319,19 @@ const SoundsComponent = ({ TRACKS }: { TRACKS: any }) => {
   return (
     <MaxWidthWrapper className="h-[100vh] w-full overflow-hidden relative flex items-center justify-center">
       <div className="flex flex-col items-center justify-center gap-3">
-        <div className="relative w-[375px] h-[482px]">
-          <Image src="/tape.png" alt="Tape" fill className="object-contain" priority />
+        <div className="relative pointer-events-none w-[272px] h-[425px]">
+          <Image src="/casette.webp" alt="Tape" fill className="object-contain pointer-events-none" priority />
 
           <img
             src={currentTrack?.thumb || "/discs.png"}
-            className={`w-[59px] h-[59px] absolute top-[38%] rounded-full left-1/2 -translate-x-1/2 -translate-y-1/2 ${
+            className={`w-[59px] h-[59px] absolute top-[30.5%] rounded-full pointer-events-none left-[49.5%] -translate-x-1/2 -translate-y-1/2 ${
               isPlaying ? "animate-spin" : ""
             }`}
             alt="Discs"
           />
 
           {/* Waveform visualizer window — resized to 163x71 */}
-          <div className="absolute bottom-[12%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[163px] h-[71px] bg-black/90 border shadow-inner overflow-hidden border-white/15">
+          <div className="absolute bottom-[6.25%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[223px] h-[71px] bg-black/90 border shadow-inner overflow-hidden border-white/15">
             <div className="absolute top-1 left-2 right-2 text-white text-[9px] font-mono truncate">
               {currentTrack ? currentTrack.title : "No Track"}
             </div>
