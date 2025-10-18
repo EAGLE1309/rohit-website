@@ -4,7 +4,7 @@ import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 
 const Home = () => {
   return (
-    <MaxWidthWrapper className="h-[90vh] md:h-[100vh] relative flex items-center justify-center">
+    <MaxWidthWrapper className="overflow-hidden h-[90vh] md:h-[100vh] relative flex items-center justify-center">
       <div className="flex flex-col items-center justify-center gap-3">
         <p className="text-sm md:text-lg font-medium uppercase">[Rohit Patnala]</p>
         <div className="flex justify-center items-center">

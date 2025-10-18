@@ -9,7 +9,7 @@ export default function WorkDetailsComponent({ project, allProjects }: { project
 
   return (
     <MaxWidthWrapper className="mt-8 py-16 relative">
-      <div className="w-full grid grid-cols-3 gap-16">
+      <div className="w-full flex flex-col-reverse md:grid md:grid-cols-3 gap-16">
         {/* Sidebar projects */}
         <div className="grid grid-cols-2 col-span-1 gap-8">
           {allProjects.map((p: any) => (

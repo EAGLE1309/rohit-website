@@ -69,7 +69,7 @@ export const ParallaxGridWrapper: React.FC<ParallaxGridWrapperProps> = ({
         requestAnimationFrame(() => {
           columnElementsRef.current.forEach((col, i) => {
             const distance = Math.abs(i - mid);
-            const lag = baseLag * (1 + distance);
+            const lag = (baseLag / 5) * (1 + distance);
             const startOffset = initialOffsetsRef.current[i] || 0;
             col.style.transform = `translate3d(0, ${startOffset - scrollY * lag}px, 0)`;
           });

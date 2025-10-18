@@ -26,7 +26,7 @@ const WorksComponent = ({ projects }: { projects: Project[] }) => {
   return (
     <MaxWidthWrapper className="mt-28 relative">
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="w-full grid grid-cols-2 grid-rows-2 place-items-start gap-5 md:gap-0 pb-16">
+        <TabsList className="w-full grid grid-cols-2 grid-rows-2 place-items-start pb-16">
           {filterOptions.map((filter, index) => (
             <TabsTrigger
               className={`text-sm uppercase font-medium md:font-normal cursor-pointer ${activeTab === filter.value ? "" : ""}`}
