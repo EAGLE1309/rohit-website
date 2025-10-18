@@ -1,25 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "@/components/navigations/link";
 import { Sparkle, Sparkles, WandSparkles } from "lucide-react";
 
 import { Button } from "../ui/button";
-import { usePathname } from "next/navigation";
 import ThemeSelectors from "../theme/theme-selectors";
+import { usePathname } from "next/navigation";
 
 const items = [
-  { title: "Home", href: "/" },
-  { title: "Work", href: "/work" },
+  { title: "Home.", href: "/" },
+  { title: "Work.", href: "/work" },
+  { title: "Sounds.", href: "/sounds" },
   { title: "About", href: "/about" },
-  { title: "Sounds", href: "/sounds" },
 ];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("Home.");
+
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const title = items.find((item) => item.href === pathname)?.title;
+    if (title) {
+      setActive(title);
+    }
+  }, [pathname]);
 
   return (
-    <nav className={`fixed transition-all bg-background duration-300 ease-in-out w-full top-0 z-50 px-3`}>
+    <nav className={`fixed transition-all bg-background ease-in-out w-full top-0 z-50 px-3`}>
       <div className="h-auto w-full py-3 lg:mx-auto max-w-screen-xl flex justify-between items-center">
         <Link href="/" className={`flex leading-5 items-center text-lg font-medium font-neue gap-3`}>
           Ro6it
@@ -27,8 +37,14 @@ const Navbar = () => {
 
         <div className="gap-2 py-4 hidden md:flex items-center">
           {items.map((item) => (
-            <Link key={item.href} href={item.href} className="font-neue text-md hover:translate-y-[-2px] transition-all flex items-center gap-1">
-              {item.title},
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`font-neue text-md hover:translate-y-[-2px] transition-all flex items-center gap-1 ${
+                pathname === item.href ? "text-red-500 font-medium" : ""
+              }`}
+            >
+              {item.title}
             </Link>
           ))}
         </div>

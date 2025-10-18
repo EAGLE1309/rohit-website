@@ -35,8 +35,9 @@ const WorksComponent = ({ projects }: { projects: Project[] }) => {
             >
               {filter.label}
               {activeTab === filter.value ? (
-                <span className="text-red-500 ">
-                  &nbsp;[<b>—</b>]
+                <span className="text-red-500 relative">
+                  &nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <span className="after:absolute after:h-[2px] after:top-1/2 after:-translate-y-1/2 after:w-[28px] after:bg-current after:left-0" />]
                 </span>
               ) : (
                 <span>&nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]</span>

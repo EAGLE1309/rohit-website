@@ -1,53 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import { IconBolt, IconFlare, IconFlame } from "@tabler/icons-react";
+import { Slider } from "@/components/ui/slider";
 import { Moon, Sun } from "lucide-react";
+import { IconFlame, IconBolt, IconFlare } from "@tabler/icons-react";
 
 const themes = [
-  { name: "dark", icon: Moon },
-  { name: "light", icon: Sun },
-  { name: "bolt", icon: IconBolt },
-  { name: "red", icon: IconFlame },
-  { name: "beige", icon: IconFlare },
+  { name: "dark", icon: Moon, reactNode: <Moon /> },
+  { name: "light", icon: Sun, reactNode: <Sun /> },
+  { name: "bolt", icon: IconBolt, reactNode: <IconBolt /> },
+  { name: "red", icon: IconFlame, reactNode: <IconFlame /> },
+  { name: "beige", icon: IconFlare, reactNode: <IconFlare /> },
 ];
-
-const ThemeSelectors = () => {
-  const [themeOpen, setThemeOpen] = useState(false);
+const ThemeSlider = () => {
   const { theme, setTheme } = useTheme();
+  const defaultIndex = themes.findIndex((t) => t.name === theme) || 1;
+  const [sliderValue, setSliderValue] = useState(defaultIndex);
 
-  const handleThemeChange = (newTheme: string) => {
-    setTheme(newTheme);
-    setThemeOpen(false);
-  };
+  useEffect(() => {
+    setTheme(themes[sliderValue].name);
+  }, [sliderValue]);
 
-  const currentTheme = themes.find((t) => t.name === theme) || themes[1]; // default to light
-  const otherThemes = themes.filter((t) => t.name !== theme);
-
+  const [themeOpen, setThemeOpen] = useState(false);
+  const currentTheme = themes.find((t) => t.name === theme) || themes[1];
   const CurrentIcon = currentTheme.icon;
 
   return (
     <div className="flex gap-3 relative items-center">
       {/* Toggle button */}
-      <CurrentIcon onClick={() => setThemeOpen(!themeOpen)} className="w-8 h-8 p-1.5 rounded-md cursor-pointer hover:bg-zinc-100 transition-colors" />
+      <CurrentIcon
+        onClick={() => setThemeOpen(!themeOpen)}
+        className={`size-8 p-1 cursor-pointer hover:bg-black/5 rounded-full transition-colors ${themeOpen ? "bg-black/5" : ""}`}
+      />
 
       {/* Dropdown with other themes */}
       <div
-        className={`absolute top-0 right-full flex gap-3 transform origin-right transition-all duration-300 ${
+        className={`absolute w-48 top-0 right-full flex gap-3 transform origin-right transition-all duration-300 ${
           themeOpen ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0 pointer-events-none"
         }`}
         style={{ marginRight: "0.5rem" }}
       >
-        {otherThemes.map((t) => {
-          const Icon = t.icon;
-          return (
-            <Icon key={t.name} onClick={() => handleThemeChange(t.name)} className="w-8 h-8 p-1.5 cursor-pointer rounded-md hover:bg-zinc-100" />
-          );
-        })}
+        <Slider
+          min={0}
+          max={themes.length - 1}
+          value={[sliderValue]}
+          onValueChange={(val) => setSliderValue(val[0])}
+          icons={themes.map((t) => t.reactNode)}
+        />
       </div>
     </div>
   );
 };
 
-export default ThemeSelectors;
+export default ThemeSlider;
