@@ -104,7 +104,7 @@ export default function RootLayout({
       <html lang="en" className="">
         <body className={`${DM_mono.variable} ${inter.variable} ${neueMontreal.variable} antialiased`}>
           <Lenis>
-            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+            <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} themes={["light", "dark", "red", "bolt", "beige"]}>
               <Navbar />
               {children}
               <Toaster />

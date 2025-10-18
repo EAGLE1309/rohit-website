@@ -7,6 +7,24 @@ body {
   font-family: var(--font-neue-montreal);
 }
 
+:root[class~="red"] {
+  --background: #efe6de;
+  --foreground: #bb080e;
+  --accent: #ef4444;
+}
+
+:root[class~="bolt"] {
+  --background: #eef1f5;
+  --foreground: #0145f2;
+  --accent: #f59e0b;
+}
+
+:root[class~="beige"] {
+  --background: #ffe5ca;
+  --foreground: #543f2a;
+  --accent: #cba57e;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

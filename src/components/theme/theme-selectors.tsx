@@ -9,8 +9,8 @@ const themes = [
   { name: "dark", icon: Moon },
   { name: "light", icon: Sun },
   { name: "bolt", icon: IconBolt },
-  { name: "red", icon: IconFlare },
-  { name: "beige", icon: IconFlame },
+  { name: "red", icon: IconFlame },
+  { name: "beige", icon: IconFlare },
 ];
 
 const ThemeSelectors = () => {
