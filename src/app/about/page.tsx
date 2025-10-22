@@ -28,12 +28,12 @@ const AboutPage = () => {
         </div>
 
         <div className="flex flex-col h-full justify-between gap-8">
-          <div className="w-full max-w-[575px] max-h-[575px] grid grid-rows-4 grid-cols-2 gap-8">
+          {/* <div className="w-full max-w-[575px] max-h-[575px] grid grid-rows-4 grid-cols-2 gap-8">
             <img className="object-cover row-span-3 w-full h-full" src="/about 2.png" alt="" />
             <img className="object-cover w-full h-full row-span-2" src="/about 3.png" alt="" />
             <img className="object-cover w-full h-full row-span-2" src="/about 4.png" alt="" />
-          </div>
-          <h3 className="font-semibold justify-self-end self-end text-7xl">About</h3>
+          </div> */}
+          <img className="w-full md:pl-28 h-full object-cover" src="/about.png" alt="" />
         </div>
       </div>
 

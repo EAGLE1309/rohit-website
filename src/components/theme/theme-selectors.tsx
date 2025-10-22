@@ -38,7 +38,7 @@ const ThemeSlider = () => {
 
       {/* Dropdown with other themes */}
       <div
-        className={`absolute w-48 top-0 right-full flex gap-3 transform origin-right transition-all duration-300 ${
+        className={`absolute w-32 md:w-48 top-0 right-full flex gap-3 transform origin-right transition-all duration-300 ${
           themeOpen ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0 pointer-events-none"
         }`}
         style={{ marginRight: "0.5rem" }}
