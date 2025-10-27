@@ -1,7 +1,9 @@
-import SoundsComponent from "./component";
+import dynamic from "next/dynamic";
 import { getMusics } from "@/lib/dashboard/queries/musics";
 import { getFlyers } from "@/lib/dashboard/queries/flyers";
 import { getPhotography } from "@/lib/dashboard/queries/photography";
+
+const SoundsComponent = dynamic(() => import("./component"));
 
 const SoundsPage = async () => {
   const musics = await getMusics();
