@@ -2,6 +2,8 @@ import SoundsComponent from "./component";
 import { getMusics } from "@/lib/dashboard/queries/musics";
 import { getFlyers } from "@/lib/dashboard/queries/flyers";
 import { getPhotography } from "@/lib/dashboard/queries/photography";
+import { Suspense } from "react";
+import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 
 const SoundsPage = async () => {
   const musics = await getMusics();
@@ -20,7 +22,13 @@ const SoundsPage = async () => {
 
   console.log(TRACKS);
 
-  return <SoundsComponent tracks={TRACKS} flyers={flyers} photographs={photographs} />;
+  return (
+    <Suspense
+      fallback={<MaxWidthWrapper className="h-[100vh] w-full overflow-hidden flex items-center justify-center gap-3">Loading...</MaxWidthWrapper>}
+    >
+      <SoundsComponent tracks={TRACKS} flyers={flyers} photographs={photographs} />;
+    </Suspense>
+  );
 };
 
 export default SoundsPage;
