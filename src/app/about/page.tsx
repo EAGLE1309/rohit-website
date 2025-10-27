@@ -2,6 +2,7 @@
 import { TextAnimate } from "@/components/text-animate";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const AboutPage = () => {
   return (
@@ -38,9 +39,14 @@ const AboutPage = () => {
       </div>
 
       <div className="w-full flex gap-y-16 py-28">
-        <TextAnimate className="text-5xl md:text-7xl font-semibold" animation="slideUp" by="character" once>
-          ropatnala@gmail.com
-        </TextAnimate>
+        <Tooltip>
+          <TooltipTrigger>
+            <TextAnimate className="text-5xl md:text-7xl cursor-pointer font-semibold" animation="slideUp" by="character" once>
+              ropatnala@gmail.com
+            </TextAnimate>
+          </TooltipTrigger>
+          <TooltipContent>Click to copy</TooltipContent>
+        </Tooltip>
       </div>
     </MaxWidthWrapper>
   );

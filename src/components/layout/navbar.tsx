@@ -26,10 +26,10 @@ const Navbar = () => {
   const pathname = usePathname();
 
   return (
-    <nav className={`fixed transition-all bg-background ease-in-out w-full top-0 z-50 px-3`}>
+    <nav className={`fixed bg-background ease-in-out w-full top-0 z-50 px-3`}>
       <div className="h-auto w-full py-3 lg:mx-auto max-w-screen-xl flex justify-between items-center">
         <Link href="/" className={`flex leading-5 items-center text-lg font-medium font-neue gap-3`}>
-          {theme === "dark" ? (
+          {theme === "dark" || theme === "nightfall" || theme === "midnight" ? (
             <img src="/logo-white.svg" className="h-full w-24" alt="Logo" />
           ) : (
             <img src="/logo.svg" className="h-full w-24" alt="Logo" />
@@ -69,7 +69,7 @@ const Navbar = () => {
       {/* Mobile nav */}
 
       <div
-        className={`md:hidden transition-all bg-background absolute z-[-1] top-0 pt-24 py-12 flex h-screen flex-col items-center gap-2 px-3 duration-300 ${
+        className={`md:hidden transition-all bg-background absolute z-[-1] top-0 pt-24 py-12 flex h-screen flex-col items-center gap-2 px-3 ease-in-out duration-300 ${
           open ? "left-0 w-full" : "left-[-100%] w-0"
         }`}
       >

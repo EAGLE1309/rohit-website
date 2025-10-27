@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { DM_Mono, Inter } from "next/font/google";
+import { DM_Mono, Geist, Inter } from "next/font/google";
 
 import localFont from "next/font/local";
 
@@ -19,9 +19,16 @@ const DM_mono = DM_Mono({
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   style: ["normal"],
   variable: "--font-inter",
+});
+
+const geist = Geist({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  style: ["normal"],
+  variable: "--font-geist",
 });
 
 export const neueMontreal = localFont({
@@ -101,10 +108,32 @@ export default function RootLayout({
 }>) {
   return (
     <ViewTransitions>
-      <html lang="en" className="">
+      <html lang="en">
         <body className={`${DM_mono.variable} ${inter.variable} ${neueMontreal.variable} antialiased`}>
           <Lenis>
-            <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} themes={["light", "dark", "red", "bolt", "beige"]}>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem={false}
+              themes={[
+                "light",
+                "dark",
+                "one",
+                "two",
+                "three",
+                "four",
+                "five",
+                "six",
+                "seven",
+                "eight",
+                "nine",
+                "ten",
+                "eleven",
+                "twelve",
+                "thirteen",
+                "fourteen",
+              ]}
+            >
               <Navbar />
               {children}
               <Toaster />

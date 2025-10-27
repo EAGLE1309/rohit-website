@@ -9,22 +9,23 @@ import { useState } from "react";
 import Link from "@/components/navigations/link";
 import { urlFor } from "@/lib/dashboard/sanity-cilent";
 import type { Project } from "@/lib/dashboard/queries/projects";
+import type { Photography } from "@/lib/dashboard/queries/photography";
 import { motion, AnimatePresence } from "motion/react";
 
 const filterOptions = [
   { label: "All", value: "all" },
-  { label: "Highlights", value: "highlights" },
+  { label: "Selected", value: "selected" },
   { label: "Personal", value: "personal" },
   { label: "Photography", value: "photography" },
   { label: "Projects", value: "projects" },
   { label: "Archives", value: "archives" },
 ];
 
-const WorksComponent = ({ projects }: { projects: Project[] }) => {
+const WorksComponent = ({ projects, photography }: { projects: Project[]; photography: Photography[] }) => {
   const [activeTab, setActiveTab] = useState("all");
 
   return (
-    <MaxWidthWrapper className="mt-28 relative">
+    <MaxWidthWrapper className="pt-28 relative">
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="w-full grid grid-cols-2 grid-rows-2 place-items-start pb-16">
           {filterOptions.map((filter, index) => (
@@ -59,12 +60,27 @@ const WorksComponent = ({ projects }: { projects: Project[] }) => {
                   }}
                 >
                   <ParallaxGridWrapper className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-5 md:gap-16 gap-5">
-                    {projects.map((project: Project, index: number) => (
-                      <Card key={project._id} id={project._id} image={urlFor(project.thumbnail).url()} title={project.name} />
-                    ))}
-                    {Array.from({ length: (index + 1) * 5 }).map((_, i) => (
-                      <Card key={i} />
-                    ))}
+                    {filter.value === "all" ? (
+                      <>
+                        {projects.map((project: Project) => (
+                          <Card key={project._id} id={project._id} image={urlFor(project.thumbnail).url()} title={project.name} />
+                        ))}
+                        {photography.map((photo: Photography) => (
+                          <Card key={photo._id} id={photo._id} isPhoto image={urlFor(photo.image).url()} title={photo.name} />
+                        ))}
+                      </>
+                    ) : filter.value === "photography" ? (
+                      photography.map((photo: Photography) => (
+                        <Card key={photo._id} id={photo._id} isPhoto noBadge image={urlFor(photo.image).url()} title={photo.name} />
+                      ))
+                    ) : (
+                      projects.map(
+                        (project: Project) =>
+                          project.category === filter.value && (
+                            <Card key={project._id} id={project._id} image={urlFor(project.thumbnail).url()} title={project.name} />
+                          )
+                      )
+                    )}
                   </ParallaxGridWrapper>{" "}
                 </motion.div>
               )}
@@ -78,16 +94,29 @@ const WorksComponent = ({ projects }: { projects: Project[] }) => {
 
 export default WorksComponent;
 
-const Card = ({ id = "default", title = "Don Toliver For Bape - [December 2024]", image }: { id?: string; title?: string; image?: string }) => {
+const Card = ({
+  id = "default",
+  title = "Don Toliver For Bape - [December 2024]",
+  isPhoto = false,
+  noBadge = false,
+  image,
+}: {
+  id?: string;
+  title?: string;
+  isPhoto?: boolean;
+  noBadge?: boolean;
+  image?: string;
+}) => {
   return (
     <motion.div
-      className="w-full group flex flex-col cursor-pointer gap-1"
+      className="w-full group relative flex flex-col cursor-pointer gap-1"
       variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
     >
-      <Link href={`/work/${id}`} className="w-full group flex flex-col cursor-pointer gap-1">
-        <div className="w-full h-full">
+      {!noBadge && isPhoto && <div className="absolute py-0.5 px-1 text-xs z-[1] top-2 left-2 font-medium bg-white">PHOTO</div>}
+      <Link href={isPhoto ? `/photography/${id}` : `/work/${id}`} className="w-full group flex flex-col cursor-pointer gap-1">
+        <div className="overflow-hidden w-full h-full">
           <Image
-            className="w-full h-full object-cover group-hover:brightness-85 transition-all"
+            className="w-full h-full object-cover group-hover:scale-105 ease-in group-hover:brightness-85 transition-all"
             src={image || "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=270&fit=crop"}
             alt="Work 1"
             width={400}

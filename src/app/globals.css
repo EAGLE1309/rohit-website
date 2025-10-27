@@ -7,22 +7,106 @@ body {
   font-family: var(--font-neue-montreal);
 }
 
-:root[class~="red"] {
-  --background: #efe6de;
-  --foreground: #bb080e;
-  --accent: #ef4444;
+.transition-custom {
+  transition: all 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity, transform, background-color;
+}
+/* 1. Deep Dawn — cool blue awakening */
+:root[class~="one"] {
+  --background: #15212e;
+  --foreground: #aabedb;
+  --accent: #6e8bb8;
 }
 
-:root[class~="bolt"] {
-  --background: #eef1f5;
-  --foreground: #0145f2;
-  --accent: #f59e0b;
+/* 2. Abyss Mist — oceanic stillness */
+:root[class~="two"] {
+  --background: #001419;
+  --foreground: #b7d3dc;
+  --accent: #7bb7c6;
 }
 
-:root[class~="beige"] {
-  --background: #ffe5ca;
-  --foreground: #543f2a;
-  --accent: #cba57e;
+/* 3. Iron Night — bluish indigo tone */
+:root[class~="three"] {
+  --background: #252c3f;
+  --foreground: #c6c3e4;
+  --accent: #8f8dc7;
+}
+
+/* 4. Twilight Bloom — violet transition */
+:root[class~="four"] {
+  --background: #373046;
+  --foreground: #f6afd4;
+  --accent: #c67fad;
+}
+
+/* 5. Rose Halo — warm pink tint */
+:root[class~="five"] {
+  --background: #4d3650;
+  --foreground: #ffa8b3;
+  --accent: #d47d9a;
+}
+
+/* 6. Ember Rise — glowing copper tone */
+:root[class~="six"] {
+  --background: #974129;
+  --foreground: #ffd8b5;
+  --accent: #e59e72;
+}
+
+/* 7. Solar Veil — soft orange beam */
+:root[class~="seven"] {
+  --background: #f25008;
+  --foreground: #f2e0b2;
+  --accent: #f5a36c;
+}
+
+/* 8. Luminous Heat — glowing amber */
+:root[class~="eight"] {
+  --background: #ffcea6;
+  --foreground: #ea4d0c;
+  --accent: #f78141;
+}
+
+/* 9. Warm Clay — grounded dusk tone */
+:root[class~="nine"] {
+  --background: #f1dfc5;
+  --foreground: #64442d;
+  --accent: #9b7a5a;
+}
+
+/* 10. Golden Dusk — earthy transition */
+:root[class~="ten"] {
+  --background: #cdc7aa;
+  --foreground: #49411d;
+  --accent: #7e764a;
+}
+
+/* 11. Moss Veil — forest serenity */
+:root[class~="eleven"] {
+  --background: #c7d2c1;
+  --foreground: #2e3227;
+  --accent: #5f6a55;
+}
+
+/* 12. Emerald Fade — cooling into night */
+:root[class~="twelve"] {
+  --background: #cadad6;
+  --foreground: #1d2b28;
+  --accent: #53726b;
+}
+
+/* 13. Arctic Dawn — pale light return */
+:root[class~="thirteen"] {
+  --background: #eef9fd;
+  --foreground: #0e1819;
+  --accent: #6faab6;
+}
+
+/* 14. Pure Zenith — clean white clarity */
+:root[class~="fourteen"] {
+  --background: #fdfdfd;
+  --foreground: #030303;
+  --accent: #b0b0b0;
 }
 
 @theme inline {
@@ -30,6 +114,7 @@ body {
   --color-foreground: var(--foreground);
   --font-mono: var(--font-dm-mono);
   --font-sans: var(--font-inter);
+  --font-sans: var(--font-geist);
   --font-neue: var(--font-neue-montreal);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -101,7 +186,7 @@ body {
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-.dark {
+:root[class~="dark"] {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
