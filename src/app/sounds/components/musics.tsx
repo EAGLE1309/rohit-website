@@ -4,12 +4,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { IconPlayerPlayFilled, IconPlayerPauseFilled } from "@tabler/icons-react";
+import { IconPlayerPlayFilled, IconPlayerTrackNext, IconPlayerTrackPrev, IconPlayerPauseFilled } from "@tabler/icons-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import Image from "next/image";
 
-const BAR_COUNT = 34; // keep it small for 163px width
+const BAR_COUNT = 56; // denser waveform for the 223px viewport
 
 const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -18,11 +18,14 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
   const rafRef = useRef<number | null>(null);
 
-  const [levels, setLevels] = useState<number[]>(() => Array(BAR_COUNT).fill(3));
+  const [levels, setLevels] = useState<number[]>(() => Array(BAR_COUNT).fill(12));
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [bufferedPercent, setBufferedPercent] = useState(0);
+  const [bufferedSeconds, setBufferedSeconds] = useState(0);
+  const [volume, setVolume] = useState(0.9);
   const waveformRef = useRef<HTMLDivElement>(null);
 
   const currentTrack = useMemo(() => (currentIndex !== null ? TRACKS[currentIndex] : null), [currentIndex, TRACKS]);
@@ -32,8 +35,31 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
     const audio = new Audio();
     audioRef.current = audio;
     audio.preload = "metadata";
+    audio.volume = volume;
 
     // setup event handlers
+    const updateBufferedInfo = () => {
+      if (!audio.buffered || audio.buffered.length === 0) {
+        setBufferedPercent(0);
+        setBufferedSeconds(0);
+        return;
+      }
+      try {
+        const latestBufferEnd = audio.buffered.end(audio.buffered.length - 1);
+        setBufferedSeconds(latestBufferEnd);
+        const durationValue = audio.duration;
+        if (Number.isFinite(durationValue) && durationValue > 0) {
+          const ratio = Math.max(0, Math.min(1, latestBufferEnd / durationValue));
+          setBufferedPercent(ratio);
+        } else {
+          setBufferedPercent(0);
+        }
+      } catch {
+        setBufferedPercent(0);
+        setBufferedSeconds(0);
+      }
+    };
+
     const onEnded = () => {
       if (currentIndex === null) return;
       const next = (currentIndex + 1) % TRACKS.length;
@@ -43,77 +69,20 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
     const onPlay = () => setIsPlaying(true);
     const onPause = () => setIsPlaying(false);
     const onTimeUpdate = () => setCurrentTime(audio.currentTime);
-    const onLoadedMetadata = () => setDuration(audio.duration || 0);
+    const onLoadedMetadata = () => {
+      const newDuration = Number.isFinite(audio.duration) ? audio.duration : 0;
+      setDuration(newDuration || 0);
+      updateBufferedInfo();
+    };
+    const onProgress = () => updateBufferedInfo();
 
     audio.addEventListener("ended", onEnded);
     audio.addEventListener("play", onPlay);
     audio.addEventListener("pause", onPause);
     audio.addEventListener("timeupdate", onTimeUpdate);
     audio.addEventListener("loadedmetadata", onLoadedMetadata);
+    audio.addEventListener("progress", onProgress);
 
-    // create AudioContext + Analyser when user interacts (deferred until needed)
-    // We'll create lazily when play is first triggered to satisfy autoplay/user gesture rules.
-    const ensureAudioContext = async () => {
-      if (audioContextRef.current) return;
-      const AC = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AC) return;
-      const ctx = new AC();
-      audioContextRef.current = ctx;
-      const analyser = ctx.createAnalyser();
-      analyser.fftSize = 256;
-      analyser.smoothingTimeConstant = 0.85;
-      analyserRef.current = analyser;
-      try {
-        const source = ctx.createMediaElementSource(audio);
-        sourceRef.current = source;
-        source.connect(analyser);
-        analyser.connect(ctx.destination);
-      } catch (err) {
-        // if creating MediaElementSource fails (shouldn't normally), ignore and keep fallback
-        console.warn("AudioContext media source setup failed", err);
-      }
-    };
-
-    // draw loop
-    let dataArray = new Uint8Array(analyserRef.current ? analyserRef.current.frequencyBinCount : 128);
-    const draw = () => {
-      const analyser = analyserRef.current;
-      if (analyser) {
-        const bins = analyser.frequencyBinCount;
-        // ensure dataArray length matches
-        if (dataArray.length !== bins) {
-          dataArray = new Uint8Array(bins);
-        }
-        analyser.getByteFrequencyData(dataArray);
-
-        // Map frequency bins to BAR_COUNT bars
-        const step = Math.floor(dataArray.length / BAR_COUNT) || 1;
-        const newLevels = new Array(BAR_COUNT).fill(3).map((_, i) => {
-          // average over step
-          let sum = 0;
-          let count = 0;
-          for (let j = 0; j < step; j++) {
-            const idx = i * step + j;
-            if (idx < dataArray.length) {
-              sum += dataArray[idx];
-              count++;
-            }
-          }
-          const avg = count ? sum / count : 0;
-          // convert 0-255 to px height (clamped for small container)
-          const scaled = Math.max(3, Math.min(30, Math.round((avg / 255) * 30)));
-          return scaled;
-        });
-        setLevels(newLevels);
-      } else {
-        // fallback: slight pulsing when no analyser
-        setLevels((prev) => prev.map((v, i) => 6 + Math.round(Math.abs(Math.sin(Date.now() / 300 + i)) * 12)));
-      }
-
-      rafRef.current = requestAnimationFrame(draw);
-    };
-
-    // start RAF only when playing; we'll control it elsewhere.
     // cleanup
     return () => {
       audio.pause();
@@ -122,6 +91,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
       audio.removeEventListener("pause", onPause);
       audio.removeEventListener("timeupdate", onTimeUpdate);
       audio.removeEventListener("loadedmetadata", onLoadedMetadata);
+      audio.removeEventListener("progress", onProgress);
       // stop RAF
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
@@ -135,7 +105,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
           // don't always close; suspend instead to be safer
           audioContextRef.current.close().catch(() => {});
         }
-      } catch (err) {
+      } catch {
         // ignore
       }
       audioRef.current = null;
@@ -177,6 +147,8 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
     if (currentTrack) {
       audio.src = currentTrack.src;
       audio.currentTime = 0;
+      setBufferedPercent(0);
+      setBufferedSeconds(0);
       if (isPlaying) {
         // ensure audio context exists and resume it (user gesture)
         startAnalyserIfNeeded().then(() => {
@@ -193,7 +165,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
                     analyser.getByteFrequencyData(data);
 
                     const step = Math.floor(data.length / BAR_COUNT) || 1;
-                    const newLevels = new Array(BAR_COUNT).fill(3).map((_, i) => {
+                    const newLevels = new Array(BAR_COUNT).fill(12).map((_, i) => {
                       let sum = 0;
                       let count = 0;
                       for (let j = 0; j < step; j++) {
@@ -204,13 +176,13 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
                         }
                       }
                       const avg = count ? sum / count : 0;
-                      const scaled = Math.max(3, Math.min(30, Math.round((avg / 255) * 30)));
+                      const scaled = Math.max(8, Math.min(42, Math.round((avg / 255) * 42)));
                       return scaled;
                     });
                     setLevels(newLevels);
                   } else {
                     // fallback subtle animation
-                    setLevels((prev) => prev.map((v, idx) => 6 + Math.round(Math.abs(Math.sin(Date.now() / 300 + idx)) * 12)));
+                    setLevels((prev) => prev.map((_, idx) => 14 + Math.round(Math.abs(Math.sin(Date.now() / 320 + idx)) * 16)));
                   }
                   rafRef.current = requestAnimationFrame(drawLoop);
                 };
@@ -236,13 +208,13 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
       audio.pause();
       audio.removeAttribute("src");
       audio.load();
+      setBufferedPercent(0);
+      setBufferedSeconds(0);
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
       }
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTrack, isPlaying]);
 
   // toggle / controls (unchanged)
@@ -293,9 +265,54 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const timeMarkers = useMemo(() => {
+    const markerCount: number = 5;
+    if (duration <= 0) {
+      return [{ position: 0, label: "00:00" }];
+    }
+    return Array.from({ length: markerCount }).map((_, idx) => {
+      const ratio = markerCount === 1 ? 0 : idx / (markerCount - 1);
+      return {
+        position: ratio,
+        label: formatTime(ratio * duration),
+      };
+    });
+  }, [duration]);
+
+  // RESERVED
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    setVolume(value);
+    if (audioRef.current) {
+      audioRef.current.volume = value;
+    }
+  };
+
+  const goToPrevTrack = () => {
+    if (!TRACKS.length) return;
+    setCurrentIndex((prevIndex) => {
+      if (prevIndex === null) return TRACKS.length - 1;
+      return prevIndex === 0 ? TRACKS.length - 1 : prevIndex - 1;
+    });
+    setIsPlaying(true);
+  };
+
+  const goToNextTrack = () => {
+    if (!TRACKS.length) return;
+    setCurrentIndex((prevIndex) => {
+      if (prevIndex === null) return 0;
+      return (prevIndex + 1) % TRACKS.length;
+    });
+    setIsPlaying(true);
+  };
+
   // compute played index to color bars up to that index instantly (no slow transition)
   const progress = duration > 0 ? Math.max(0, Math.min(1, currentTime / duration)) : 0;
   const playedIndex = Math.floor(progress * BAR_COUNT);
+  const bufferedRatio = Math.max(0, Math.min(1, bufferedPercent));
+  const isBuffering = duration === 0 || bufferedRatio < 0.98;
+  const bufferedTime = Math.max(0, Math.min(bufferedSeconds, duration || bufferedSeconds || 0));
+  const bufferedTimeLabel = formatTime(bufferedTime);
 
   return (
     <div className="flex flex-col items-center justify-center gap-3">
@@ -310,44 +327,104 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
           alt="Discs"
         />
 
-        {/* Waveform visualizer window — resized to 163x71 */}
-        <div className="absolute bottom-[6.25%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[223px] h-[71px] bg-black/90 border shadow-inner overflow-hidden border-white/15">
-          <div className="absolute top-1 left-2 right-2 text-white text-[9px] font-mono truncate">
-            {currentTrack ? currentTrack.title : "No Track"}
-          </div>
-
-          <div ref={waveformRef} onClick={handleWaveformClick} className="absolute top-1/2 left-0 right-0 -translate-y-1/2 h-[36px] cursor-pointer">
-            <div className="flex items-end h-full px-2 gap-[1px]">
-              {Array.from({ length: BAR_COUNT }).map((_, i) => {
-                // use analyser driven height if available else fallback
-                const h = levels[i] ?? 6;
-                const isPlayed = i <= playedIndex;
-                return (
-                  <div
-                    key={i}
-                    // removed slow transition so changes are immediate and in-sync with playhead
-                    className="w-[2px] rounded-sm"
-                    style={{
-                      height: `${h}px`,
-                      backgroundColor: isPlayed ? "#ffffff" : "#6b6b6b",
-                    }}
-                  />
-                );
-              })}
+        {/* Waveform visualizer window */}
+        <div className="absolute bottom-[6.5%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[223px] h-[71px] bg-[#040404] border border-white/15 rounded-xs shadow-[0_4px_18px_rgba(0,0,0,0.65)] text-white px-2.5 py-1.5 overflow-hidden">
+          <div className="flex items-center justify-between text-[8.5px] uppercase tracking-[0.18em]">
+            <div className="flex items-center justify-between w-full">
+              <button onClick={goToPrevTrack} className="p-0.5 rounded-sm hover:bg-white/10 transition-colors" aria-label="Previous track">
+                <IconPlayerTrackPrev className="w-3 h-3" />
+              </button>
+              <span className="text-[7px] font-mono truncate">{currentTrack ? currentTrack.title : "Select Track"}</span>
+              <button
+                onClick={() => setIsPlaying((prev) => !prev)}
+                className="p-0.5 rounded-sm hover:bg-white/10 transition-colors"
+                aria-label={isPlaying ? "Pause" : "Play"}
+              >
+                {isPlaying ? <IconPlayerPauseFilled className="w-3 h-3" /> : <IconPlayerPlayFilled className="w-3 h-3" />}
+              </button>
+              <button onClick={goToNextTrack} className="p-0.5 rounded-sm hover:bg-white/10 transition-colors" aria-label="Next track">
+                <IconPlayerTrackNext className="w-3 h-3" />
+              </button>
             </div>
+            {/* <div className="flex items-center gap-0.5 text-white/70">
+              <IconVolume className="w-3 h-3" />
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.01}
+                value={volume}
+                onChange={handleVolumeChange}
+                aria-label="Volume"
+                className="h-[2px] w-12 accent-white"
+              />
+            </div> */}
           </div>
 
-          <div className="absolute bottom-1 left-2 right-2 flex justify-between text-white text-[9px] font-mono">
+          <div className="flex items-center justify-between text-[8px] font-mono text-white/70 mt-0.5">
             <span>{formatTime(currentTime)}</span>
+            <span className={isBuffering ? "text-sky-300" : "text-emerald-300"}>
+              {isBuffering ? `Loading ${(bufferedRatio * 100).toFixed(0)}% · ${bufferedTimeLabel}` : `Loaded · ${bufferedTimeLabel}`}
+            </span>
             <span>{formatTime(duration)}</span>
           </div>
 
+          <div className="mt-0.5" style={{ height: "26px" }}>
+            <div
+              ref={waveformRef}
+              onClick={handleWaveformClick}
+              className="relative h-full rounded-sm border border-white/10 bg-black/80 cursor-pointer overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white/10 opacity-60 pointer-events-none" />
+              <div
+                className="absolute inset-y-0 left-0 bg-white/10 pointer-events-none transition-[width] duration-300"
+                style={{ width: `${bufferedRatio * 100}%` }}
+              />
+              <div
+                className="absolute inset-y-0 left-0 bg-white/15 pointer-events-none transition-[width] duration-150"
+                style={{ width: `${progress * 100}%` }}
+              />
+              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-white/15 pointer-events-none" />
+              <div className="relative z-10 flex h-full w-full items-center justify-between px-2" style={{ gap: "2px" }}>
+                {Array.from({ length: BAR_COUNT }).map((_, i) => {
+                  const h = levels[i] ?? 10;
+                  const isPlayed = i <= playedIndex;
+                  const width = i % 3 === 0 ? 2 : 1;
+                  return (
+                    <div
+                      key={i}
+                      className="rounded-full transition-[height] duration-120 ease-out"
+                      style={{
+                        height: `${h}px`,
+                        width: `${width}px`,
+                        backgroundColor: isPlayed ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.35)",
+                        boxShadow: isPlayed ? "0 0 6px rgba(255,255,255,0.45)" : "none",
+                      }}
+                    />
+                  );
+                })}
+              </div>
+              <div
+                className="absolute top-0 bottom-0 w-[2px] bg-red-500 shadow-[0_0_6px_rgba(255,45,45,0.8)] pointer-events-none"
+                style={{ left: `calc(${progress * 100}% - 1px)` }}
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-between text-white text-[8px] font-mono mt-0.5 opacity-80">
+            {timeMarkers.map((marker) => (
+              <span key={marker.position.toFixed(2)}>{marker.label}</span>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center pb-3">
           <button
             onClick={handleGlobalPlayPause}
-            className="absolute top-1 right-1 w-6 h-6 flex items-center justify-center rounded bg-white/10 hover:bg-white/20 transition-colors"
+            className="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors"
             aria-label={isPlaying ? "Pause" : "Play"}
           >
-            {isPlaying ? <IconPlayerPauseFilled className="w-3 h-3 text-white" /> : <IconPlayerPlayFilled className="w-3 h-3 text-white" />}
+            {isPlaying ? <span className="block w-2.5 h-2.5 bg-white" /> : <IconPlayerPlayFilled className="w-3 h-3 text-white" />}
           </button>
         </div>
       </div>
