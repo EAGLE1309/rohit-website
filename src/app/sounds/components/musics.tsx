@@ -28,6 +28,8 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
   const [bufferedSeconds, setBufferedSeconds] = useState(0);
   const [volume, setVolume] = useState(0.9);
   const waveformRef = useRef<HTMLDivElement>(null);
+  const isSeekingRef = useRef(false);
+  const latestTrackIndex = TRACKS.length > 0 ? TRACKS.length - 1 : null;
 
   const currentTrack = useMemo(() => (currentIndex !== null ? TRACKS[currentIndex] : null), [currentIndex, TRACKS]);
 
@@ -243,28 +245,86 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
 
   const handleGlobalPlayPause = () => {
     if (currentIndex === null) {
-      setCurrentIndex(0);
-      setIsPlaying(true);
-    } else {
-      if (isPlaying) {
-        audioRef.current?.pause();
-        setIsPlaying(false);
-      } else {
+      if (latestTrackIndex !== null) {
+        setCurrentIndex(latestTrackIndex);
         setIsPlaying(true);
+      }
+      return;
+    }
+
+    if (isPlaying) {
+      audioRef.current?.pause();
+      setIsPlaying(false);
+    } else {
+      setIsPlaying(true);
+    }
+  };
+
+  const handleWaveformPlayToggle = () => {
+    if (currentIndex === null) {
+      if (latestTrackIndex === null) return;
+      setCurrentIndex(latestTrackIndex);
+      setIsPlaying(true);
+      return;
+    }
+    setIsPlaying((prev) => !prev);
+  };
+
+  const seekFromClientX = (clientX: number) => {
+    const audio = audioRef.current;
+    const waveform = waveformRef.current;
+    if (!audio || !waveform || duration === 0) return;
+
+    const rect = waveform.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const percent = Math.max(0, Math.min(1, x / rect.width));
+    const newTime = percent * duration;
+
+    audio.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const handleWaveformPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (duration === 0) return;
+    e.preventDefault();
+    isSeekingRef.current = true;
+    if (e.currentTarget.setPointerCapture) {
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch {
+        // ignore capture errors
+      }
+    }
+    seekFromClientX(e.clientX);
+  };
+
+  const handleWaveformPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isSeekingRef.current) return;
+    e.preventDefault();
+    seekFromClientX(e.clientX);
+  };
+
+  const stopSeeking = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isSeekingRef.current) return;
+    e.preventDefault();
+    isSeekingRef.current = false;
+    if (e.currentTarget.releasePointerCapture) {
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {
+        // ignore release errors
       }
     }
   };
 
-  const handleWaveformClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!audioRef.current || !waveformRef.current || duration === 0) return;
+  const handleWaveformPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isSeekingRef.current) return;
+    seekFromClientX(e.clientX);
+    stopSeeking(e);
+  };
 
-    const rect = waveformRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const percent = x / rect.width;
-    const newTime = percent * duration;
-
-    audioRef.current.currentTime = newTime;
-    setCurrentTime(newTime);
+  const handleWaveformPointerCancel = (e: React.PointerEvent<HTMLDivElement>) => {
+    stopSeeking(e);
   };
 
   const formatTime = (time: number) => {
@@ -344,7 +404,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
               </button>
               <span className="text-[7px] font-mono truncate">{currentTrack ? currentTrack.title : "Select Track"}</span>
               <button
-                onClick={() => setIsPlaying((prev) => !prev)}
+                onClick={handleWaveformPlayToggle}
                 className="p-0.5 rounded-sm hover:bg-white/10 transition-colors"
                 aria-label={isPlaying ? "Pause" : "Play"}
               >
@@ -380,8 +440,13 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
           <div className="mt-0.5" style={{ height: "26px" }}>
             <div
               ref={waveformRef}
-              onClick={handleWaveformClick}
+              onPointerDown={handleWaveformPointerDown}
+              onPointerMove={handleWaveformPointerMove}
+              onPointerUp={handleWaveformPointerUp}
+              onPointerLeave={stopSeeking}
+              onPointerCancel={handleWaveformPointerCancel}
               className="relative h-full rounded-sm border border-white/10 bg-black/80 cursor-pointer overflow-hidden"
+              style={{ touchAction: "none" }}
             >
               <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white/10 opacity-60 pointer-events-none" />
               <div
@@ -470,7 +535,7 @@ const Card = ({ title, thumb, active, playing }: { title: string; thumb: string;
         >
           <div
             className={`absolute top-0 left-0 flex items-center justify-center w-full h-full bg-black/45 backdrop-blur-sm opacity-0 group-hover:opacity-100 duration-300 ease-in-out ${
-              playing ? "opacity-100" : "opacity-0"
+              active || playing ? "opacity-100" : "opacity-0"
             } transition-all`}
           >
             {playing ? <IconPlayerPauseFilled className="w-8 h-8 text-white" /> : <IconPlayerPlayFilled className="w-8 h-8 text-white" />}
