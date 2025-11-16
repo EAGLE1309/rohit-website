@@ -10,8 +10,6 @@ const SoundsPage = async () => {
   const flyers = await getFlyers();
   const photographs = await getPhotography();
 
-  console.log(flyers);
-
   const TRACKS = musics.map((music: any, index: number) => ({
     id: index,
     title: music.title,
@@ -19,8 +17,6 @@ const SoundsPage = async () => {
     src: `/api/proxy-audio?url=${encodeURIComponent(music.trackUrl)}`,
     thumb: music.coverUrl,
   }));
-
-  console.log(TRACKS);
 
   return (
     <Suspense

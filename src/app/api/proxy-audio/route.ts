@@ -13,10 +13,26 @@ export async function GET(req: NextRequest) {
     }
 
     const arrayBuffer = await r.arrayBuffer();
+    const remoteContentType = r.headers.get("content-type");
+    const fallbackContentType = (() => {
+      try {
+        const extension = new URL(url).pathname.split(".").pop()?.toLowerCase();
+        switch (extension) {
+          case "wav":
+            return "audio/wav";
+          case "mp3":
+            return "audio/mpeg";
+          default:
+            return undefined;
+        }
+      } catch {
+        return undefined;
+      }
+    })();
     return new NextResponse(Buffer.from(arrayBuffer), {
       status: 200,
       headers: {
-        "Content-Type": "audio/mpeg",
+        "Content-Type": remoteContentType || fallbackContentType || "application/octet-stream",
         "Access-Control-Allow-Origin": "*",
       },
     });

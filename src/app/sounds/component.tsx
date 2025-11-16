@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { useEffect } from "react";
 import MusicsComponent from "./components/musics";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 import Link from "next/link";
@@ -14,8 +14,17 @@ interface Types {
 
 const SoundsComponent = ({ tracks, flyers, photographs }: { tracks: any; flyers: any; photographs: any }) => {
   const searchParams = useSearchParams();
-
   const type = searchParams.get("id") as Types["id"];
+
+  // 👇 Prevent body scroll when this component mounts
+  useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
+
   return (
     <MaxWidthWrapper className="h-[100vh] w-full overflow-hidden relative flex items-center justify-center">
       <div className="absolute flex flex-col top-[calc(50%-5rem)] translate-y-1/2 left-1">
