@@ -27,8 +27,8 @@ const SoundsComponent = ({ tracks, flyers, photographs }: { tracks: any; flyers:
 
   return (
     <MaxWidthWrapper className="h-[100vh] w-full overflow-hidden relative flex items-center justify-center">
-      <div className="absolute flex flex-col top-[calc(50%-5rem)] translate-y-1/2 left-1">
-        <Link href={`?id=music`} className={`text-sm uppercase font-medium md:font-normal cursor-pointer`}>
+      <div className="absolute flex md:flex-col md:top-[calc(50%-5rem)] top-[85px] left-[51px] gap-3 md:gap-0 translate-y-1/2 md:left-1">
+        <Link href={`?id=music`} className={`text-xs md:text-sm uppercase font-medium md:font-normal cursor-pointer`}>
           Music
           {type === "music" || !type ? (
             <span className="text-red-500 relative">
@@ -39,7 +39,7 @@ const SoundsComponent = ({ tracks, flyers, photographs }: { tracks: any; flyers:
             <span>&nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]</span>
           )}
         </Link>
-        <Link href={`?id=flyers`} className={`text-sm uppercase font-medium md:font-normal cursor-pointer`}>
+        <Link href={`?id=flyers`} className={`text-xs md:text-sm uppercase font-medium md:font-normal cursor-pointer`}>
           Flyers
           {type === "flyers" ? (
             <span className="text-red-500 relative">
@@ -50,7 +50,7 @@ const SoundsComponent = ({ tracks, flyers, photographs }: { tracks: any; flyers:
             <span>&nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]</span>
           )}
         </Link>
-        <Link href={`?id=photographies`} className={`text-sm uppercase font-medium md:font-normal cursor-pointer`}>
+        <Link href={`?id=photographies`} className={`text-xs md:text-sm uppercase font-medium md:font-normal cursor-pointer`}>
           Photographs
           {type === "photographies" ? (
             <span className="text-red-500 relative">
