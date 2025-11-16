@@ -17,6 +17,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
   const rafRef = useRef<number | null>(null);
+  const loadedTrackKeyRef = useRef<string | number | null>(null);
 
   const [levels, setLevels] = useState<number[]>(() => Array(BAR_COUNT).fill(12));
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
@@ -145,10 +146,16 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
     };
 
     if (currentTrack) {
-      audio.src = currentTrack.src;
-      audio.currentTime = 0;
-      setBufferedPercent(0);
-      setBufferedSeconds(0);
+      const trackKey = currentTrack.id ?? currentTrack.src;
+      const trackChanged = loadedTrackKeyRef.current !== trackKey;
+
+      if (trackChanged) {
+        loadedTrackKeyRef.current = trackKey;
+        audio.src = currentTrack.src;
+        audio.currentTime = 0;
+        setBufferedPercent(0);
+        setBufferedSeconds(0);
+      }
       if (isPlaying) {
         // ensure audio context exists and resume it (user gesture)
         startAnalyserIfNeeded().then(() => {
@@ -208,6 +215,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
       audio.pause();
       audio.removeAttribute("src");
       audio.load();
+      loadedTrackKeyRef.current = null;
       setBufferedPercent(0);
       setBufferedSeconds(0);
       if (rafRef.current) {
@@ -457,10 +465,14 @@ const Card = ({ title, thumb, active, playing }: { title: string; thumb: string;
       <TooltipTrigger asChild>
         <div
           className={`relative group overflow-hidden w-full h-full transition-all duration-300 ease-in-out cursor-pointer ${
-            active ? "ring-2 ring-white/70 rounded-2xl" : "hover:rounded-2xl"
+            active ? "rounded-2xl" : "hover:rounded-2xl"
           }`}
         >
-          <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full bg-black/45 backdrop-blur-sm opacity-0 group-hover:opacity-100 duration-300 ease-in-out transition-all">
+          <div
+            className={`absolute top-0 left-0 flex items-center justify-center w-full h-full bg-black/45 backdrop-blur-sm opacity-0 group-hover:opacity-100 duration-300 ease-in-out ${
+              playing ? "opacity-100" : "opacity-0"
+            } transition-all`}
+          >
             {playing ? <IconPlayerPauseFilled className="w-8 h-8 text-white" /> : <IconPlayerPlayFilled className="w-8 h-8 text-white" />}
           </div>
           <img src={thumb} alt={title} className="object-contain w-full min-h-[75px] mx-auto" />
