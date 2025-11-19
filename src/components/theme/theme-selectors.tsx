@@ -39,6 +39,7 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
   const [viewportWidth, setViewportWidth] = useState<number>(typeof window !== "undefined" ? window.innerWidth : 1024);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pulseIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const skipNextPointerRef = useRef(false);
 
   // Track viewport width for mobile detection
   useEffect(() => {
@@ -130,6 +131,10 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (skipNextPointerRef.current) {
+      skipNextPointerRef.current = false;
+      return;
+    }
     if (!isExpanded) return;
     setIsDragging(true);
     resetTimeout();
@@ -159,6 +164,10 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
   }, [isDragging]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (skipNextPointerRef.current) {
+      skipNextPointerRef.current = false;
+      return;
+    }
     if (!isExpanded) return;
     setIsDragging(true);
     resetTimeout();
@@ -253,9 +262,15 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
           resetTimeout();
         }
       }}
-      onClick={() => {
+      onClick={(e) => {
         if (isMobile && !isExpanded) {
+          e.preventDefault();
+          e.stopPropagation();
+          if ("stopImmediatePropagation" in e.nativeEvent) {
+            e.nativeEvent.stopImmediatePropagation();
+          }
           handleFirstHover();
+          skipNextPointerRef.current = true;
           setIsExpanded(true);
         }
       }}
@@ -267,7 +282,12 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
       onTouchStart={(e) => {
         handleFirstHover();
         if (!isExpanded) {
+          e.preventDefault();
           e.stopPropagation();
+          if ("stopImmediatePropagation" in e.nativeEvent) {
+            e.nativeEvent.stopImmediatePropagation();
+          }
+          skipNextPointerRef.current = true;
           setIsExpanded(true);
           resetTimeout();
         } else {
