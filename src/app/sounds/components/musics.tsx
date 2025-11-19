@@ -27,6 +27,8 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
   const [bufferedPercent, setBufferedPercent] = useState(0);
   const [bufferedSeconds, setBufferedSeconds] = useState(0);
   const [volume, setVolume] = useState(0.9);
+  const [isLoading, setIsLoading] = useState(false);
+  const isPlayingRef = useRef(isPlaying);
   const waveformRef = useRef<HTMLDivElement>(null);
   const isSeekingRef = useRef(false);
   const latestTrackIndex = TRACKS.length > 0 ? TRACKS.length - 1 : null;
@@ -64,9 +66,12 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
     };
 
     const onEnded = () => {
-      if (currentIndex === null) return;
-      const next = (currentIndex + 1) % TRACKS.length;
-      setCurrentIndex(next);
+      // use functional update so we never rely on a stale currentIndex
+      setCurrentIndex((prevIndex) => {
+        if (prevIndex === null || !TRACKS.length) return prevIndex;
+        const next = (prevIndex + 1) % TRACKS.length;
+        return next;
+      });
       setIsPlaying(true);
     };
     const onPlay = () => setIsPlaying(true);
@@ -76,6 +81,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
       const newDuration = Number.isFinite(audio.duration) ? audio.duration : 0;
       setDuration(newDuration || 0);
       updateBufferedInfo();
+      setIsLoading(false);
     };
     const onProgress = () => updateBufferedInfo();
 
@@ -119,10 +125,15 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+
   // When currentTrack / isPlaying changes: load / play and ensure AudioContext exists & RAF runs while playing
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    let canceled = false;
 
     const startAnalyserIfNeeded = async () => {
       if (!audioContextRef.current) {
@@ -157,13 +168,20 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
         audio.currentTime = 0;
         setBufferedPercent(0);
         setBufferedSeconds(0);
+        setIsLoading(true);
       }
       if (isPlaying) {
         // ensure audio context exists and resume it (user gesture)
         startAnalyserIfNeeded().then(() => {
+          if (canceled || !isPlayingRef.current || loadedTrackKeyRef.current !== trackKey) {
+            return;
+          }
           audio
             .play()
             .then(() => {
+              if (canceled || !isPlayingRef.current || loadedTrackKeyRef.current !== trackKey) {
+                return;
+              }
               // kick off draw loop if not already running
               if (!rafRef.current) {
                 const drawLoop = () => {
@@ -200,6 +218,16 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
               toast.success(`Playing: ${currentTrack.title}`);
             })
             .catch((err) => {
+              if (canceled || loadedTrackKeyRef.current !== trackKey) {
+                return;
+              }
+              // Ignore expected abort errors when user pauses or switches tracks mid-load
+              const errMsg = typeof err?.message === "string" ? err.message : "";
+              const wasInterrupted = errMsg.includes("pause") || errMsg.includes("interrupted") || errMsg.includes("AbortError");
+              if (!isPlayingRef.current || wasInterrupted) {
+                return;
+              }
+
               setIsPlaying(false);
               toast.error("Playback failed. Check file path or user gesture policy.");
               console.error(err);
@@ -225,22 +253,46 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
         rafRef.current = null;
       }
     }
+
+    return () => {
+      canceled = true;
+    };
   }, [currentTrack, isPlaying]);
 
   // toggle / controls (unchanged)
   const togglePlayForIndex = (index: number) => {
+    const audio = audioRef.current;
+
     if (currentIndex === index) {
+      // Same track: simple play / pause toggle
       if (isPlaying) {
-        audioRef.current?.pause();
+        audio?.pause();
         setIsPlaying(false);
         toast.message("Paused");
       } else {
         setIsPlaying(true);
       }
-    } else {
-      setCurrentIndex(index);
-      setIsPlaying(true);
+      return;
     }
+
+    // Different track: ensure we fully reset previous playback/loading state
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+    setCurrentTime(0);
+    setDuration(0);
+    setBufferedPercent(0);
+    setBufferedSeconds(0);
+
+    // Clear RAF so we don't keep an analyser loop tied to the previous track
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+
+    setCurrentIndex(index);
+    setIsPlaying(true);
   };
 
   const handleGlobalPlayPause = () => {
@@ -511,6 +563,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
                 thumb={track.thumb ?? "/home.png"}
                 active={currentIndex === index}
                 playing={currentIndex === index && isPlaying}
+                loading={currentIndex === index && isLoading}
               />
             </CarouselItem>
           ))}
@@ -524,26 +577,66 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
 
 export default MusicsComponent;
 
-const Card = ({ title, thumb, active, playing }: { title: string; thumb: string; active: boolean; playing: boolean }) => {
+const Card = ({ title, thumb, active, playing, loading }: { title: string; thumb: string; active: boolean; playing: boolean; loading?: boolean }) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <div
-          className={`relative group overflow-hidden w-full h-full transition-all duration-300 ease-in-out cursor-pointer ${
-            active ? "rounded-2xl" : "hover:rounded-2xl"
-          }`}
+          className={`relative group overflow-hidden w-full h-full transition-all duration-300 ease-in-out cursor-pointer
+            ${active ? "rounded-2xl" : "hover:rounded-2xl hover:scale-105"}
+            ${playing ? "" : ""}
+          `}
         >
+          {/* Active glow effect */}
+          {active && <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/20 via-transparent to-white/10 pointer-events-none" />}
+
+          {/* Image with subtle zoom on hover */}
+          <img
+            src={thumb}
+            alt={title}
+            className={`object-contain w-full min-h-[75px] mx-auto transition-transform duration-500 ease-out ${
+              active || playing ? "" : "group-hover:scale-110"
+            }`}
+          />
+
+          {/* Overlay with controls */}
           <div
-            className={`absolute top-0 left-0 flex items-center justify-center w-full h-full bg-black/45 backdrop-blur-sm opacity-0 group-hover:opacity-100 duration-300 ease-in-out ${
-              active || playing ? "opacity-100" : "opacity-0"
-            } transition-all`}
+            className={`absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all duration-300 ${
+              active || playing ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+            }`}
           >
-            {playing ? <IconPlayerPauseFilled className="w-8 h-8 text-white" /> : <IconPlayerPlayFilled className="w-8 h-8 text-white" />}
+            {loading ? (
+              <div className="relative">
+                <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                </div>
+              </div>
+            ) : playing ? (
+              <div className="relative animate-scale-in">
+                <IconPlayerPauseFilled className="w-8 h-8 text-white drop-shadow-lg" />
+                <div className="absolute -inset-2 bg-white/20 rounded-full blur-md -z-10 animate-pulse" />
+              </div>
+            ) : (
+              <div className="relative group-hover:animate-scale-in">
+                <IconPlayerPlayFilled className="w-8 h-8 text-white drop-shadow-lg transition-transform group-hover:scale-110" />
+              </div>
+            )}
           </div>
-          <img src={thumb} alt={title} className="object-contain w-full min-h-[75px] mx-auto" />
+
+          {/* Playing indicator - subtle corner pulse */}
+          {playing && !loading && (
+            <div className="absolute top-2 right-2 w-2 h-2 bg-green-400 rounded-full shadow-lg shadow-green-400/50 animate-pulse" />
+          )}
         </div>
       </TooltipTrigger>
-      <TooltipContent>{title}</TooltipContent>
+      <TooltipContent>
+        <div className="text-center">
+          <p className="font-medium">{title}</p>
+          {loading && <p className="text-xs text-white/70 mt-1">Loading...</p>}
+          {playing && !loading && <p className="text-xs text-green-400 mt-1">● Now Playing</p>}
+        </div>
+      </TooltipContent>
     </Tooltip>
   );
 };
