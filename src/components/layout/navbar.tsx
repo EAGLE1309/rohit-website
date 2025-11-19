@@ -84,7 +84,7 @@ const Navbar = () => {
 
   return (
     <nav className={`fixed bg-background ease-in-out w-full top-0 z-50 px-3`}>
-      <div className="h-auto w-[50%] border-2 rounded-full px-5 my-3 lg:mx-auto max-w-screen-xl flex justify-between items-center">
+      <div className="h-auto md:w-[50%] w-full border-2 rounded-full px-5 my-3 mx-auto max-w-screen-xl flex justify-between items-center">
         <Link href="/" className={`flex leading-5 items-center text-lg font-medium font-neue gap-3`}>
           {theme === "dark" || theme === "nightfall" || theme === "midnight" ? (
             <img src="/logo-white.svg" className="w-20 h-full " alt="Logo" />

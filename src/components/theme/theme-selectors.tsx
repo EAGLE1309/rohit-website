@@ -251,7 +251,7 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
           handleTouchStart(e);
         }
       }}
-      className={`flex items-center rounded-full cursor-pointer select-none overflow-hidden ${
+      className={`flex items-center rounded-full cursor-pointer select-none ${isExpanded ? "overflow-hidden" : "overflow-visible"} ${
         isExpanded
           ? `transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${theme === "dark" ? "bg-white/10" : "bg-black/10"}`
           : "transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
@@ -285,14 +285,27 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
         })
       ) : (
         <div
-          className={`rounded-full bg-foreground transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-            shouldPulse ? "animate-pulse" : ""
-          }`}
+          className="relative flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
           style={{
             width: `${activeDotSize}px`,
             height: `${activeDotSize}px`,
           }}
-        />
+        >
+          <span
+            className={`absolute inline-flex rounded-full bg-black/20 ${shouldPulse ? "animate-ping" : "opacity-0"}`}
+            style={{
+              width: `${activeDotSize * 1.1}px`,
+              height: `${activeDotSize * 1.1}px`,
+            }}
+          />
+          <span
+            className="relative inline-flex rounded-full bg-black"
+            style={{
+              width: `${activeDotSize}px`,
+              height: `${activeDotSize}px`,
+            }}
+          />
+        </div>
       )}
     </div>
   );
