@@ -36,8 +36,19 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [shouldPulse, setShouldPulse] = useState(true);
+  const [viewportWidth, setViewportWidth] = useState<number>(typeof window !== "undefined" ? window.innerWidth : 1024);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pulseIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Track viewport width for mobile detection
+  useEffect(() => {
+    const handleResize = () => setViewportWidth(window.innerWidth);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const isMobile = viewportWidth <= 768;
 
   // Check cookie on mount to see if user has interacted before
   useEffect(() => {
@@ -83,8 +94,9 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
     }
   }, [theme]);
 
-  // Auto-collapse after 3 seconds of inactivity (but not while hovering)
+  // Auto-collapse after 3 seconds of inactivity (desktop/tablet only)
   const resetTimeout = () => {
+    if (isMobile) return;
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -105,6 +117,7 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
   }, [isExpanded, isDragging, isHovering]);
 
   // Calculate theme index from cursor position
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const getThemeIndexFromPosition = (clientX: number) => {
     if (!containerRef.current) return activeIndex;
 
@@ -226,15 +239,25 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
     <div
       ref={containerRef}
       onMouseEnter={() => {
-        setIsHovering(true);
-        handleFirstHover();
-        if (!isExpanded) {
-          setIsExpanded(true);
+        if (!isMobile) {
+          setIsHovering(true);
+          handleFirstHover();
+          if (!isExpanded) {
+            setIsExpanded(true);
+          }
         }
       }}
       onMouseLeave={() => {
-        setIsHovering(false);
-        resetTimeout();
+        if (!isMobile) {
+          setIsHovering(false);
+          resetTimeout();
+        }
+      }}
+      onClick={() => {
+        if (isMobile && !isExpanded) {
+          handleFirstHover();
+          setIsExpanded(true);
+        }
       }}
       onMouseDown={(e) => {
         if (isExpanded) {
