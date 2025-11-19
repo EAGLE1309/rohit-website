@@ -28,12 +28,13 @@ interface ThemeSliderProps {
   height?: number; // Height in pixels
 }
 
-const ThemeSlider = ({ width = 250, height = 40 }: ThemeSliderProps) => {
+const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
   const { theme, setTheme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get current theme index
   useEffect(() => {
@@ -42,6 +43,27 @@ const ThemeSlider = ({ width = 250, height = 40 }: ThemeSliderProps) => {
       setActiveIndex(currentIndex);
     }
   }, [theme]);
+
+  // Auto-collapse after 3 seconds of inactivity
+  const resetTimeout = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    if (isExpanded && !isDragging) {
+      timeoutRef.current = setTimeout(() => {
+        setIsExpanded(false);
+      }, 3000);
+    }
+  };
+
+  useEffect(() => {
+    resetTimeout();
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [isExpanded, isDragging]);
 
   // Calculate theme index from cursor position
   const getThemeIndexFromPosition = (clientX: number) => {
@@ -56,7 +78,9 @@ const ThemeSlider = ({ width = 250, height = 40 }: ThemeSliderProps) => {
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (!isExpanded) return;
     setIsDragging(true);
+    resetTimeout();
     const index = getThemeIndexFromPosition(e.clientX);
     setActiveIndex(index);
     setTheme(themes[index].name);
@@ -65,6 +89,7 @@ const ThemeSlider = ({ width = 250, height = 40 }: ThemeSliderProps) => {
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!isDragging) return;
+      e.preventDefault();
       const index = getThemeIndexFromPosition(e.clientX);
       if (index !== activeIndex) {
         setActiveIndex(index);
@@ -75,11 +100,16 @@ const ThemeSlider = ({ width = 250, height = 40 }: ThemeSliderProps) => {
   );
 
   const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
+    if (isDragging) {
+      setIsDragging(false);
+      resetTimeout();
+    }
+  }, [isDragging]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (!isExpanded) return;
     setIsDragging(true);
+    resetTimeout();
     const touch = e.touches[0];
     const index = getThemeIndexFromPosition(touch.clientX);
     setActiveIndex(index);
@@ -89,6 +119,7 @@ const ThemeSlider = ({ width = 250, height = 40 }: ThemeSliderProps) => {
   const handleTouchMove = useCallback(
     (e: TouchEvent) => {
       if (!isDragging) return;
+      e.preventDefault();
       const touch = e.touches[0];
       const index = getThemeIndexFromPosition(touch.clientX);
       if (index !== activeIndex) {
@@ -100,8 +131,11 @@ const ThemeSlider = ({ width = 250, height = 40 }: ThemeSliderProps) => {
   );
 
   const handleTouchEnd = useCallback(() => {
-    setIsDragging(false);
-  }, []);
+    if (isDragging) {
+      setIsDragging(false);
+      resetTimeout();
+    }
+  }, [isDragging]);
 
   // Add global mouse/touch event listeners
   useEffect(() => {
@@ -123,19 +157,23 @@ const ThemeSlider = ({ width = 250, height = 40 }: ThemeSliderProps) => {
   const handleDotClick = (index: number) => {
     setActiveIndex(index);
     setTheme(themes[index].name);
+    resetTimeout();
   };
 
   // Calculate dot sizes based on container height
-  const activeDotSize = Math.max(12, height * 0.4);
-  const inactiveDotSize = Math.max(8, height * 0.25);
-  const gap = Math.max(4, height * 0.1);
-  const padding = Math.max(12, height * 0.3);
+  const activeDotSize = Math.max(12, height * 0.38);
+  const inactiveDotSize = Math.max(5, height * 0.15);
+  const gap = Math.max(4, height * 0.15);
+  const padding = Math.max(12, height * 0.38);
 
   // Handle click outside to collapse
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node) && !isDragging) {
         setIsExpanded(false);
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
       }
     };
 
@@ -143,10 +181,13 @@ const ThemeSlider = ({ width = 250, height = 40 }: ThemeSliderProps) => {
       document.addEventListener("mousedown", handleClickOutside);
       return () => document.removeEventListener("mousedown", handleClickOutside);
     }
-  }, [isExpanded]);
+  }, [isExpanded, isDragging]);
 
   const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
+    if (!isExpanded) {
+      setIsExpanded(true);
+      resetTimeout();
+    }
   };
 
   return (
@@ -168,15 +209,18 @@ const ThemeSlider = ({ width = 250, height = 40 }: ThemeSliderProps) => {
           handleTouchStart(e);
         }
       }}
-      className={`flex items-center rounded-full cursor-pointer select-none transition-all duration-500 ease-in-out overflow-hidden ${
-        theme === "dark" ? "bg-white/10" : "bg-black/10"
+      className={`flex items-center rounded-full cursor-pointer select-none overflow-hidden ${
+        isExpanded
+          ? `transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] ${theme === "dark" ? "bg-white/10" : "bg-black/10"}`
+          : "transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
       }`}
       style={{
-        width: isExpanded ? `${width}px` : `${height}px`,
-        height: `${height}px`,
+        width: isExpanded ? `${width}px` : `${activeDotSize}px`,
+        height: isExpanded ? `${height}px` : `${activeDotSize}px`,
         gap: isExpanded ? `${gap}px` : "0px",
         padding: isExpanded ? `0 ${padding}px` : "0",
         justifyContent: isExpanded ? "flex-start" : "center",
+        backgroundColor: isExpanded ? undefined : "transparent",
       }}
     >
       {isExpanded ? (
@@ -188,7 +232,7 @@ const ThemeSlider = ({ width = 250, height = 40 }: ThemeSliderProps) => {
             <button
               key={t.name}
               onClick={() => handleDotClick(index)}
-              className={`rounded-full transition-all duration-200 ease-out flex-shrink-0 ${isActive ? "bg-foreground" : "bg-foreground/40"}`}
+              className={`rounded-full transition-all duration-150 ease-out flex-shrink-0 ${isActive ? "bg-foreground" : "bg-foreground/40"}`}
               style={{
                 width: `${dotSize}px`,
                 height: `${dotSize}px`,
@@ -199,10 +243,10 @@ const ThemeSlider = ({ width = 250, height = 40 }: ThemeSliderProps) => {
         })
       ) : (
         <div
-          className="rounded-full bg-foreground transition-all duration-300"
+          className="rounded-full bg-foreground transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
           style={{
-            width: `${Math.max(12, height * 0.4)}px`,
-            height: `${Math.max(12, height * 0.4)}px`,
+            width: `${activeDotSize}px`,
+            height: `${activeDotSize}px`,
           }}
         />
       )}
