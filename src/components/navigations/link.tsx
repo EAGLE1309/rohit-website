@@ -7,47 +7,34 @@ import type { UrlObject } from "url";
 import clsx from "clsx";
 import { useLenis } from "lenis/react";
 
-type TransitionLinkProps = {
+type TransitionLinkProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & {
   href: string | UrlObject;
   children: React.ReactNode;
   className?: string;
   ref?: React.ForwardedRef<HTMLAnchorElement>;
-  onClick?: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
 };
 
-const Link: React.FC<TransitionLinkProps> = ({ href, children, className, ref, onClick }) => {
+const Link: React.FC<TransitionLinkProps> = ({ href, children, className, ref, onClick, ...rest }) => {
   const router = useTransitionRouter();
   const currentPath = usePathname();
   const lenis = useLenis();
 
   function improvedSlideInOut() {
-    // Animate old page fading and sliding up slightly
-    document.documentElement.animate(
-      [
-        { opacity: 1, transform: "translateY(0) scale(1)" },
-        { opacity: 0, transform: "translateY(-25%) scale(0.98)" },
-      ],
-      {
-        duration: 600,
-        easing: "cubic-bezier(0.86, 0, 0.07, 1)",
-        fill: "forwards",
-        pseudoElement: "::view-transition-old(root)",
-      }
-    );
+    // Fade out old page - buttery smooth
+    document.documentElement.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: 700,
+      easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+      fill: "forwards",
+      pseudoElement: "::view-transition-old(root)",
+    });
 
-    // Animate new page appearing with a subtle slide from bottom and fade in
-    document.documentElement.animate(
-      [
-        { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)", opacity: 0.95 },
-        { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)", opacity: 1 },
-      ],
-      {
-        duration: 650,
-        easing: "cubic-bezier(0.86, 0, 0.07, 1)",
-        fill: "forwards",
-        pseudoElement: "::view-transition-new(root)",
-      }
-    );
+    // Fade in new page - seamless and smooth
+    document.documentElement.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: 750,
+      easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+      fill: "forwards",
+      pseudoElement: "::view-transition-new(root)",
+    });
   }
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -67,7 +54,7 @@ const Link: React.FC<TransitionLinkProps> = ({ href, children, className, ref, o
   };
 
   return (
-    <a href={typeof href === "string" ? href : href.pathname || "/"} ref={ref} onClick={handleClick} className={clsx(className)}>
+    <a href={typeof href === "string" ? href : href.pathname || "/"} ref={ref} onClick={handleClick} className={clsx(className)} {...rest}>
       {children}
     </a>
   );

@@ -11,10 +11,29 @@ interface ParallaxGridWrapperProps extends Omit<HTMLAttributes<HTMLDivElement>, 
   randomOffset?: number; // maximum random start offset in px
 }
 
+const getGridColumnCount = (template: string) => {
+  if (!template) return 0;
+
+  const regex = /repeat\(\s*(\d+)\s*,\s*[^)]+\)|(?:minmax|fit-content|clamp)\([^)]*\)|[^\s]+/g;
+  let match: RegExpExecArray | null;
+  let count = 0;
+
+  while ((match = regex.exec(template)) !== null) {
+    if (match[0].startsWith("repeat")) {
+      const repeatMatch = /repeat\(\s*(\d+)\s*,/.exec(match[0]);
+      count += repeatMatch ? parseInt(repeatMatch[1], 10) : 1;
+    } else {
+      count += 1;
+    }
+  }
+
+  return count;
+};
+
 export const ParallaxGridWrapper: React.FC<ParallaxGridWrapperProps> = ({
   children,
   baseLag = 0.5,
-  randomOffset = 25,
+  randomOffset = 1,
   lenisInstance,
   className = "",
   style = {},
@@ -30,7 +49,8 @@ export const ParallaxGridWrapper: React.FC<ParallaxGridWrapperProps> = ({
     if (!grid) return;
 
     // Get number of columns from CSS grid
-    const numColumns = window.getComputedStyle(grid).getPropertyValue("grid-template-columns").split(" ").filter(Boolean).length;
+    const template = window.getComputedStyle(grid).getPropertyValue("grid-template-columns");
+    const numColumns = getGridColumnCount(template);
     if (numColumns <= 1) return;
 
     const items = Array.from(grid.children) as HTMLElement[];
@@ -41,6 +61,7 @@ export const ParallaxGridWrapper: React.FC<ParallaxGridWrapperProps> = ({
 
     // Clear grid and append column containers
     grid.innerHTML = "";
+    initialOffsetsRef.current = [];
     const columnEls: HTMLDivElement[] = columns.map((colItems) => {
       const col = document.createElement("div");
 

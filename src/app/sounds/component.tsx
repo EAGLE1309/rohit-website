@@ -30,36 +30,15 @@ const SoundsComponent = ({ tracks, flyers, photographs }: { tracks: any; flyers:
       <div className="absolute flex md:flex-col md:top-[calc(50%-5rem)] top-[85px] left-[51px] gap-3 md:gap-0 translate-y-1/2 md:left-1">
         <Link href={`?id=music`} className={`text-xs md:text-sm uppercase font-medium md:font-normal cursor-pointer`}>
           Music
-          {type === "music" || !type ? (
-            <span className="text-red-500 relative">
-              &nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <span className="after:absolute after:h-[2px] after:top-1/2 after:-translate-y-1/2 after:w-[28px] after:bg-current after:left-0" />]
-            </span>
-          ) : (
-            <span>&nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]</span>
-          )}
+          {type === "music" || !type ? <span>&nbsp;[&nbsp;•&nbsp;]</span> : <span>&nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;]</span>}
         </Link>
         <Link href={`?id=flyers`} className={`text-xs md:text-sm uppercase font-medium md:font-normal cursor-pointer`}>
           Flyers
-          {type === "flyers" ? (
-            <span className="text-red-500 relative">
-              &nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <span className="after:absolute after:h-[2px] after:top-1/2 after:-translate-y-1/2 after:w-[28px] after:bg-current after:left-0" />]
-            </span>
-          ) : (
-            <span>&nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]</span>
-          )}
+          {type === "flyers" ? <span>&nbsp;[&nbsp;•&nbsp;]</span> : <span>&nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;]</span>}
         </Link>
         <Link href={`?id=photographies`} className={`text-xs md:text-sm uppercase font-medium md:font-normal cursor-pointer`}>
           Photographs
-          {type === "photographies" ? (
-            <span className="text-red-500 relative">
-              &nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <span className="after:absolute after:h-[2px] after:top-1/2 after:-translate-y-1/2 after:w-[28px] after:bg-current after:left-0" />]
-            </span>
-          ) : (
-            <span>&nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]</span>
-          )}
+          {type === "photographies" ? <span>&nbsp;[&nbsp;•&nbsp;]</span> : <span>&nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;]</span>}
         </Link>
       </div>
 
