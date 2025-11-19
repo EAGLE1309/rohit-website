@@ -34,7 +34,46 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const [shouldPulse, setShouldPulse] = useState(true);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pulseIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Check cookie on mount to see if user has interacted before
+  useEffect(() => {
+    const hasInteracted = document.cookie.includes("theme-slider-interacted=true");
+    if (hasInteracted) {
+      setShouldPulse(false);
+    } else {
+      // Start pulsing every 5 seconds
+      pulseIntervalRef.current = setInterval(() => {
+        setShouldPulse(true);
+        setTimeout(() => setShouldPulse(false), 1000); // Pulse for 1 second
+      }, 5000);
+    }
+
+    return () => {
+      if (pulseIntervalRef.current) {
+        clearInterval(pulseIntervalRef.current);
+      }
+    };
+  }, []);
+
+  // Stop pulsing permanently when user hovers for the first time
+  const handleFirstHover = () => {
+    if (!document.cookie.includes("theme-slider-interacted=true")) {
+      // Set cookie that expires in 1 year
+      const expires = new Date();
+      expires.setFullYear(expires.getFullYear() + 1);
+      document.cookie = `theme-slider-interacted=true; expires=${expires.toUTCString()}; path=/`;
+
+      setShouldPulse(false);
+      if (pulseIntervalRef.current) {
+        clearInterval(pulseIntervalRef.current);
+        pulseIntervalRef.current = null;
+      }
+    }
+  };
 
   // Get current theme index
   useEffect(() => {
@@ -44,15 +83,15 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
     }
   }, [theme]);
 
-  // Auto-collapse after 3 seconds of inactivity
+  // Auto-collapse after 3 seconds of inactivity (but not while hovering)
   const resetTimeout = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    if (isExpanded && !isDragging) {
+    if (isExpanded && !isDragging && !isHovering) {
       timeoutRef.current = setTimeout(() => {
         setIsExpanded(false);
-      }, 3000);
+      }, 100);
     }
   };
 
@@ -63,7 +102,7 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [isExpanded, isDragging]);
+  }, [isExpanded, isDragging, isHovering]);
 
   // Calculate theme index from cursor position
   const getThemeIndexFromPosition = (clientX: number) => {
@@ -183,28 +222,31 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
     }
   }, [isExpanded, isDragging]);
 
-  const toggleExpand = () => {
-    if (!isExpanded) {
-      setIsExpanded(true);
-      resetTimeout();
-    }
-  };
-
   return (
     <div
       ref={containerRef}
-      onMouseDown={(e) => {
+      onMouseEnter={() => {
+        setIsHovering(true);
+        handleFirstHover();
         if (!isExpanded) {
-          e.stopPropagation();
-          toggleExpand();
-        } else {
+          setIsExpanded(true);
+        }
+      }}
+      onMouseLeave={() => {
+        setIsHovering(false);
+        resetTimeout();
+      }}
+      onMouseDown={(e) => {
+        if (isExpanded) {
           handleMouseDown(e);
         }
       }}
       onTouchStart={(e) => {
+        handleFirstHover();
         if (!isExpanded) {
           e.stopPropagation();
-          toggleExpand();
+          setIsExpanded(true);
+          resetTimeout();
         } else {
           handleTouchStart(e);
         }
@@ -243,7 +285,9 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
         })
       ) : (
         <div
-          className="rounded-full bg-foreground transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+          className={`rounded-full bg-foreground transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+            shouldPulse ? "animate-pulse" : ""
+          }`}
           style={{
             width: `${activeDotSize}px`,
             height: `${activeDotSize}px`,
