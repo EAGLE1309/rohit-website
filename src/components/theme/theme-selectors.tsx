@@ -26,9 +26,10 @@ const themes = [
 interface ThemeSliderProps {
   width?: number; // Width in pixels
   height?: number; // Height in pixels
+  onMobileExpandChange?: (expanded: boolean) => void;
 }
 
-const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
+const ThemeSlider = ({ width = 225, height = 40, onMobileExpandChange }: ThemeSliderProps) => {
   const { theme, setTheme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -40,6 +41,19 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pulseIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const skipNextPointerRef = useRef(false);
+  const mobileSelectionGuardRef = useRef(false);
+  const mobileSelectionGuardTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const activateMobileSelectionGuard = useCallback(() => {
+    mobileSelectionGuardRef.current = true;
+    if (mobileSelectionGuardTimeoutRef.current) {
+      clearTimeout(mobileSelectionGuardTimeoutRef.current);
+    }
+    mobileSelectionGuardTimeoutRef.current = setTimeout(() => {
+      mobileSelectionGuardRef.current = false;
+      mobileSelectionGuardTimeoutRef.current = null;
+    }, 250);
+  }, []);
 
   // Track viewport width for mobile detection
   useEffect(() => {
@@ -50,6 +64,19 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
   }, []);
 
   const isMobile = viewportWidth <= 768;
+
+  useEffect(() => {
+    if (!onMobileExpandChange) return;
+    onMobileExpandChange(isMobile ? isExpanded : false);
+  }, [isExpanded, isMobile, onMobileExpandChange]);
+
+  useEffect(() => {
+    return () => {
+      if (mobileSelectionGuardTimeoutRef.current) {
+        clearTimeout(mobileSelectionGuardTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Check cookie on mount to see if user has interacted before
   useEffect(() => {
@@ -216,6 +243,7 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
   }, [isDragging, handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd]);
 
   const handleDotClick = (index: number) => {
+    if (mobileSelectionGuardRef.current) return;
     setActiveIndex(index);
     setTheme(themes[index].name);
     resetTimeout();
@@ -272,6 +300,7 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
           handleFirstHover();
           skipNextPointerRef.current = true;
           setIsExpanded(true);
+          activateMobileSelectionGuard();
         }
       }}
       onMouseDown={(e) => {
@@ -290,6 +319,7 @@ const ThemeSlider = ({ width = 225, height = 40 }: ThemeSliderProps) => {
           skipNextPointerRef.current = true;
           setIsExpanded(true);
           resetTimeout();
+          activateMobileSelectionGuard();
         } else {
           handleTouchStart(e);
         }

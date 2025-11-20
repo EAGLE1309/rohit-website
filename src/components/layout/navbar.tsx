@@ -20,6 +20,7 @@ const items = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [isThemeSliderExpanded, setIsThemeSliderExpanded] = useState(false);
 
   const { theme } = useTheme();
 
@@ -84,8 +85,13 @@ const Navbar = () => {
 
   return (
     <nav className={`fixed bg-background ease-in-out w-full top-0 z-50 px-3`}>
-      <div className="h-auto md:w-[50%] w-full border-2 rounded-full px-5 my-3 mx-auto max-w-screen-xl flex justify-between items-center">
-        <Link href="/" className={`flex leading-5 items-center text-lg font-medium font-neue gap-3`}>
+      <div className="h-auto md:w-[50%] w-full border-2 rounded-full px-5 py-1 my-3 mx-auto max-w-screen-xl flex justify-between items-center">
+        <Link
+          href="/"
+          className={`flex leading-5 items-center text-lg font-medium font-neue gap-3 ${
+            isThemeSliderExpanded ? "opacity-0 pointer-events-none" : "opacity-100"
+          }`}
+        >
           {theme === "dark" || theme === "nightfall" || theme === "midnight" ? (
             <img src="/logo-white.svg" className="w-20 h-full " alt="Logo" />
           ) : (
@@ -138,7 +144,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-4 md:hidden">
-          <ThemeSelectors />
+          <ThemeSelectors onMobileExpandChange={setIsThemeSliderExpanded} />
           <Button
             className={`!px-1.5 rounded-full ${open ? (theme === "dark" ? "!bg-white/5" : "!bg-black/5") : ""}`}
             onClick={() => setOpen(!open)}
