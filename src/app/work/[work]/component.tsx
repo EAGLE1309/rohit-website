@@ -58,7 +58,6 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
                 poster={urlFor(project.thumbnail).url() ?? undefined}
                 playsInline
                 autoPlay
-                muted
                 disablePictureInPicture
                 className="w-full h-auto max-h-[65vh]"
               >
