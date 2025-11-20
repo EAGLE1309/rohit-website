@@ -43,6 +43,7 @@ const ThemeSlider = ({ width = 225, height = 40, onMobileExpandChange }: ThemeSl
   const skipNextPointerRef = useRef(false);
   const mobileSelectionGuardRef = useRef(false);
   const mobileSelectionGuardTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const themeChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const activateMobileSelectionGuard = useCallback(() => {
     mobileSelectionGuardRef.current = true;
@@ -54,6 +55,19 @@ const ThemeSlider = ({ width = 225, height = 40, onMobileExpandChange }: ThemeSl
       mobileSelectionGuardTimeoutRef.current = null;
     }, 250);
   }, []);
+
+  // Debounced theme change for smoother transitions
+  const debouncedSetTheme = useCallback(
+    (themeName: string) => {
+      if (themeChangeTimeoutRef.current) {
+        clearTimeout(themeChangeTimeoutRef.current);
+      }
+      themeChangeTimeoutRef.current = setTimeout(() => {
+        setTheme(themeName);
+      }, 50);
+    },
+    [setTheme]
+  );
 
   // Track viewport width for mobile detection
   useEffect(() => {
@@ -74,6 +88,9 @@ const ThemeSlider = ({ width = 225, height = 40, onMobileExpandChange }: ThemeSl
     return () => {
       if (mobileSelectionGuardTimeoutRef.current) {
         clearTimeout(mobileSelectionGuardTimeoutRef.current);
+      }
+      if (themeChangeTimeoutRef.current) {
+        clearTimeout(themeChangeTimeoutRef.current);
       }
     };
   }, []);
@@ -177,10 +194,10 @@ const ThemeSlider = ({ width = 225, height = 40, onMobileExpandChange }: ThemeSl
       const index = getThemeIndexFromPosition(e.clientX);
       if (index !== activeIndex) {
         setActiveIndex(index);
-        setTheme(themes[index].name);
+        debouncedSetTheme(themes[index].name);
       }
     },
-    [isDragging, activeIndex, getThemeIndexFromPosition, setTheme]
+    [isDragging, activeIndex, getThemeIndexFromPosition, debouncedSetTheme]
   );
 
   const handleMouseUp = useCallback(() => {
@@ -212,10 +229,10 @@ const ThemeSlider = ({ width = 225, height = 40, onMobileExpandChange }: ThemeSl
       const index = getThemeIndexFromPosition(touch.clientX);
       if (index !== activeIndex) {
         setActiveIndex(index);
-        setTheme(themes[index].name);
+        debouncedSetTheme(themes[index].name);
       }
     },
-    [isDragging, activeIndex, getThemeIndexFromPosition, setTheme]
+    [isDragging, activeIndex, getThemeIndexFromPosition, debouncedSetTheme]
   );
 
   const handleTouchEnd = useCallback(() => {

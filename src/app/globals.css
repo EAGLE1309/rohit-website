@@ -3,8 +3,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Smooth theme transition animations */
 body {
   font-family: var(--font-neue-montreal);
+  transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1), color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+nav {
+  transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1), color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .transition-custom {
@@ -289,6 +295,15 @@ body {
   100% {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes theme-fade {
+  0% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 1;
   }
 }
 
