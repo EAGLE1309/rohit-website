@@ -26,7 +26,7 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
   return (
     <MaxWidthWrapper className="pt-28 relative">
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="w-full md:w-[75%] mx-auto flex justify-evenly items-center pb-20 pt-8">
+        <TabsList className="w-full md:w-[75%] mx-auto flex justify-evenly flex-wrap items-center pb-20 pt-8">
           {filterOptions.map((filter, index) => (
             <TabsTrigger
               className={`text-sm uppercase font-medium md:font-normal cursor-pointer ${activeTab === filter.value ? "" : ""}`}

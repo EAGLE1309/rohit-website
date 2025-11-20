@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { urlFor } from "@/lib/dashboard/sanity-cilent";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -12,6 +12,11 @@ const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
   const [selectedImage, setSelectedImage] = useState(photographs[0]?.image);
   const [loading, setLoading] = useState(true);
 
+  const blurredPlaceholder = useMemo(() => {
+    if (!selectedImage) return "";
+    return urlFor(selectedImage).width(32).height(32).quality(40).blur(50).url();
+  }, [selectedImage]);
+
   // whenever selectedImage changes, show loader until next image loads
   useEffect(() => {
     setLoading(true);
@@ -20,15 +25,18 @@ const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
   return (
     <div className="flex flex-col items-center justify-center gap-3">
       {/* Main display image */}
-      <div className="relative w-[272px] h-[425px]">
-        {/* Skeleton / placeholder */}
+      <div className="relative w-[305px] h-[375px] md:w-[272px] md:h-[425px]">
+        {/* Blurred placeholder sourced via Sanity image builder */}
         <div
           aria-hidden
           className={`absolute inset-0 rounded-md overflow-hidden transition-opacity duration-300 ${
             loading ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
+          style={
+            blurredPlaceholder ? { backgroundImage: `url(${blurredPlaceholder})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined
+          }
         >
-          <div className="w-full h-full bg-gray-100 dark:bg-gray-800 animate-pulse" />
+          {!blurredPlaceholder && <div className="w-full h-full bg-gray-100 dark:bg-gray-800 animate-pulse" />}
         </div>
 
         <Image
@@ -36,6 +44,8 @@ const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
           alt="Selected Photograph"
           fill
           className={`object-contain pointer-events-none transition-all duration-300 ${loading ? "opacity-0" : "opacity-100"}`}
+          placeholder={blurredPlaceholder ? "blur" : "empty"}
+          blurDataURL={blurredPlaceholder || undefined}
           priority
           // next/image provides onLoadingComplete; fall back to onError as well
           onLoadingComplete={() => setLoading(false)}
@@ -47,7 +57,7 @@ const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
       </div>
 
       {/* Carousel */}
-      <Carousel opts={{ loop: true }} className="w-[565px]">
+      <Carousel opts={{ loop: true }} className="w-full md:w-[565px]">
         <CarouselContent>
           {photographs.map((photograph: any) => (
             <CarouselItem className="basis-1/4 md:basis-1/5" key={photograph.id}>

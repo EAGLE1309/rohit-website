@@ -215,7 +215,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
                 };
                 rafRef.current = requestAnimationFrame(drawLoop);
               }
-              toast.success(`Playing: ${currentTrack.title}`);
+              // toast.success(`Playing: ${currentTrack.title}`);
             })
             .catch((err) => {
               if (canceled || loadedTrackKeyRef.current !== trackKey) {
@@ -268,7 +268,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
       if (isPlaying) {
         audio?.pause();
         setIsPlaying(false);
-        toast.message("Paused");
+        // toast.message("Paused");
       } else {
         setIsPlaying(true);
       }

@@ -167,15 +167,13 @@ const Navbar = () => {
         }`}
       >
         {items.map((item) => (
-          <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className="w-full text-2xl font-belleza py-2 flex items-center gap-2">
-            {isNavActive(item.href) ? (
-              <span className="text-red-500 relative">
-                &nbsp;[&nbsp;&nbsp;&nbsp;
-                <span className="after:absolute after:h-[3px] after:top-1/2 after:-translate-y-1/2 after:w-[38px] after:bg-current after:left-0" />]
-              </span>
-            ) : (
-              <span>&nbsp;[&nbsp;&nbsp;&nbsp;]</span>
-            )}
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={() => setOpen(false)}
+            className="w-full text-lg font-medium font-neue py-2 flex items-center gap-2"
+          >
+            {isNavActive(item.href) ? <span>&nbsp;[&nbsp;•&nbsp;]</span> : <span>&nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;]</span>}
             &nbsp;{item.title}
           </Link>
         ))}
