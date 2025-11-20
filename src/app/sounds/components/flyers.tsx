@@ -1,16 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { urlFor } from "@/lib/dashboard/sanity-cilent";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Image from "next/image";
 
-/* eslint-disable @next/next/no-img-element */
-
 const FlyersComponent = ({ flyers }: { flyers: any[] }) => {
   const [selectedImage, setSelectedImage] = useState(flyers[0]?.image);
   const [loading, setLoading] = useState(true);
+
+  const blurredPlaceholder = useMemo(() => {
+    if (!selectedImage) return "";
+    return urlFor(selectedImage).width(32).height(32).quality(40).blur(50).url();
+  }, [selectedImage]);
 
   // whenever selectedImage changes, show loader until next image loads
   useEffect(() => {
@@ -21,14 +24,17 @@ const FlyersComponent = ({ flyers }: { flyers: any[] }) => {
     <div className="flex flex-col items-center justify-center gap-3">
       {/* Main display image */}
       <div className="relative w-[305px] h-[375px] md:w-[272px] md:h-[425px]">
-        {/* Skeleton / placeholder */}
+        {/* Blurred placeholder sourced via Sanity image builder */}
         <div
           aria-hidden
-          className={`absolute inset-0 rounded-md overflow-hidden transition-opacity duration-300 ${
+          className={`absolute w-[305px] h-[375px] md:w-[272px] md:h-[275px] inset-0 overflow-hidden transition-opacity duration-300 ${
             loading ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
+          style={
+            blurredPlaceholder ? { backgroundImage: `url(${blurredPlaceholder})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined
+          }
         >
-          <div className="w-full h-full bg-gray-100 dark:bg-gray-800 animate-pulse" />
+          {!blurredPlaceholder && <div className="w-full h-full bg-gray-100 dark:bg-gray-800 animate-pulse" />}
         </div>
 
         <Image
@@ -36,14 +42,13 @@ const FlyersComponent = ({ flyers }: { flyers: any[] }) => {
           alt="Selected Photograph"
           fill
           className={`object-contain pointer-events-none transition-all duration-300 ${loading ? "opacity-0" : "opacity-100"}`}
+          placeholder={blurredPlaceholder ? "blur" : "empty"}
+          blurDataURL={blurredPlaceholder || undefined}
           priority
           // next/image provides onLoadingComplete; fall back to onError as well
           onLoadingComplete={() => setLoading(false)}
           onError={() => setLoading(false)}
         />
-
-        {/* Spinner overlay */}
-        {loading && <div className="absolute inset-0 flex items-center justify-center"></div>}
       </div>
 
       {/* Carousel */}
@@ -72,6 +77,7 @@ const Card = ({ title, image, onClick }: { title: string; image: string; onClick
           onClick={onClick}
           className="relative group overflow-hidden w-full h-full transition-all duration-300 ease-in-out cursor-pointer hover:scale-105"
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={urlFor(image).url()} alt={title} className="object-contain w-full min-h-[75px] mx-auto" />
         </div>
       </TooltipTrigger>

@@ -365,14 +365,14 @@ const ThemeSlider = ({ width = 225, height = 40, onMobileExpandChange }: ThemeSl
           }}
         >
           <span
-            className={`absolute inline-flex rounded-full bg-black/20 ${shouldPulse ? "animate-ping" : "opacity-0"}`}
+            className={`absolute inline-flex rounded-full bg-foreground/20 ${shouldPulse ? "animate-ping" : "opacity-0"}`}
             style={{
               width: `${activeDotSize * 1.1}px`,
               height: `${activeDotSize * 1.1}px`,
             }}
           />
           <span
-            className="relative inline-flex rounded-full bg-black"
+            className="relative inline-flex rounded-full bg-foreground"
             style={{
               width: `${activeDotSize}px`,
               height: `${activeDotSize}px`,

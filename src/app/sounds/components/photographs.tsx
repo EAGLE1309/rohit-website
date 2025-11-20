@@ -6,8 +6,6 @@ import { urlFor } from "@/lib/dashboard/sanity-cilent";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Image from "next/image";
 
-/* eslint-disable @next/next/no-img-element */
-
 const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
   const [selectedImage, setSelectedImage] = useState(photographs[0]?.image);
   const [loading, setLoading] = useState(true);
@@ -29,9 +27,7 @@ const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
         {/* Blurred placeholder sourced via Sanity image builder */}
         <div
           aria-hidden
-          className={`absolute inset-0 rounded-md overflow-hidden transition-opacity duration-300 ${
-            loading ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
+          className={`absolute inset-0 overflow-hidden transition-opacity duration-300 ${loading ? "opacity-100" : "opacity-0 pointer-events-none"}`}
           style={
             blurredPlaceholder ? { backgroundImage: `url(${blurredPlaceholder})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined
           }
@@ -51,9 +47,6 @@ const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
           onLoadingComplete={() => setLoading(false)}
           onError={() => setLoading(false)}
         />
-
-        {/* Spinner overlay */}
-        {loading && <div className="absolute inset-0 flex items-center justify-center"></div>}
       </div>
 
       {/* Carousel */}
@@ -82,6 +75,7 @@ const Card = ({ title, image, onClick }: { title: string; image: string; onClick
           onClick={onClick}
           className="relative group overflow-hidden w-full h-full transition-all duration-300 ease-in-out cursor-pointer hover:scale-105"
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={urlFor(image).url()} alt={title} className="object-contain w-full min-h-[75px] mx-auto" />
         </div>
       </TooltipTrigger>
