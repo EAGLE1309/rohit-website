@@ -364,7 +364,9 @@ const ThemeSlider = ({ width = 225, height = 40, onMobileExpandChange }: ThemeSl
             <button
               key={t.name}
               onClick={() => handleDotClick(index)}
-              className={`rounded-full transition-all duration-150 ease-out flex-shrink-0 ${isActive ? "bg-foreground" : "bg-foreground/40"}`}
+              className={`rounded-full cursor-pointer transition-all duration-150 ease-out flex-shrink-0 ${
+                isActive ? "bg-foreground" : "bg-foreground/40"
+              }`}
               style={{
                 width: `${dotSize}px`,
                 height: `${dotSize}px`,
@@ -375,21 +377,21 @@ const ThemeSlider = ({ width = 225, height = 40, onMobileExpandChange }: ThemeSl
         })
       ) : (
         <div
-          className="relative flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+          className="relative flex items-center cursor-pointer justify-center transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
           style={{
             width: `${activeDotSize}px`,
             height: `${activeDotSize}px`,
           }}
         >
           <span
-            className={`absolute inline-flex rounded-full bg-foreground/20 ${shouldPulse ? "animate-ping" : "opacity-0"}`}
+            className={`absolute inline-flex cursor-pointer rounded-full bg-foreground/20 ${shouldPulse ? "animate-ping" : "opacity-0"}`}
             style={{
               width: `${activeDotSize * 1.1}px`,
               height: `${activeDotSize * 1.1}px`,
             }}
           />
           <span
-            className="relative inline-flex rounded-full bg-foreground"
+            className="relative inline-flex cursor-pointer rounded-full bg-foreground"
             style={{
               width: `${activeDotSize}px`,
               height: `${activeDotSize}px`,
