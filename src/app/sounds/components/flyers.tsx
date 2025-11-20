@@ -52,7 +52,7 @@ const FlyersComponent = ({ flyers }: { flyers: any[] }) => {
       </div>
 
       {/* Carousel */}
-      <Carousel opts={{ loop: true }} className="w-full md:w-[565px]">
+      <Carousel opts={{ loop: true, skipSnaps: true }} className="w-full md:w-[565px]">
         <CarouselContent>
           {flyers.map((flyer: any) => (
             <CarouselItem className="basis-1/4 md:basis-1/5" key={flyer.id}>

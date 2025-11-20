@@ -50,7 +50,7 @@ const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
       </div>
 
       {/* Carousel */}
-      <Carousel opts={{ loop: true }} className="w-full md:w-[565px]">
+      <Carousel opts={{ loop: true, skipSnaps: true }} className="w-full md:w-[565px]">
         <CarouselContent>
           {photographs.map((photograph: any) => (
             <CarouselItem className="basis-1/4 md:basis-1/5" key={photograph.id}>
