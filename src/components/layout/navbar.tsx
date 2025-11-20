@@ -102,7 +102,7 @@ const Navbar = () => {
         <div ref={desktopNavRef} className="relative gap-2 py-3 hidden md:flex items-center">
           {indicatorVisible && (
             <span
-              className="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2 h-9 rounded-full bg-black/90 transition-[width,left] duration-400 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              className="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2 h-9 rounded-full bg-foreground transition-[width,left] duration-400 ease-[cubic-bezier(0.4,0,0.2,1)]"
               style={{
                 width: `${Math.max(indicatorStyle.width, 0)}px`,
                 left: `${indicatorStyle.left}px`,
@@ -116,10 +116,10 @@ const Navbar = () => {
               className={`font-neue relative z-10 px-3 py-1 text-md transition-colors flex items-center gap-1 ${
                 hoveredHref
                   ? hoveredHref === item.href
-                    ? "text-white"
+                    ? "text-accent"
                     : "text-foreground/55"
                   : isNavActive(item.href)
-                  ? "text-white"
+                  ? "text-accent"
                   : "text-foreground/55 hover:text-white"
               }`}
               onMouseEnter={() => {
