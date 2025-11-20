@@ -15,7 +15,13 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
             {/* Title section */}
             <div className="w-full grid grid-cols-3 md:grid-cols-5 gap-8">
               <div className="w-full col-span-1 md:col-span-2">
-                <p className="text-3xl md:text-5xl font-medium">01.</p>
+                <p className="text-3xl md:text-5xl font-medium">
+                  {(() => {
+                    const name = project?.name || "";
+                    const num = name ? String(name.split("").reduce((acc: any, c: any) => acc + c.charCodeAt(0), 0) % 100).padStart(2, "0") : "--";
+                    return <p className="text-3xl md:text-5xl font-medium">{num}.</p>;
+                  })()}
+                </p>
               </div>
               <div className="w-full col-span-2 md:col-span-3">
                 <div className="text-3xl md:text-5xl uppercase font-medium ">{project?.name}</div>

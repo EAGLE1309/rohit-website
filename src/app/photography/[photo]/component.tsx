@@ -4,28 +4,58 @@
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 import { urlFor } from "@/lib/dashboard/sanity-cilent";
 
-export default function PhotographyDetailsComponent({ photo, allPhotography }: { photo: any; allPhotography: any }) {
+export default function PhotographyDetailsComponent({ photo }: { photo: any }) {
   return (
-    <MaxWidthWrapper className="mt-8 py-16 relative">
-      <div className="w-full flex flex-col gap-3">
+    <MaxWidthWrapper className="md:mt-24 overflow-hidden relative">
+      <div className="w-full mt-28 flex flex-col gap-3">
         {/* Main project */}
-        <div className="w-full h-[85vh] md:grid grid-cols-3 place-items-center  mb-8 gap-8">
-          <div className="text-5xl py-8 font-bold">{photo?.name}</div>
-          <div className="w-full">
-            <img src={urlFor(photo.image).url()} className="w-fit h-full" alt={photo.name || ""} />
-          </div>
-          <div className="text-sm md:text-md py-8">{photo?.description}</div>
-        </div>
-
-        {/* Sidebar projects */}
-        <div className="text-5xl py-8 font-bold">More Photographies</div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-          {allPhotography.map((p: any) => (
-            <div className="w-full h-full" key={p._id}>
-              <img src={urlFor(p.image).url()} alt={p.name || ""} className="w-full object-cover" />
-              <p className="text-sm mt-2">{p.name}</p>
+        <div className="w-full md:grid md:grid-cols-3 gap-8">
+          <div className="w-full flex flex-col col-span-2 justify-between gap-8">
+            {/* Title section */}
+            <div className="w-full grid grid-cols-3 md:grid-cols-5 gap-8">
+              <div className="w-full col-span-1 md:col-span-2">
+                {(() => {
+                  const name = photo?.name || "";
+                  const num = name ? String(name.split("").reduce((acc: any, c: any) => acc + c.charCodeAt(0), 0) % 100).padStart(2, "0") : "--";
+                  return <p className="text-3xl md:text-5xl font-medium">{num}.</p>;
+                })()}
+              </div>
+              <div className="w-full col-span-2 md:col-span-3">
+                <div className="text-3xl md:text-5xl uppercase font-medium ">{photo?.name}</div>
+              </div>
             </div>
-          ))}
+
+            <div className="flex flex-col my-8 gap-8">
+              {/* About section */}
+              <div className="w-full grid grid-cols-3 md:grid-cols-5 gap-8">
+                <div className="w-full col-span-1 md:col-span-2">
+                  <p className="text-sm md:text-base">About</p>
+                </div>
+                <div className="w-full col-span-2 md:col-span-3">
+                  <p className="text-sm md:text-base text-foreground/55 leading-relaxed">{photo?.description}</p>
+                </div>
+              </div>
+
+              {/* Project Details section */}
+              <div className="w-full grid grid-cols-3 md:grid-cols-5 gap-8">
+                <div className="w-full col-span-1 md:col-span-2">
+                  <p className="text-sm md:text-base">Project Details</p>
+                </div>
+                <div className="w-full col-span-2 md:col-span-3 flex flex-col gap-2 text-sm md:text-base text-foreground/55">
+                  <p>Category - {photo?.category || "Personal"} </p>
+                  <p>Service - Mix Media Video</p>
+                  <p>Client - {photo?.client || "N/A"}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Video section */}
+          <div className="w-fit mb-8 place-self-end md:mb-0 flex items-start justify-end">
+            <div className="w-full ">
+              <img src={urlFor(photo.image).url()} className="w-fit object-contain h-full max-h-[68vh]" alt={photo.name || ""} />
+            </div>
+          </div>
         </div>
       </div>
     </MaxWidthWrapper>
