@@ -85,14 +85,14 @@ const Navbar = () => {
 
   return (
     <nav className={`fixed bg-background ease-in-out w-full top-0 z-50 px-3`}>
-      <div className="h-auto md:w-[50%] w-full border-2 rounded-full px-5 py-1 my-3 mx-auto max-w-screen-xl flex justify-between items-center">
+      <div className="h-auto md:w-[50%] w-full border-2 border-foreground/10 rounded-full px-5 py-1 my-3 mx-auto max-w-screen-xl flex justify-between items-center">
         <Link
           href="/"
           className={`flex leading-5 items-center text-lg font-medium font-neue gap-3 ${
             isThemeSliderExpanded ? "opacity-0 pointer-events-none" : "opacity-100"
           }`}
         >
-          {theme === "dark" || theme === "nightfall" || theme === "midnight" ? (
+          {theme === "dark" || theme === "one" || theme === "two" || theme === "three" || theme === "four" || theme === "five" || theme === "six" ? (
             <img src="/logo-white.svg" className="w-20 h-full " alt="Logo" />
           ) : (
             <img src="/logo.svg" className="w-20 h-full" alt="Logo" />
@@ -117,10 +117,10 @@ const Navbar = () => {
                 hoveredHref
                   ? hoveredHref === item.href
                     ? "text-white"
-                    : "text-gray-500"
+                    : "text-foreground/55"
                   : isNavActive(item.href)
                   ? "text-white"
-                  : "text-gray-500 hover:text-white"
+                  : "text-foreground/55 hover:text-white"
               }`}
               onMouseEnter={() => {
                 setHoveredHref(item.href);

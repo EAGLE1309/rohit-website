@@ -29,7 +29,7 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
                   <p className="text-sm md:text-base font-medium">About</p>
                 </div>
                 <div className="w-full col-span-2 md:col-span-3">
-                  <p className="text-sm md:text-base text-neutral-500 leading-relaxed">{project?.description}</p>
+                  <p className="text-sm md:text-base text-foreground/55 leading-relaxed">{project?.description}</p>
                 </div>
               </div>
 
@@ -38,7 +38,7 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
                 <div className="w-full col-span-1 md:col-span-2">
                   <p className="text-sm md:text-base">Project Details</p>
                 </div>
-                <div className="w-full col-span-2 md:col-span-3 flex flex-col gap-2 text-sm md:text-base text-neutral-500">
+                <div className="w-full col-span-2 md:col-span-3 flex flex-col gap-2 text-sm md:text-base text-foreground/55">
                   <p>Category - {project?.category || "Personal"} </p>
                   <p>Service - Mix Media Video</p>
                   <p>Client - {project?.client || "N/A"}</p>

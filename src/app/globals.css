@@ -13,99 +13,99 @@ body {
 }
 /* 1. Deep Dawn — cool blue awakening */
 :root[class~="one"] {
-  --background: #15212e;
-  --foreground: #aabedb;
+  --background: #0c202e;
+  --foreground: white;
   --accent: #6e8bb8;
 }
 
 /* 2. Abyss Mist — oceanic stillness */
 :root[class~="two"] {
-  --background: #001419;
-  --foreground: #b7d3dc;
+  --background: #1d2845;
+  --foreground: white;
   --accent: #7bb7c6;
 }
 
 /* 3. Iron Night — bluish indigo tone */
 :root[class~="three"] {
-  --background: #252c3f;
-  --foreground: #c6c3e4;
+  --background: #2e2343;
+  --foreground: white;
   --accent: #8f8dc7;
 }
 
 /* 4. Twilight Bloom — violet transition */
 :root[class~="four"] {
-  --background: #373046;
-  --foreground: #f6afd4;
+  --background: #5c2a64;
+  --foreground: white;
   --accent: #c67fad;
 }
 
 /* 5. Rose Halo — warm pink tint */
 :root[class~="five"] {
-  --background: #4d3650;
-  --foreground: #ffa8b3;
+  --background: #9a2e1c;
+  --foreground: white;
   --accent: #d47d9a;
 }
 
 /* 6. Ember Rise — glowing copper tone */
 :root[class~="six"] {
-  --background: #974129;
-  --foreground: #ffd8b5;
+  --background: #e3440c;
+  --foreground: white;
   --accent: #e59e72;
 }
 
 /* 7. Solar Veil — soft orange beam */
 :root[class~="seven"] {
-  --background: #f25008;
-  --foreground: #f2e0b2;
+  --background: #fdcba6;
+  --foreground: black;
   --accent: #f5a36c;
 }
 
 /* 8. Luminous Heat — glowing amber */
 :root[class~="eight"] {
-  --background: #ffcea6;
-  --foreground: #ea4d0c;
+  --background: #efdfc6;
+  --foreground: black;
   --accent: #f78141;
 }
 
 /* 9. Warm Clay — grounded dusk tone */
 :root[class~="nine"] {
-  --background: #f1dfc5;
-  --foreground: #64442d;
+  --background: #efebc6;
+  --foreground: black;
   --accent: #9b7a5a;
 }
 
 /* 10. Golden Dusk — earthy transition */
 :root[class~="ten"] {
-  --background: #cdc7aa;
-  --foreground: #49411d;
+  --background: #deefc6;
+  --foreground: black;
   --accent: #7e764a;
 }
 
 /* 11. Moss Veil — forest serenity */
 :root[class~="eleven"] {
-  --background: #c7d2c1;
-  --foreground: #2e3227;
+  --background: #daffda;
+  --foreground: black;
   --accent: #5f6a55;
 }
 
 /* 12. Emerald Fade — cooling into night */
 :root[class~="twelve"] {
-  --background: #cadad6;
-  --foreground: #1d2b28;
+  --background: #ddf6ff;
+  --foreground: black;
   --accent: #53726b;
 }
 
 /* 13. Arctic Dawn — pale light return */
 :root[class~="thirteen"] {
-  --background: #eef9fd;
-  --foreground: #0e1819;
+  --background: #fbf7ff;
+  --foreground: black;
   --accent: #6faab6;
 }
 
 /* 14. Pure Zenith — clean white clarity */
 :root[class~="fourteen"] {
-  --background: #fdfdfd;
-  --foreground: #030303;
+  --background: #fbf7ff;
+  --foreground: black;
   --accent: #b0b0b0;
 }
 
