@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 interface HoverGifProps {
   staticSrc: string;
@@ -10,9 +12,12 @@ interface HoverGifProps {
 }
 
 export function HoverGif({ staticSrc, gifSrc, alt = "", className = "" }: HoverGifProps) {
-  const [hover, setHover] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <img src={hover ? gifSrc : staticSrc} alt={alt} className={className} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} />
+    <div className={cn("relative overflow-hidden", className)} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+      <Image src={staticSrc} alt={alt} fill priority className="object-cover" sizes="(max-width: 768px) 80px, 230px" />
+      {isHovered && <img src={gifSrc} alt={alt} className="absolute inset-0 w-full h-full object-cover" />}
+    </div>
   );
 }
