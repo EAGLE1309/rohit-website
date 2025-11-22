@@ -1,52 +1,87 @@
 /* eslint-disable @next/next/no-img-element */
-import { TextAnimate } from "@/components/text-animate";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
-import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { IconBrandInstagram, IconBrandSoundcloud, IconBrandTwitter, IconMail } from "@tabler/icons-react";
 
 const AboutPage = () => {
   return (
-    <MaxWidthWrapper className="mt-28">
-      <div className="w-full flex flex-col-reverse md:flex-row justify-between gap-y-16 h-full">
-        <div className="w-full max-w-[575px] self-end flex flex-col gap-5">
-          <TextAnimate className="text-md font-normal" animation="slideUp" once>
-            I am a visual artist, DJ, and creative director (b. June 30, 2004 - Houston, Texas). I began my creative practice at nine years old making
-            sports edits on Vine, which grew into a deep love for culture and cultural movements. Over time this expanded into an affinity for pop
-            culture, music, fashion, art, philosophy, and the pursuit of seamlessness.
-          </TextAnimate>
-          <Separator />
-          <TextAnimate className="text-md font-normal" animation="slideUp" delay={0.3} once>
-            My work focuses on blending audio and visuals into one experience. I draw inspiration from the fast paced style of Vine edits from 2014 to
-            2017 and have since evolved that foundation into my own distinct approach across mediums and musical genres. I am especially drawn to
-            loopable videos that feel infinite, where the viewer cannot tell where the cut begins or ends. That subtle continuity and slyness is what
-            I love.
-          </TextAnimate>
-          <Separator />
-          <TextAnimate className="text-md font-normal" animation="slideUp" delay={0.5} once>
-            I am currently wrapping up my undergraduate studies in Texas while moving between Houston, Dallas, Austin and New York, and I take on
-            select projects worldwide.
-          </TextAnimate>
-        </div>
+    <MaxWidthWrapper className="mt-28 pb-20">
+      <div className="relative min-h-screen flex overflow-hidden items-center justify-center">
+        <div className="pointer-events-none md:hidden absolute inset-0">
+          <img src="/about/about-4.png" alt="Rogit portrait 1" className="absolute top-0 left-1/2 w-32 h-40 -translate-x-1/2 object-cover" />
+          <img src="/about/about-1.png" alt="Rogit portrait 2" className="absolute top-12 right-[-58px] w-32 h-44 object-cover" />
+          <img src="/about/about-5.png" alt="Rogit portrait 8" className="absolute top-12 left-[-58px] w-32 h-40 object-cover" />
 
-        <div className="flex flex-col h-full justify-between gap-8">
-          {/* <div className="w-full max-w-[575px] max-h-[575px] grid grid-rows-4 grid-cols-2 gap-8">
-            <img className="object-cover row-span-3 w-full h-full" src="/about 2.png" alt="" />
-            <img className="object-cover w-full h-full row-span-2" src="/about 3.png" alt="" />
-            <img className="object-cover w-full h-full row-span-2" src="/about 4.png" alt="" />
-          </div> */}
-          <img className="w-full md:pl-28 h-full object-cover" src="/about.png" alt="" />
+          <img
+            src="/about/about-3.png"
+            alt="Rogit portrait 3"
+            className="absolute top-1/2 right-[-58px] hidden w-32 h-48 -translate-y-1/2 object-cover"
+          />
+          <img src="/about/about-1.png" alt="Rogit portrait 4" className="absolute bottom-12 right-[-58px] w-32 h-40 object-cover" />
+          <img src="/about/about-2.png" alt="Rogit portrait 5" className="absolute bottom-0 left-1/2 w-32 h-40 -translate-x-1/2 object-cover" />
+          <img src="/about/about-5.png" alt="Rogit portrait 6" className="absolute bottom-12 left-[-58px] w-32 h-44 object-cover" />
+          <img
+            src="/about/about-3.png"
+            alt="Rogit portrait 7"
+            className="absolute top-1/2 left-[-58px] hidden w-32 h-48 -translate-y-1/2 object-cover"
+          />
         </div>
-      </div>
+        <div className="relative w-full max-w-5xl aspect-[4/3]">
+          {/* Scattered Images Grid */}
+          <div className="pointer-events-none hidden md:block absolute inset-0">
+            <img src="/about/about-4.png" alt="Rogit portrait 1" className="absolute top-0 left-1/2 w-32 h-40 -translate-x-1/2 object-cover" />
+            <img src="/about/about-1.png" alt="Rogit portrait 2" className="absolute top-12 right-28 w-32 h-44 object-cover" />
+            <img src="/about/about-3.png" alt="Rogit portrait 3" className="absolute top-1/2 right-0 w-32 h-48 -translate-y-1/2 object-cover" />
+            <img src="/about/about-1.png" alt="Rogit portrait 4" className="absolute bottom-12 right-28 w-36 h-40 object-cover" />
+            <img src="/about/about-2.png" alt="Rogit portrait 5" className="absolute bottom-0 left-1/2 w-40 h-44 -translate-x-1/2 object-cover" />
+            <img src="/about/about-5.png" alt="Rogit portrait 6" className="absolute bottom-12 left-28 w-36 h-44 object-cover" />
+            <img src="/about/about-3.png" alt="Rogit portrait 7" className="absolute top-1/2 left-0 w-32 h-48 -translate-y-1/2 object-cover" />
+            <img src="/about/about-5.png" alt="Rogit portrait 8" className="absolute top-12 left-28 w-32 h-40 object-cover" />
+          </div>
 
-      <div className="w-full flex gap-y-16 py-28">
-        <Tooltip>
-          <TooltipTrigger>
-            <TextAnimate className="text-5xl md:text-7xl cursor-pointer font-semibold" animation="slideUp" by="character" once>
-              ropatnala@gmail.com
-            </TextAnimate>
-          </TooltipTrigger>
-          <TooltipContent>Click to copy</TooltipContent>
-        </Tooltip>
+          {/* Middle Section with Images and Bio */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            {/* Center Bio Content */}
+            <div className="text-center space-y-4 max-w-lg mx-auto px-6 py-8">
+              <h1 className="text-3xl font-bold tracking-wide">RO6IT</h1>
+              <p className="text-xs md:text-sm text-foreground">
+                I’m a visual artist, DJ, and creative director <br />
+                (b. June 30, 2004 — Houston, Texas).
+              </p>
+
+              <p className="text-xs md:text-sm text-foreground">
+                I began my creative practice at the age of nine, making sports edits on Vine a small beginning that evolved into a deep fascination
+                with culture and its movements. What started as playful experimentation quickly became a lifelong study of rhythm, image, and emotion.
+              </p>
+
+              <p className="text-xs md:text-sm text-foreground">
+                Overtime, my interests expanded into pop culture, music, fashion, art, and philosophy disciplines that continue to shape the way I
+                think and create. My work exists at the intersection of these worlds, guided by a pursuit of seamlessness across mediums and
+                experiences.
+              </p>
+
+              {/* Social Media Icons */}
+              <div className="flex justify-center gap-4 pt-4">
+                <a href="mailto:ropatnala@gmail.com" className="hover:text-gray-600 transition-colors">
+                  <IconMail className="size-5 transition-all hover:-translate-y-0.5" />
+                </a>
+                <a href="https://instagram.com/ro6it" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
+                  <IconBrandInstagram className="size-5 transition-all hover:-translate-y-0.5" />
+                </a>
+                <a href="https://twitter.com/ro6itism" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
+                  <IconBrandTwitter className="size-5 transition-all hover:-translate-y-0.5" />
+                </a>
+                <a
+                  href="https://soundcloud.com/user-735813520"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-gray-600 transition-colors"
+                >
+                  <IconBrandSoundcloud className="size-5 transition-all hover:-translate-y-0.5" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </MaxWidthWrapper>
   );

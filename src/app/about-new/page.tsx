@@ -7,27 +7,35 @@ const AboutPage = () => {
     <MaxWidthWrapper className="mt-28 pb-20">
       <div className="relative min-h-screen flex overflow-hidden items-center justify-center">
         <div className="pointer-events-none md:hidden absolute inset-0">
-          <img src="/about 3.png" alt="Rogit portrait 1" className="absolute top-0 left-1/2 w-32 h-40 -translate-x-1/2 object-cover" />
-          <img src="/about 3.png" alt="Rogit portrait 2" className="absolute top-12 right-[-58px] w-32 h-44 object-cover" />
-          <img src="/about 3.png" alt="Rogit portrait 8" className="absolute top-12 left-[-58px] w-32 h-40 object-cover" />
+          <img src="/about/about-4.png" alt="Rogit portrait 1" className="absolute top-0 left-1/2 w-32 h-40 -translate-x-1/2 object-cover" />
+          <img src="/about/about-1.png" alt="Rogit portrait 2" className="absolute top-12 right-[-58px] w-32 h-44 object-cover" />
+          <img src="/about/about-5.png" alt="Rogit portrait 8" className="absolute top-12 left-[-58px] w-32 h-40 object-cover" />
 
-          <img src="/about 3.png" alt="Rogit portrait 3" className="absolute top-1/2 right-[-58px] hidden w-32 h-48 -translate-y-1/2 object-cover" />
-          <img src="/about 3.png" alt="Rogit portrait 4" className="absolute bottom-12 right-[-58px] w-32 h-40 object-cover" />
-          <img src="/about 3.png" alt="Rogit portrait 5" className="absolute bottom-0 left-1/2 w-32 h-40 -translate-x-1/2 object-cover" />
-          <img src="/about 3.png" alt="Rogit portrait 6" className="absolute bottom-12 left-[-58px] w-32 h-44 object-cover" />
-          <img src="/about 3.png" alt="Rogit portrait 7" className="absolute top-1/2 left-[-58px] hidden w-32 h-48 -translate-y-1/2 object-cover" />
+          <img
+            src="/about/about-3.png"
+            alt="Rogit portrait 3"
+            className="absolute top-1/2 right-[-58px] hidden w-32 h-48 -translate-y-1/2 object-cover"
+          />
+          <img src="/about/about-1.png" alt="Rogit portrait 4" className="absolute bottom-12 right-[-58px] w-32 h-40 object-cover" />
+          <img src="/about/about-2.png" alt="Rogit portrait 5" className="absolute bottom-0 left-1/2 w-32 h-40 -translate-x-1/2 object-cover" />
+          <img src="/about/about-5.png" alt="Rogit portrait 6" className="absolute bottom-12 left-[-58px] w-32 h-44 object-cover" />
+          <img
+            src="/about/about-3.png"
+            alt="Rogit portrait 7"
+            className="absolute top-1/2 left-[-58px] hidden w-32 h-48 -translate-y-1/2 object-cover"
+          />
         </div>
         <div className="relative w-full max-w-5xl aspect-[4/3]">
           {/* Scattered Images Grid */}
           <div className="pointer-events-none hidden md:block absolute inset-0">
-            <img src="/about 3.png" alt="Rogit portrait 1" className="absolute top-0 left-1/2 w-32 h-40 -translate-x-1/2 object-cover" />
-            <img src="/about 3.png" alt="Rogit portrait 2" className="absolute top-12 right-28 w-32 h-44 object-cover" />
-            <img src="/about 3.png" alt="Rogit portrait 3" className="absolute top-1/2 right-0 w-32 h-48 -translate-y-1/2 object-cover" />
-            <img src="/about 3.png" alt="Rogit portrait 4" className="absolute bottom-12 right-28 w-36 h-40 object-cover" />
-            <img src="/about 3.png" alt="Rogit portrait 5" className="absolute bottom-0 left-1/2 w-40 h-44 -translate-x-1/2 object-cover" />
-            <img src="/about 3.png" alt="Rogit portrait 6" className="absolute bottom-12 left-28 w-36 h-44 object-cover" />
-            <img src="/about 3.png" alt="Rogit portrait 7" className="absolute top-1/2 left-0 w-32 h-48 -translate-y-1/2 object-cover" />
-            <img src="/about 3.png" alt="Rogit portrait 8" className="absolute top-12 left-28 w-32 h-40 object-cover" />
+            <img src="/about/about-4.png" alt="Rogit portrait 1" className="absolute top-0 left-1/2 w-32 h-40 -translate-x-1/2 object-cover" />
+            <img src="/about/about-1.png" alt="Rogit portrait 2" className="absolute top-12 right-28 w-32 h-44 object-cover" />
+            <img src="/about/about-3.png" alt="Rogit portrait 3" className="absolute top-1/2 right-0 w-32 h-48 -translate-y-1/2 object-cover" />
+            <img src="/about/about-1.png" alt="Rogit portrait 4" className="absolute bottom-12 right-28 w-36 h-40 object-cover" />
+            <img src="/about/about-2.png" alt="Rogit portrait 5" className="absolute bottom-0 left-1/2 w-40 h-44 -translate-x-1/2 object-cover" />
+            <img src="/about/about-5.png" alt="Rogit portrait 6" className="absolute bottom-12 left-28 w-36 h-44 object-cover" />
+            <img src="/about/about-3.png" alt="Rogit portrait 7" className="absolute top-1/2 left-0 w-32 h-48 -translate-y-1/2 object-cover" />
+            <img src="/about/about-5.png" alt="Rogit portrait 8" className="absolute top-12 left-28 w-32 h-40 object-cover" />
           </div>
 
           {/* Middle Section with Images and Bio */}
@@ -53,16 +61,21 @@ const AboutPage = () => {
 
               {/* Social Media Icons */}
               <div className="flex justify-center gap-4 pt-4">
-                <a href="mailto:rogit@example.com" className="hover:text-gray-600 transition-colors">
+                <a href="mailto:ropatnala@gmail.com" className="hover:text-gray-600 transition-colors">
                   <IconMail className="size-5 transition-all hover:-translate-y-0.5" />
                 </a>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
+                <a href="https://instagram.com/ro6it" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
                   <IconBrandInstagram className="size-5 transition-all hover:-translate-y-0.5" />
                 </a>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
+                <a href="https://twitter.com/ro6itism" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
                   <IconBrandTwitter className="size-5 transition-all hover:-translate-y-0.5" />
                 </a>
-                <a href="https://soundcloud.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
+                <a
+                  href="https://soundcloud.com/user-735813520"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-gray-600 transition-colors"
+                >
                   <IconBrandSoundcloud className="size-5 transition-all hover:-translate-y-0.5" />
                 </a>
               </div>
