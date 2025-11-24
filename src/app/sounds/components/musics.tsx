@@ -4,7 +4,14 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { IconPlayerPlayFilled, IconPlayerTrackNext, IconPlayerTrackPrev, IconPlayerPauseFilled } from "@tabler/icons-react";
+import {
+  IconPlayerPlayFilled,
+  IconPlayerTrackNext,
+  IconPlayerTrackPrev,
+  IconPlayerPauseFilled,
+  IconPlayerTrackNextFilled,
+  IconPlayerTrackPrevFilled,
+} from "@tabler/icons-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import Image from "next/image";
@@ -385,6 +392,13 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const formatTimeHMS = (time: number) => {
+    const hours = Math.floor(time / 3600);
+    const mins = Math.floor((time % 3600) / 60);
+    const secs = Math.floor(time % 60);
+    return [hours, mins, secs].map((unit) => unit.toString().padStart(2, "0")).join(":");
+  };
+
   const timeMarkers = useMemo(() => {
     const markerCount: number = 5;
     if (duration <= 0) {
@@ -429,67 +443,56 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
   // compute played index to color bars up to that index instantly (no slow transition)
   const progress = duration > 0 ? Math.max(0, Math.min(1, currentTime / duration)) : 0;
   const playedIndex = Math.floor(progress * BAR_COUNT);
+  const playheadPercent = (BAR_COUNT <= 1 ? 0 : (playedIndex + 0.5) / BAR_COUNT) * 100;
   const bufferedRatio = Math.max(0, Math.min(1, bufferedPercent));
   const isBuffering = duration === 0 || bufferedRatio < 0.98;
   const bufferedTime = Math.max(0, Math.min(bufferedSeconds, duration || bufferedSeconds || 0));
   const bufferedTimeLabel = formatTime(bufferedTime);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-3">
-      <div className="relative w-[272px] h-[425px]">
-        <Image src="/casette.webp" alt="Tape" fill className="object-contain pointer-events-none" priority />
-
-        <img
-          src={currentTrack?.thumb || "/discs.png"}
-          className={`w-[59px] h-[59px] absolute top-[30.5%] rounded-full pointer-events-none left-[49.5%] -translate-x-1/2 -translate-y-1/2 ${
-            isPlaying ? "animate-spin" : ""
-          }`}
-          alt="Discs"
+    <div className="flex flex-col items-center justify-center gap-4">
+      {/* Cassette visual above */}
+      <div className="relative w-[272px] bg-foreground/10 border-2 border-foreground/10 rounded-xl h-[272px]">
+        <Image
+          src="/cd-15.png"
+          alt="CD"
+          fill
+          className="object-contain pointer-events-none p-3 pt-0 drop-sadow-[0_4px_18px_rgba(0,0,0,0.35)]"
+          style={{
+            animation: "spin 5s linear infinite",
+            animationPlayState: isPlaying && duration > 0 && !isLoading ? "running" : "paused",
+          }}
+          priority
         />
+      </div>
 
-        {/* Waveform visualizer window */}
-        <div className="absolute bottom-[6.5%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[223px] h-[71px] bg-[#040404] border border-white/15 rounded-xs shadow-[0_4px_18px_rgba(0,0,0,0.65)] text-white px-2.5 py-1.5 overflow-hidden">
-          <div className="flex items-center justify-between text-[8.5px] uppercase tracking-[0.18em]">
-            <div className="flex items-center justify-between w-full">
-              <button onClick={goToPrevTrack} className="p-0.5 rounded-sm hover:bg-white/10 transition-colors" aria-label="Previous track">
-                <IconPlayerTrackPrev className="w-3 h-3" />
-              </button>
-              <span className="text-[7px] font-mono truncate">{currentTrack ? currentTrack.title : "Select Track"}</span>
-              <button
-                onClick={handleWaveformPlayToggle}
-                className="p-0.5 rounded-sm hover:bg-white/10 transition-colors"
-                aria-label={isPlaying ? "Pause" : "Play"}
-              >
-                {isPlaying ? <IconPlayerPauseFilled className="w-3 h-3" /> : <IconPlayerPlayFilled className="w-3 h-3" />}
-              </button>
-              <button onClick={goToNextTrack} className="p-0.5 rounded-sm hover:bg-white/10 transition-colors" aria-label="Next track">
-                <IconPlayerTrackNext className="w-3 h-3" />
-              </button>
-            </div>
-            {/* <div className="flex items-center gap-0.5 text-white/70">
-              <IconVolume className="w-3 h-3" />
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.01}
-                value={volume}
-                onChange={handleVolumeChange}
-                aria-label="Volume"
-                className="h-[2px] w-12 accent-white"
-              />
-            </div> */}
-          </div>
-
-          <div className="flex items-center justify-between text-[8px] font-mono text-white/70 mt-0.5">
-            <span>{formatTime(currentTime)}</span>
-            <span className={isBuffering ? "text-sky-300" : "text-emerald-300"}>
-              {isBuffering ? `Loading ${(bufferedRatio * 100).toFixed(0)}% · ${bufferedTimeLabel}` : `Loaded · ${bufferedTimeLabel}`}
+      {/* Standalone player panel below */}
+      <div className="w-[272px]">
+        <div className="w-full bg-[#040404] border border-foreground/20 rounded-xl text-white p-2.5 overflow-hidden">
+          <div className="w-full flex items-center justify-center">
+            <span className="text-[10px] text-center font-neue tracking-widest font-normal truncate">
+              {currentTrack ? currentTrack.title : "Select Track"}
             </span>
-            <span>{formatTime(duration)}</span>
           </div>
 
-          <div className="mt-0.5" style={{ height: "26px" }}>
+          <div className="mt-1 w-full">
+            <div className="relative h-[0.1rem] w-1/2 mx-auto overflow-hidden rounded-full bg-white/10">
+              <div
+                className={`absolute inset-y-0 left-0 rounded-full bg-green-500 shadow-[0_0_12px_rgba(6,182,212,0.45)] ${isBuffering ? "" : ""}`}
+                style={{
+                  width: `${Math.max(0, bufferedRatio) * 100}%`,
+                  transition: "width 0.6s ease-out",
+                }}
+              />
+              {isBuffering && <div className="absolute inset-0 bg-white/5" />}
+            </div>
+            <div className="mt-1 flex items-center justify-between text-[8px] font-mono text-white/60">
+              <span>{isBuffering ? "Loading..." : "Loaded"}</span>
+              <span>{`${(bufferedRatio * 100).toFixed(0)}% · ${bufferedTimeLabel}`}</span>
+            </div>
+          </div>
+
+          <div className="mt-0.5 w-full" style={{ height: "26px" }}>
             <div
               ref={waveformRef}
               onPointerDown={handleWaveformPointerDown}
@@ -510,20 +513,59 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
                 style={{ width: `${progress * 100}%` }}
               />
               <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-white/15 pointer-events-none" />
-              <div className="relative z-10 flex h-full w-full items-center justify-between px-2" style={{ gap: "2px" }}>
+              {/* Bars now stretch across the full player width (no inner padding) */}
+              <div className="relative z-10 flex h-full w-full items-center justify-between" style={{ gap: "2px" }}>
                 {Array.from({ length: BAR_COUNT }).map((_, i) => {
-                  const h = levels[i] ?? 10;
+                  // Get real-time audio level from analyser
+                  const audioLevel = levels[i] ?? 12;
+
+                  // Normalize analyser output (typically 8-42 range) to 0-1
+                  const normalizedAudio = Math.max(0, Math.min(1, (audioLevel - 8) / 34));
+
+                  // Generate deterministic waveform shape pattern
+                  const position = i / BAR_COUNT;
+
+                  // Create complex wave pattern with multiple frequencies (like real audio)
+                  const wave1 = Math.sin(position * Math.PI * 3.5) * 0.35;
+                  const wave2 = Math.sin(position * Math.PI * 7.2 + 1.3) * 0.25;
+                  const wave3 = Math.sin(position * Math.PI * 14.5 + 0.9) * 0.2;
+                  const wave4 = Math.cos(position * Math.PI * 23 + 2.1) * 0.15;
+
+                  // Per-bar variation for natural look
+                  const seed = Math.sin(i * 7.919) * Math.cos(i * 3.141);
+                  const variation = 0.5 + Math.abs(seed) * 0.5;
+
+                  // Combine waveform shape
+                  let shapeAmplitude = (wave1 + wave2 + wave3 + wave4 + 0.55) * variation;
+                  shapeAmplitude = Math.max(0, Math.min(1, shapeAmplitude));
+
+                  // Blend real audio with waveform shape (70% audio, 30% shape for realism)
+                  const blendedAmplitude = normalizedAudio * 0.7 + shapeAmplitude * 0.5;
+
+                  // Apply envelope for natural audio waveform look (louder in middle)
+                  const envelopeCurve = Math.sin(position * Math.PI);
+                  const finalAmplitude = blendedAmplitude * (0.3 + envelopeCurve * 0.7);
+
+                  // Map to pixel height
+                  const minBarHeight = 0;
+                  const maxBarHeight = 35;
+                  const barHeight = minBarHeight + finalAmplitude * (maxBarHeight - minBarHeight);
+
+                  // Determine if bar has been played
                   const isPlayed = i <= playedIndex;
-                  const width = i % 3 === 0 ? 2 : 1;
+
+                  // Variable bar width for visual texture
+                  const barWidth = i % 3 === 0 ? 2 : 1;
+
                   return (
                     <div
                       key={i}
-                      className="rounded-full transition-[height] duration-120 ease-out"
+                      className="rounded-full transition-[height] duration-100 ease-out"
                       style={{
-                        height: `${h}px`,
-                        width: `${width}px`,
+                        height: `${barHeight}px`,
+                        width: `${barWidth}px`,
                         backgroundColor: isPlayed ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.35)",
-                        boxShadow: isPlayed ? "0 0 6px rgba(255,255,255,0.45)" : "none",
+                        boxShadow: isPlayed ? "0 0 4px rgba(255,255,255,0.4)" : "none",
                       }}
                     />
                   );
@@ -531,26 +573,35 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
               </div>
               <div
                 className="absolute top-0 bottom-0 w-[2px] bg-red-500 shadow-[0_0_6px_rgba(255,45,45,0.8)] pointer-events-none"
-                style={{ left: `calc(${progress * 100}% - 1px)` }}
+                style={{ left: `calc(${playheadPercent}% - 1px)` }}
               />
             </div>
           </div>
 
-          <div className="flex justify-between text-white text-[8px] font-mono mt-0.5 opacity-80">
+          {/* <div className="flex justify-between text-white text-[8px] font-mono mt-0.5 opacity-80">
             {timeMarkers.map((marker) => (
               <span key={marker.position.toFixed(2)}>{marker.label}</span>
             ))}
-          </div>
-        </div>
+          </div> */}
+          <div className="flex mt-3 items-center justify-between bg-background gap-1 rounded-sm p-1">
+            <p className="text-lg text-foreground font-medium pl-1">{formatTimeHMS(currentTime)}</p>
 
-        <div className="flex items-center justify-center pb-3">
-          <button
-            onClick={handleGlobalPlayPause}
-            className="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors"
-            aria-label={isPlaying ? "Pause" : "Play"}
-          >
-            {isPlaying ? <span className="block w-2.5 h-2.5 bg-white" /> : <IconPlayerPlayFilled className="w-3 h-3 text-white" />}
-          </button>
+            <div className="flex items-center gap-1">
+              <button onClick={goToPrevTrack} className="p-2 rounded-sm bg-foreground text-accent transition-colors" aria-label="Previous track">
+                <IconPlayerTrackPrevFilled className="w-3 h-3" />
+              </button>
+              <button
+                onClick={handleWaveformPlayToggle}
+                className="p-2 rounded-sm bg-foreground text-accent transition-colors"
+                aria-label={isPlaying ? "Pause" : "Play"}
+              >
+                {isPlaying ? <IconPlayerPauseFilled className="w-3 h-3" /> : <IconPlayerPlayFilled className="w-3 h-3" />}
+              </button>
+              <button onClick={goToNextTrack} className="p-2 rounded-sm bg-foreground text-accent transition-colors" aria-label="Next track">
+                <IconPlayerTrackNextFilled className="w-3 h-3" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -28,7 +28,7 @@ export default function WavePlayerCard({
 
           {/* Waveform SVG */}
           <div className="relative w-full flex items-center justify-center">
-            <Waveform width="100%" height={72} bars={60} />
+            <Waveform width="100%" height={72} bars={60} progress={pct} />
           </div>
         </div>
 
@@ -82,43 +82,67 @@ export default function WavePlayerCard({
 }
 
 /* ---------- Waveform component (SVG) ---------- */
-/* - `bars` controls number of vertical bars in waveform
-   - heights are generated procedurally to create that "dense mono" waveform look
-*/
-function Waveform({ width = "100%", height = 72, bars = 60 }: { width?: string; height?: number; bars?: number }) {
-  // create deterministic-ish heights so waveform looks "designed"
-  const seed = 1337;
-  const rand = (i: number) => {
-    // simple pseudo random deterministic function
-    return Math.abs(Math.sin(i * 12.9898 + seed) * 43758.5453) % 1;
+/* Dense audio waveform visualization with white vertical bars */
+function Waveform({ width = "100%", height = 1, bars = 80, progress = 0 }: { width?: string; height?: number; bars?: number; progress?: number }) {
+  // Generate waveform pattern similar to the reference image
+  const generateWaveformData = () => {
+    const data: number[] = [];
+
+    // Create a complex waveform pattern with multiple frequency components
+    for (let i = 0; i < bars; i++) {
+      const t = i / bars;
+
+      // Combine multiple sine waves for natural audio-like appearance
+      const wave1 = Math.sin(t * Math.PI * 4) * 0.4;
+      const wave2 = Math.sin(t * Math.PI * 8 + 1.5) * 0.3;
+      const wave3 = Math.sin(t * Math.PI * 16 + 0.7) * 0.2;
+      const wave4 = Math.sin(t * Math.PI * 32 + 2.1) * 0.1;
+
+      // Add some noise for variation
+      const noise = Math.sin(i * 12.9898) * Math.cos(i * 78.233) * 0.15;
+
+      // Combine all components
+      let amplitude = wave1 + wave2 + wave3 + wave4 + noise;
+
+      // Create envelope (louder in middle, quieter at edges)
+      const envelope = Math.sin(t * Math.PI) * 0.8 + 0.2;
+      amplitude *= envelope;
+
+      // Normalize to 0-1 range
+      amplitude = (amplitude + 1) / 2;
+
+      data.push(amplitude);
+    }
+
+    return data;
   };
 
-  const barElements = Array.from({ length: bars }).map((_, i) => {
-    // vary height: center area slightly taller to match screenshot density
-    const mid = bars / 2;
-    const dist = Math.abs(i - mid) / mid;
-    const base = 0.15 + (1 - dist) * 0.85; // center bigger
-    const jitter = 0.2 + rand(i) * 0.8; // add randomness
-    const hFactor = base * jitter;
+  const waveformData = generateWaveformData();
 
-    // map to pixels
-    const barMax = height * 0.9; // leave small padding top/bottom
-    const barH = Math.max(2, Math.round(barMax * hFactor));
-    const barW = Math.max(2, Math.round(width === "100%" ? 4 : 4)); // fixed pixel-like width
-    const gap = 2;
-    const x = i * (barW + gap);
+  const barWidth = 3;
+  const barGap = 2;
+  const totalBarWidth = barWidth + barGap;
 
-    const y = (height - barH) / 2;
+  const barElements = waveformData.map((amplitude, i) => {
+    // Map amplitude to bar height
+    const minHeight = 4;
+    const maxHeight = height * 0.85;
+    const barHeight = minHeight + amplitude * (maxHeight - minHeight);
 
-    // vary opacity slightly to produce foreground/backfade effect
-    // simulate the waveform fading to the right (like screenshot) by reducing opacity based on x
-    const fadeFactor = 1 - (i / bars) * 0.55;
-    const opacity = 0.85 * fadeFactor;
+    const x = i * totalBarWidth;
+    const y = (height - barHeight) / 2;
 
-    return <rect key={i} x={x} y={y} width={barW} height={barH} rx={1} ry={1} fill={`rgba(255,255,255,${opacity.toFixed(3)})`} />;
+    // Determine if this bar has been played
+    const isPlayed = i / bars <= progress;
+    const opacity = isPlayed ? 0.95 : 0.35;
+
+    return (
+      <rect key={i} x={x} y={y} width={barWidth} height={barHeight} rx={barWidth / 2} ry={barWidth / 2} fill={`rgba(255, 255, 255, ${opacity})`} />
+    );
   });
 
-  const viewWidth = bars * 6; // bar + gap approx
+  const viewWidth = bars * totalBarWidth;
+
   return (
     <svg
       viewBox={`0 0 ${viewWidth} ${height}`}
