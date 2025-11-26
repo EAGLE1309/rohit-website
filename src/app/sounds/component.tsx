@@ -26,7 +26,7 @@ const SoundsComponent = ({ tracks, flyers, photographs }: { tracks: any; flyers:
   }, []);
 
   return (
-    <MaxWidthWrapper className="w-full h-[80vh] mt-24 md:mt-28 overflow-hidden relative flex flex-col md:flex-row items-center justify-center">
+    <MaxWidthWrapper className="w-full h-full md:h-[80vh] mt-24 md:mt-28 overflow-hidden relative flex flex-col md:flex-row items-center justify-center">
       <div className="mb-5 md:absolute pl-8 flex md:flex-col md:top-[calc(50%-5rem)] gap-3 md:gap-0 md:translate-y-1/2 md:left-1">
         <Link href={`?id=music`} className={`text-xs md:text-sm uppercase font-medium md:font-normal cursor-pointer`}>
           Music

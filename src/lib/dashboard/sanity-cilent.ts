@@ -17,11 +17,19 @@ export interface SanityFile {
   };
 }
 
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
+const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2025-02-06";
+
+if (!projectId) {
+  throw new Error("Missing NEXT_PUBLIC_SANITY_PROJECT_ID environment variable");
+}
+
 export const client = createClient({
-  projectId: "ozn9n8zp",
-  dataset: "production",
+  projectId,
+  dataset,
   useCdn: true,
-  apiVersion: "2025-02-06",
+  apiVersion,
 });
 
 const builder = imageUrlBuilder(client);

@@ -1,10 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Allowlist of trusted domains for audio proxying (prevents SSRF attacks)
+const ALLOWED_AUDIO_DOMAINS = [
+  "cdn.sanity.io",
+  // Add other trusted audio CDN domains here
+];
+
+function isAllowedUrl(urlString: string): boolean {
+  try {
+    const url = new URL(urlString);
+    // Only allow HTTPS
+    if (url.protocol !== "https:") {
+      return false;
+    }
+    // Check against allowlist
+    return ALLOWED_AUDIO_DOMAINS.some((domain) => url.hostname === domain || url.hostname.endsWith(`.${domain}`));
+  } catch {
+    return false;
+  }
+}
+
 export async function GET(req: NextRequest) {
   try {
     const url = req.nextUrl.searchParams.get("url");
     if (!url) {
       return NextResponse.json({ error: "Missing url parameter" }, { status: 400 });
+    }
+
+    // Validate URL against allowlist to prevent SSRF
+    if (!isAllowedUrl(url)) {
+      return NextResponse.json({ error: "URL not allowed" }, { status: 403 });
     }
 
     const rangeHeader = req.headers.get("range");
@@ -38,7 +63,15 @@ export async function GET(req: NextRequest) {
     const remoteContentType = r.headers.get("content-type") || fallbackContentType || "application/octet-stream";
 
     const headers = new Headers();
-    headers.set("Access-Control-Allow-Origin", "*");
+    // Restrict CORS to same origin (remove if cross-origin access is needed)
+    const origin = req.headers.get("origin");
+    if (origin) {
+      // Only allow requests from the same site
+      const allowedOrigins = [process.env.NEXT_PUBLIC_SITE_URL, "http://localhost:3000", "https://rohit.solithix.com"].filter(Boolean);
+      if (allowedOrigins.includes(origin)) {
+        headers.set("Access-Control-Allow-Origin", origin);
+      }
+    }
     headers.set("Content-Type", remoteContentType);
     headers.set("Cache-Control", "no-store");
     const contentLength = r.headers.get("content-length");
@@ -67,6 +100,8 @@ export async function GET(req: NextRequest) {
       headers,
     });
   } catch (err) {
-    return NextResponse.json({ error: "Server error", details: err }, { status: 500 });
+    // Don't expose error details to clients
+    console.error("Proxy audio error:", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
