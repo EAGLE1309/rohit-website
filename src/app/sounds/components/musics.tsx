@@ -15,6 +15,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import Image from "next/image";
+import CDShineEffect from "./CDShineEffect";
 
 const BAR_COUNT = 56; // denser waveform for the 223px viewport
 
@@ -465,6 +466,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
             }}
             priority
           />
+          <CDShineEffect isSpinning={isPlaying && duration > 0 && !isLoading} size={220} />
         </div>
       </div>
 
@@ -488,8 +490,8 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
               />
               {isBuffering && <div className="absolute inset-0 bg-white/5" />}
             </div>
-            <div className="mt-1 flex items-center justify-between text-[8px] font-mono text-white/60">
-              <span>{isBuffering ? "Loading..." : "Loaded"}</span>
+            <div className="mt-1 flex items-center justify-between text-[9px] font-mono text-white/60">
+              <span>{currentTrack ? (isBuffering ? "Loading..." : "Loaded") : "No track selected"}</span>
               <span>{`${(bufferedRatio * 100).toFixed(0)}% · ${bufferedTimeLabel}`}</span>
             </div>
           </div>

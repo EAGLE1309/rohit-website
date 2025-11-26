@@ -53,33 +53,48 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                 >
                   <ParallaxGridWrapper className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-28 md:gap-y-16">
                     {filter.value === "all" ? (
-                      <>
-                        {projects.map((project: Project) => (
-                          <Card
-                            key={project._id}
-                            id={project._id}
-                            image={urlFor(project.thumbnail).url()}
-                            title={project.name}
-                            subtitle={project.category}
-                          />
-                        ))}
-                        {photography.map((photo: Photography) => (
-                          <Card key={photo._id} id={photo._id} isPhoto image={urlFor(photo.image).url()} title={photo.name} subtitle="PHOTOGRAPHY" />
-                        ))}
-                      </>
+                      projects.length === 0 && photography.length === 0 ? (
+                        <div className="col-span-full text-center text-foreground/60">Nothing to show here</div>
+                      ) : (
+                        <>
+                          {projects.map((project: Project) => (
+                            <Card
+                              key={project._id}
+                              id={project._id}
+                              image={urlFor(project.thumbnail).url()}
+                              title={project.name}
+                              subtitle={project.category}
+                            />
+                          ))}
+                          {photography.map((photo: Photography) => (
+                            <Card
+                              key={photo._id}
+                              id={photo._id}
+                              isPhoto
+                              image={urlFor(photo.image).url()}
+                              title={photo.name}
+                              subtitle="PHOTOGRAPHY"
+                            />
+                          ))}
+                        </>
+                      )
                     ) : filter.value === "photography" ? (
-                      photography.map((photo: Photography) => (
-                        <Card
-                          key={photo._id}
-                          id={photo._id}
-                          isPhoto
-                          noBadge
-                          image={urlFor(photo.image).url()}
-                          title={photo.name}
-                          subtitle="PHOTOGRAPHY"
-                        />
-                      ))
-                    ) : (
+                      photography.length === 0 ? (
+                        <div className="col-span-full text-center text-foreground/60">Nothing to show here</div>
+                      ) : (
+                        photography.map((photo: Photography) => (
+                          <Card
+                            key={photo._id}
+                            id={photo._id}
+                            isPhoto
+                            noBadge
+                            image={urlFor(photo.image).url()}
+                            title={photo.name}
+                            subtitle="PHOTOGRAPHY"
+                          />
+                        ))
+                      )
+                    ) : projects.some((project: Project) => project.category === filter.value) ? (
                       projects.map(
                         (project: Project) =>
                           project.category === filter.value && (
@@ -92,6 +107,8 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                             />
                           )
                       )
+                    ) : (
+                      <div className="col-span-full w-full text-center text-foreground/60">Nothing to show here</div>
                     )}
                   </ParallaxGridWrapper>
                 </motion.div>
