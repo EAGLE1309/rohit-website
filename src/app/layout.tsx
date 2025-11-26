@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { DM_Mono, Geist, Inter } from "next/font/google";
+import { DM_Mono, Inter } from "next/font/google";
 
 import localFont from "next/font/local";
 
@@ -14,6 +14,7 @@ const DM_mono = DM_Mono({
   subsets: ["latin"],
   weight: ["300", "400", "500"],
   style: ["normal"],
+  display: "swap",
   variable: "--font-dm-mono",
 });
 
@@ -21,14 +22,8 @@ const inter = Inter({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   style: ["normal"],
+  display: "swap",
   variable: "--font-inter",
-});
-
-const geist = Geist({
-  subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-  style: ["normal"],
-  variable: "--font-geist",
 });
 
 export const neueMontreal = localFont({
