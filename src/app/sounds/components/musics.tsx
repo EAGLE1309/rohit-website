@@ -452,18 +452,20 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       {/* Cassette visual above */}
-      <div className="relative w-[272px] bg-foreground/10 border-2 border-foreground/10 rounded-xl h-[272px]">
-        <Image
-          src="/cd-15.png"
-          alt="CD"
-          fill
-          className="object-contain pointer-events-none p-3 pt-0 drop-sadow-[0_4px_18px_rgba(0,0,0,0.35)]"
-          style={{
-            animation: "spin 5s linear infinite",
-            animationPlayState: isPlaying && duration > 0 && !isLoading ? "running" : "paused",
-          }}
-          priority
-        />
+      <div className="relative w-[272px] h-[272px] bg-foreground/10 border-2 border-foreground/10 rounded-xl flex items-center justify-center overflow-hidden">
+        <div className="relative w-[220px] h-[220px]">
+          <Image
+            src="/cd-15.png"
+            alt="CD"
+            fill
+            className="object-contain pointer-events-none drop-sadow-[0_4px_18px_rgba(0,0,0,0.35)] origin-center"
+            style={{
+              animation: "spin 5s linear infinite",
+              animationPlayState: isPlaying && duration > 0 && !isLoading ? "running" : "paused",
+            }}
+            priority
+          />
+        </div>
       </div>
 
       {/* Standalone player panel below */}
