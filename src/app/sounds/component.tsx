@@ -9,7 +9,7 @@ import FlyersComponent from "./components/flyers";
 import PhotographsComponent from "./components/photographs";
 
 interface Types {
-  id: "music" | "flyers" | "photographies";
+  id: "music" | "flyers" | "gallery";
 }
 
 const SoundsComponent = ({ tracks, flyers, photographs }: { tracks: any; flyers: any; photographs: any }) => {
@@ -36,9 +36,9 @@ const SoundsComponent = ({ tracks, flyers, photographs }: { tracks: any; flyers:
           Flyers
           {type === "flyers" ? <span>&nbsp;[&nbsp;•&nbsp;]</span> : <span>&nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;]</span>}
         </Link>
-        <Link href={`?id=photographies`} className={`text-xs md:text-sm uppercase font-medium md:font-normal cursor-pointer`}>
-          Photographs
-          {type === "photographies" ? <span>&nbsp;[&nbsp;•&nbsp;]</span> : <span>&nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;]</span>}
+        <Link href={`?id=gallery`} className={`text-xs md:text-sm uppercase font-medium md:font-normal cursor-pointer`}>
+          Gallery
+          {type === "gallery" ? <span>&nbsp;[&nbsp;•&nbsp;]</span> : <span>&nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;]</span>}
         </Link>
       </div>
 

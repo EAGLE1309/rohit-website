@@ -68,13 +68,15 @@ const fragmentShaderSource = `
     float spinSpeed = u_spinPhase; // matches 5s rotation
     
     // === SCANLINES (concentric rings) ===
-    float ringFreq = 120.0;
-    float rings = sin(dist * ringFreq + spinSpeed * 0.5) * 0.5 + 0.5;
-    rings = pow(rings, 8.0) * 0.15;
+    float ringFreq = 260.0;
+    float scanPhase = (uv.x - 0.5) * ringFreq + spinSpeed * 0.35;
+    float scanLines = abs(sin(scanPhase));
+    float ringMask = smoothstep(0.2, 0.32, dist) * smoothstep(0.5, 0.38, dist);
+    float rings = pow(scanLines, 3.0) * 0.14 * ringMask;
     
     // === RADIAL LINES (like CD tracks) ===
-    float radialLines = sin((angle + spinSpeed) * 180.0) * 0.5 + 0.5;
-    radialLines = pow(radialLines, 12.0) * 0.08;
+    float radialBase = sin((angle + spinSpeed * 0.5) * 40.0) * 0.5 + 0.5;
+    float radialLines = pow(radialBase, 8.0) * 0.05 * ringMask;
     
     // === RAINBOW HOLOGRAPHIC SHINE ===
     float shineAngle = angle + spinSpeed;

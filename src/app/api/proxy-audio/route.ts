@@ -33,14 +33,17 @@ export async function GET(req: NextRequest) {
     }
 
     const rangeHeader = req.headers.get("range");
-    const r = await fetch(url, {
+    const fetchOptions: RequestInit = {
       headers: rangeHeader
         ? {
             Range: rangeHeader,
           }
         : undefined,
-      cache: "no-store",
-    });
+    };
+    if (!rangeHeader) {
+      fetchOptions.cache = "force-cache";
+    }
+    const r = await fetch(url, fetchOptions);
     if (!r.ok) {
       return NextResponse.json({ error: "Failed to fetch remote audio" }, { status: r.status });
     }
@@ -73,7 +76,12 @@ export async function GET(req: NextRequest) {
       }
     }
     headers.set("Content-Type", remoteContentType);
-    headers.set("Cache-Control", "no-store");
+    const upstreamCacheControl = r.headers.get("cache-control");
+    if (upstreamCacheControl) {
+      headers.set("Cache-Control", upstreamCacheControl);
+    } else {
+      headers.set("Cache-Control", "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400");
+    }
     const contentLength = r.headers.get("content-length");
     if (contentLength) {
       headers.set("Content-Length", contentLength);

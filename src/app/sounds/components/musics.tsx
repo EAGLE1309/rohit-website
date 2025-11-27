@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import CDShineEffect from "./CDShineEffect";
 
-const BAR_COUNT = 56; // denser waveform for the 223px viewport
+const BAR_COUNT = 125; // denser waveform for the 223px viewport
 
 const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -453,10 +453,10 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       {/* Cassette visual above */}
-      <div className="relative w-[272px] h-[272px] bg-foreground/10 border-2 border-foreground/10 rounded-xl flex items-center justify-center overflow-hidden">
-        <div className="relative w-[220px] h-[220px]">
+      <div className="relative w-[272px] h-[272px] flex items-center justify-center overflow-hidden">
+        <div className="relative w-[272px] h-[272px]">
           <Image
-            src="/cd-15.png"
+            src="/cd-1.png"
             alt="CD"
             fill
             className="object-contain pointer-events-none drop-sadow-[0_4px_18px_rgba(0,0,0,0.35)] origin-center"
@@ -471,14 +471,9 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
       </div>
 
       {/* Standalone player panel below */}
-      <div className="w-[272px]">
-        <div className="w-full bg-[#040404] border border-foreground/20 rounded-xl text-white p-2.5 overflow-hidden">
-          <div className="w-full flex items-center justify-center">
-            <span className="text-[10px] text-center font-neue tracking-widest font-normal truncate">
-              {currentTrack ? currentTrack.title : "Select Track"}
-            </span>
-          </div>
-
+      <div className="w-[325px]">
+        <div className="w-full overflow-hidden">
+          {/* 
           <div className="mt-1 w-full">
             <div className="relative h-[0.1rem] w-1/2 mx-auto overflow-hidden rounded-full bg-white/10">
               <div
@@ -494,9 +489,9 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
               <span>{currentTrack ? (isBuffering ? "Loading..." : "Loaded") : "No track selected"}</span>
               <span>{`${(bufferedRatio * 100).toFixed(0)}% · ${bufferedTimeLabel}`}</span>
             </div>
-          </div>
+          </div> */}
 
-          <div className="mt-0.5 w-full" style={{ height: "26px" }}>
+          <div className="mt-0.5 w-full" style={{ height: "52px" }}>
             <div
               ref={waveformRef}
               onPointerDown={handleWaveformPointerDown}
@@ -504,7 +499,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
               onPointerUp={handleWaveformPointerUp}
               onPointerLeave={stopSeeking}
               onPointerCancel={handleWaveformPointerCancel}
-              className="relative h-full rounded-sm border border-white/10 bg-black/80 cursor-pointer overflow-hidden"
+              className="relative h-full rounded-sm border border-accent bg-black cursor-pointer overflow-hidden"
               style={{ touchAction: "none" }}
             >
               <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white/10 opacity-60 pointer-events-none" />
@@ -552,7 +547,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
 
                   // Map to pixel height
                   const minBarHeight = 0;
-                  const maxBarHeight = 35;
+                  const maxBarHeight = 75;
                   const barHeight = minBarHeight + finalAmplitude * (maxBarHeight - minBarHeight);
 
                   // Determine if bar has been played
@@ -587,23 +582,35 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
               <span key={marker.position.toFixed(2)}>{marker.label}</span>
             ))}
           </div> */}
-          <div className="flex mt-3 items-center justify-between bg-background gap-1 rounded-sm p-1">
-            <p className="text-lg text-foreground font-medium pl-1">{formatTimeHMS(currentTime)}</p>
+          <div className="flex flex-col mt-3 w-[325px] mx-auto items-center justify-between text-foreground gap-1 rounded-sm p-1">
+            <span className="text-xs font-medium self-start text-foreground">{currentTrack ? currentTrack.title : "Select Track"}</span>
 
-            <div className="flex items-center gap-1">
-              <button onClick={goToPrevTrack} className="p-2 rounded-sm bg-foreground text-accent transition-colors" aria-label="Previous track">
-                <IconPlayerTrackPrevFilled className="w-3 h-3" />
-              </button>
-              <button
-                onClick={handleWaveformPlayToggle}
-                className="p-2 rounded-sm bg-foreground text-accent transition-colors"
-                aria-label={isPlaying ? "Pause" : "Play"}
-              >
-                {isPlaying ? <IconPlayerPauseFilled className="w-3 h-3" /> : <IconPlayerPlayFilled className="w-3 h-3" />}
-              </button>
-              <button onClick={goToNextTrack} className="p-2 rounded-sm bg-foreground text-accent transition-colors" aria-label="Next track">
-                <IconPlayerTrackNextFilled className="w-3 h-3" />
-              </button>
+            <div className="flex w-full justify-between items-center gap-1">
+              <p className="text-xs font-medium text-foreground">{formatTimeHMS(currentTime)}</p>
+
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={goToPrevTrack}
+                  className="p-1 rounded-sm hover:bg-foreground/15 text-foreground transition-colors"
+                  aria-label="Previous track"
+                >
+                  <IconPlayerTrackPrevFilled className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={handleWaveformPlayToggle}
+                  className="p-1 rounded-sm hover:bg-foreground/15 text-foreground transition-colors"
+                  aria-label={isPlaying ? "Pause" : "Play"}
+                >
+                  {isPlaying ? <IconPlayerPauseFilled className="w-3 h-3" /> : <IconPlayerPlayFilled className="w-3 h-3" />}
+                </button>
+                <button
+                  onClick={goToNextTrack}
+                  className="p-1 rounded-sm hover:bg-foreground/15 text-foreground transition-colors"
+                  aria-label="Next track"
+                >
+                  <IconPlayerTrackNextFilled className="w-3 h-3" />
+                </button>
+              </div>
             </div>
           </div>
         </div>

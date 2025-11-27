@@ -12,10 +12,8 @@ const Home = () => {
           <HoverGif staticSrc="/home.png" gifSrc="/home.gif" className="w-[80px] h-[60px] md:w-[230px] md:h-[200px] object-cover" alt="" />
           <h1 className="md:text-[250px] text-7xl leading-0 font-medium uppercase">6IT</h1>
         </div>
-        <p className="text-sm md:text-lg max-w-[280px] text-center font-medium uppercase">
-          a multidisciplinary visual
-          <br />
-          artist, creative director
+        <p className="text-sm md:text-lg whitespace-nowrap max text-center font-medium uppercase">
+          *multidisciplinary visual artist <br /> *creative director
         </p>
       </div>
       <div className="absolute flex flex-col bottom-12 md:bottom-1">
