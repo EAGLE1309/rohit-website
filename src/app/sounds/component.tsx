@@ -16,18 +16,30 @@ const SoundsComponent = ({ tracks, flyers, photographs }: { tracks: any; flyers:
   const searchParams = useSearchParams();
   const type = searchParams.get("id") as Types["id"];
 
-  // 👇 Prevent body scroll when this component mounts
+  // 👇 Prevent body scroll when this component mounts (except for gallery)
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = "hidden";
+    if (type !== "gallery") {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
     return () => {
       document.body.style.overflow = originalStyle;
     };
-  }, []);
+  }, [type]);
+
+  const isGallery = type === "gallery";
 
   return (
-    <MaxWidthWrapper className="w-full h-full md:h-[80vh] mt-24 md:mt-28 overflow-hidden relative flex flex-col md:flex-row items-center justify-center">
-      <div className="mb-5 md:absolute pl-8 flex md:flex-col md:top-[calc(50%-5rem)] gap-3 md:gap-0 md:translate-y-1/2 md:left-1">
+    <MaxWidthWrapper
+      className={`w-full mt-24 md:mt-28 relative flex flex-col md:flex-row ${
+        isGallery ? "min-h-screen h-full md:h-[80vh] justify-center" : "h-full md:h-[80vh] overflow-hidden items-center justify-center"
+      }`}
+    >
+      <div
+        className={`mb-5 pl-8 flex md:flex-col gap-3 md:gap-0 ${"md:fixed md:top-1/2 md:-translate-y-1/2 md:left-[max(0.25rem,calc(50vw-640px+0.875rem))]"}`}
+      >
         <Link href={`?id=music`} className={`text-xs md:text-sm uppercase font-medium md:font-normal cursor-pointer`}>
           Music
           {type === "music" || !type ? <span>&nbsp;[&nbsp;•&nbsp;]</span> : <span>&nbsp;[&nbsp;&nbsp;&nbsp;&nbsp;]</span>}

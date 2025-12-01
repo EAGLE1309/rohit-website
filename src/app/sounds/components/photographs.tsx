@@ -21,46 +21,38 @@ const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
   }, [selectedImage]);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-16 w-full md:ml-48">
       {/* Main display image */}
-      <div className="relative w-[305px] h-[375px] md:w-[272px] md:h-[425px]">
-        {/* Blurred placeholder sourced via Sanity image builder */}
-        <div
-          aria-hidden
-          className={`absolute inset-0 overflow-hidden transition-opacity duration-300 ${loading ? "opacity-100" : "opacity-0 pointer-events-none"}`}
-          style={
-            blurredPlaceholder ? { backgroundImage: `url(${blurredPlaceholder})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined
-          }
-        >
-          {!blurredPlaceholder && <div className="w-full h-full bg-gray-100 dark:bg-gray-800 animate-pulse" />}
+      {photographs.map((photograph: any) => (
+        <div key={photograph.id} className="relative w-[305px] h-[375px] md:w-[272px] md:h-[425px]">
+          {/* Blurred placeholder sourced via Sanity image builder */}
+          <div
+            aria-hidden
+            className={`absolute inset-0 overflow-hidden transition-opacity duration-300 ${
+              loading ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+            style={
+              blurredPlaceholder
+                ? { backgroundImage: `url(${blurredPlaceholder})`, backgroundSize: "cover", backgroundPosition: "center" }
+                : undefined
+            }
+          >
+            {!blurredPlaceholder && <div className="w-full h-full bg-gray-100 dark:bg-gray-800 animate-pulse" />}
+          </div>
+          <Image
+            src={urlFor(photograph.image).url() || ""}
+            alt="Selected Photograph"
+            fill
+            className={`object-contain pointer-events-none transition-all duration-300 ${loading ? "opacity-0" : "opacity-100"}`}
+            placeholder={blurredPlaceholder ? "blur" : "empty"}
+            blurDataURL={blurredPlaceholder || undefined}
+            priority
+            // next/image provides onLoadingComplete; fall back to onError as well
+            onLoadingComplete={() => setLoading(false)}
+            onError={() => setLoading(false)}
+          />
         </div>
-
-        <Image
-          src={urlFor(selectedImage).url() || ""}
-          alt="Selected Photograph"
-          fill
-          className={`object-contain pointer-events-none transition-all duration-300 ${loading ? "opacity-0" : "opacity-100"}`}
-          placeholder={blurredPlaceholder ? "blur" : "empty"}
-          blurDataURL={blurredPlaceholder || undefined}
-          priority
-          // next/image provides onLoadingComplete; fall back to onError as well
-          onLoadingComplete={() => setLoading(false)}
-          onError={() => setLoading(false)}
-        />
-      </div>
-
-      {/* Carousel */}
-      <Carousel opts={{ loop: true, skipSnaps: true }} className="w-full md:w-[565px]">
-        <CarouselContent>
-          {photographs.map((photograph: any) => (
-            <CarouselItem className="basis-1/4 md:basis-1/5" key={photograph.id}>
-              <Card title={photograph?.name} image={photograph?.image} onClick={() => setSelectedImage(photograph.image)} />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
+      ))}
     </div>
   );
 };
