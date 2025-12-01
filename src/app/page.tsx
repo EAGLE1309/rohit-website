@@ -1,6 +1,22 @@
+import type { Metadata } from "next";
 import ArcLabels from "@/components/arc-label";
 import { HoverGif } from "@/components/hover-gif";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
+
+export const metadata: Metadata = {
+  title: "Rohit Patnala | Visual Artist & Creative Director",
+  description:
+    "Welcome to the portfolio of Rohit Patnala - a multidisciplinary visual artist, DJ, and creative director based in Houston, Texas. Explore creative works, photography, and music.",
+  keywords: ["Rohit Patnala portfolio", "visual artist Houston", "creative director Texas", "RO6IT", "multidisciplinary artist"],
+  openGraph: {
+    title: "Rohit Patnala | Visual Artist & Creative Director",
+    description: "Welcome to the portfolio of Rohit Patnala - a multidisciplinary visual artist, DJ, and creative director based in Houston, Texas.",
+    url: "https://rohit.solithix.com",
+  },
+  alternates: {
+    canonical: "https://rohit.solithix.com",
+  },
+};
 
 const Home = () => {
   return (

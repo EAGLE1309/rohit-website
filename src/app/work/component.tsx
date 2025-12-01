@@ -156,8 +156,12 @@ const Card = ({
           />
         </div>
         <div className="flex flex-col items-center text-center gap-1">
-          <p className="text-xs uppercase font-medium text-foreground">{title}</p>
-          <span className="text-[12px] uppercase text-foreground/55">{(subtitle || fallbackSubtitle || "").trim()}</span>
+          {!isPhoto && (
+            <>
+              <p className="text-xs uppercase font-medium text-foreground">{title}</p>
+              <span className="text-[12px] uppercase text-foreground/55">{(subtitle || fallbackSubtitle || "").trim()}</span>
+            </>
+          )}
         </div>
       </Link>
     </motion.div>

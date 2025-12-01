@@ -1,9 +1,25 @@
+import type { Metadata } from "next";
 import SoundsComponent from "./component";
 import { getMusics } from "@/lib/dashboard/queries/musics";
 import { getFlyers } from "@/lib/dashboard/queries/flyers";
 import { getPhotography } from "@/lib/dashboard/queries/photography";
 import { Suspense } from "react";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
+
+export const metadata: Metadata = {
+  title: "Sounds & Music",
+  description:
+    "Listen to DJ mixes, music productions, and soundscapes by Rohit Patnala. Explore flyers, event visuals, and the sonic side of RO6IT's creative practice.",
+  keywords: ["Rohit Patnala music", "DJ mixes", "RO6IT sounds", "Houston DJ", "music production", "event flyers", "soundcloud"],
+  openGraph: {
+    title: "Sounds & Music | Rohit Patnala",
+    description: "Listen to DJ mixes, music productions, and soundscapes by Rohit Patnala. Explore the sonic side of RO6IT's creative practice.",
+    url: "https://rohit.solithix.com/sounds",
+  },
+  alternates: {
+    canonical: "https://rohit.solithix.com/sounds",
+  },
+};
 
 const SoundsPage = async () => {
   const musics = await getMusics();

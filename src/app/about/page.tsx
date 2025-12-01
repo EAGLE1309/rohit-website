@@ -1,6 +1,30 @@
 /* eslint-disable @next/next/no-img-element */
+import type { Metadata } from "next";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 import { IconBrandInstagram, IconBrandSoundcloud, IconBrandTwitter, IconMail } from "@tabler/icons-react";
+
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "Learn about Rohit Patnala (RO6IT) - a visual artist, DJ, and creative director born June 30, 2004 in Houston, Texas. Discover his journey from sports edits on Vine to multidisciplinary creative practice.",
+  keywords: ["about Rohit Patnala", "RO6IT bio", "Houston visual artist", "Texas creative director", "artist biography", "DJ Houston"],
+  openGraph: {
+    title: "About | Rohit Patnala",
+    description: "Learn about Rohit Patnala (RO6IT) - a visual artist, DJ, and creative director born June 30, 2004 in Houston, Texas.",
+    url: "https://rohit.solithix.com/about",
+    images: [
+      {
+        url: "/about/about-2.png",
+        width: 400,
+        height: 500,
+        alt: "Rohit Patnala portrait",
+      },
+    ],
+  },
+  alternates: {
+    canonical: "https://rohit.solithix.com/about",
+  },
+};
 
 const AboutPage = () => {
   return (
