@@ -17,7 +17,7 @@ export interface Project {
 export const getProjects = async () => {
   const req: any = await sanityFetch({
     query: '*[_type == "projects"] | order(_createdAt desc)',
-    revalidate: 30, // revalidate every 30s
+    revalidate: 300, // revalidate every 5 minutes (reduces API calls)
     tags: [], // no tag-based revalidation interference
   });
 
@@ -32,7 +32,7 @@ export const getProjectById = async (id: string): Promise<Project | null> => {
       "videoUrl": video.asset->url
     }`,
     params: { id },
-    revalidate: 30,
+    revalidate: 300,
     tags: [],
   });
 

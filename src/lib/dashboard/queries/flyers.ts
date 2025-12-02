@@ -15,7 +15,7 @@ export interface Flyer {
 export const getFlyers = async () => {
   const req: any = await sanityFetch({
     query: '*[_type == "flyers"] | order(_createdAt desc)',
-    revalidate: 30, // revalidate every 30s
+    revalidate: 300, // revalidate every 5 minutes (reduces API calls)
     tags: [], // no tag-based revalidation interference
   });
 
@@ -30,7 +30,7 @@ export const getFlyerById = async (id: string): Promise<Flyer | null> => {
       "imageUrl": image.asset->url
     }`,
     params: { id },
-    revalidate: 30,
+    revalidate: 300,
     tags: [],
   });
 

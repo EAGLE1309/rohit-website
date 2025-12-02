@@ -15,7 +15,7 @@ export interface Photography {
 export const getPhotography = async () => {
   const req: any = await sanityFetch({
     query: '*[_type == "photography"] | order(_createdAt desc)',
-    revalidate: 30, // revalidate every 30s
+    revalidate: 300, // revalidate every 5 minutes (reduces API calls)
     tags: [], // no tag-based revalidation interference
   });
 
@@ -30,7 +30,7 @@ export const getPhotographyById = async (id: string): Promise<Photography | null
       "imageUrl": image.asset->url
     }`,
     params: { id },
-    revalidate: 30,
+    revalidate: 300,
     tags: [],
   });
 

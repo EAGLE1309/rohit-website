@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { urlFor } from "@/lib/dashboard/sanity-cilent";
+import { fullImageUrl, thumbnailUrl, blurPlaceholderUrl } from "@/lib/dashboard/sanity-cilent";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Image from "next/image";
 
@@ -12,7 +12,7 @@ const FlyersComponent = ({ flyers }: { flyers: any[] }) => {
 
   const blurredPlaceholder = useMemo(() => {
     if (!selectedImage) return "";
-    return urlFor(selectedImage).width(32).height(32).quality(40).blur(50).url();
+    return blurPlaceholderUrl(selectedImage);
   }, [selectedImage]);
 
   // whenever selectedImage changes, show loader until next image loads
@@ -38,7 +38,7 @@ const FlyersComponent = ({ flyers }: { flyers: any[] }) => {
         </div>
 
         <Image
-          src={urlFor(selectedImage).url() || ""}
+          src={fullImageUrl(selectedImage, 600) || ""}
           alt="Selected Photograph"
           fill
           className={`object-contain pointer-events-none transition-all duration-300 ${loading ? "opacity-0" : "opacity-100"}`}
@@ -78,7 +78,7 @@ const Card = ({ title, image, onClick }: { title: string; image: string; onClick
           className="relative group overflow-hidden w-full h-full transition-all duration-300 ease-in-out cursor-pointer hover:scale-105"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={urlFor(image).url()} alt={title} className="object-contain w-full min-h-[75px] mx-auto" />
+          <img src={thumbnailUrl(image, "sm")} alt={title} className="object-contain w-full min-h-[75px] mx-auto" loading="lazy" />
         </div>
       </TooltipTrigger>
       <TooltipContent>{title}</TooltipContent>

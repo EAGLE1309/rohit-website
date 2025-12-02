@@ -1,7 +1,7 @@
 "use client";
 
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
-import { urlFor } from "@/lib/dashboard/sanity-cilent";
+import { thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
 
 export default function WorkDetailsComponent({ project }: { project: any; allProjects: any }) {
   const videoUrl = project?.videoUrl;
@@ -61,7 +61,7 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
                 controls
                 controlsList="nodownload noplaybackrate noremoteplayback"
                 preload="metadata"
-                poster={urlFor(project.thumbnail).url() ?? undefined}
+                poster={thumbnailUrl(project.thumbnail, "lg") ?? undefined}
                 playsInline
                 autoPlay
                 disablePictureInPicture

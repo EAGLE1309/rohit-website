@@ -6,7 +6,7 @@ import { ParallaxGridWrapper } from "@/components/work/parallax";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { useState } from "react";
 import Link from "@/components/navigations/link";
-import { urlFor } from "@/lib/dashboard/sanity-cilent";
+import { thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
 import type { Project } from "@/lib/dashboard/queries/projects";
 import type { Photography } from "@/lib/dashboard/queries/photography";
 import { motion, AnimatePresence } from "motion/react";
@@ -61,7 +61,7 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                             <Card
                               key={project._id}
                               id={project._id}
-                              image={urlFor(project.thumbnail).url()}
+                              image={thumbnailUrl(project.thumbnail)}
                               title={project.name}
                               subtitle={project.category}
                             />
@@ -71,7 +71,7 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                               key={photo._id}
                               id={photo._id}
                               isPhoto
-                              image={urlFor(photo.image).url()}
+                              image={thumbnailUrl(photo.image)}
                               title={photo.name}
                               subtitle="PHOTOGRAPHY"
                             />
@@ -88,7 +88,7 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                             id={photo._id}
                             isPhoto
                             noBadge
-                            image={urlFor(photo.image).url()}
+                            image={thumbnailUrl(photo.image)}
                             title={photo.name}
                             subtitle="PHOTOGRAPHY"
                           />
@@ -101,7 +101,7 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                             <Card
                               key={project._id}
                               id={project._id}
-                              image={urlFor(project.thumbnail).url()}
+                              image={thumbnailUrl(project.thumbnail)}
                               title={project.name}
                               subtitle={project.category}
                             />

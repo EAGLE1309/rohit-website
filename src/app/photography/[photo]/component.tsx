@@ -2,7 +2,7 @@
 "use client";
 
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
-import { urlFor } from "@/lib/dashboard/sanity-cilent";
+import { fullImageUrl } from "@/lib/dashboard/sanity-cilent";
 
 export default function PhotographyDetailsComponent({ photo }: { photo: any }) {
   return (
@@ -53,7 +53,12 @@ export default function PhotographyDetailsComponent({ photo }: { photo: any }) {
           {/* Video section */}
           <div className="w-fit mb-8 place-self-end md:mb-0 flex items-start justify-end">
             <div className="w-full ">
-              <img src={urlFor(photo.image).url()} className="w-fit object-contain h-full max-h-[68vh]" alt={photo.name || ""} />
+              <img
+                src={fullImageUrl(photo.image, 1200)}
+                className="w-fit object-contain h-full max-h-[68vh]"
+                alt={photo.name || ""}
+                loading="eager"
+              />
             </div>
           </div>
         </div>

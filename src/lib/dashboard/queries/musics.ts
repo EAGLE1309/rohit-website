@@ -27,7 +27,7 @@ export const getMusics = async (): Promise<Music[]> => {
         "coverUrl": cover.asset->url
       }
     `,
-    revalidate: 30,
+    revalidate: 300,
     tags: [],
   });
 
@@ -45,7 +45,7 @@ export const getMusicById = async (id: string): Promise<Music | null> => {
       }
     `,
     params: { id },
-    revalidate: 30,
+    revalidate: 300,
     tags: [],
   });
 
