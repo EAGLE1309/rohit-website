@@ -18,6 +18,8 @@ import Image from "next/image";
 import CDShineEffect from "./CDShineEffect";
 import { useMediaBandwidth, MediaBandwidthMeter } from "@/hooks/use-media-bandwidth";
 
+const IS_DEV = process.env.NODE_ENV === "development";
+
 const BAR_COUNT = 125; // denser waveform for the 223px viewport
 
 const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
@@ -590,7 +592,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
             <span className="text-xs font-medium self-start text-foreground">{currentTrack ? currentTrack.title : "Select Track"}</span>
 
             {/* Audio Bandwidth Meter */}
-            {currentTrack && (
+            {IS_DEV && currentTrack && (
               <div className="w-full mb-2">
                 <MediaBandwidthMeter stats={audioBandwidth} label="🎵 Audio Streaming" />
               </div>

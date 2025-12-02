@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 
+const IS_DEV = process.env.NODE_ENV === "development";
+
 export interface MediaBandwidthStats {
   loaded: number;
   total: number;
@@ -36,6 +38,8 @@ export function useMediaBandwidth(mediaRef: React.RefObject<HTMLMediaElement | n
   }, []);
 
   useEffect(() => {
+    if (!IS_DEV) return;
+
     const media = mediaRef.current;
     if (!media) return;
 
@@ -117,6 +121,8 @@ export function MediaBandwidthMeter({
   label?: string;
   compact?: boolean;
 }) {
+  if (!IS_DEV) return null;
+
   if (compact) {
     return (
       <div className="flex items-center gap-2 text-[10px] font-mono text-foreground/60">

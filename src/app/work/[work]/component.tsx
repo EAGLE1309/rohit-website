@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 import { thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
 import { useMediaBandwidth, MediaBandwidthMeter } from "@/hooks/use-media-bandwidth";
@@ -9,6 +9,7 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
   const videoUrl = project?.videoUrl;
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoBandwidth = useMediaBandwidth(videoRef);
+  const isDev = useMemo(() => process.env.NODE_ENV === "development", []);
 
   return (
     <MaxWidthWrapper className="md:mt-24 overflow-hidden relative">
@@ -76,9 +77,11 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
                 Your browser does not support the video tag.
               </video>
               {/* Video Bandwidth Meter */}
-              <div className="mt-2">
-                <MediaBandwidthMeter stats={videoBandwidth} label="🎬 Video Streaming" />
-              </div>
+              {isDev && (
+                <div className="mt-2">
+                  <MediaBandwidthMeter stats={videoBandwidth} label="🎬 Video Streaming" />
+                </div>
+              )}
             </div>
           </div>
         </div>
