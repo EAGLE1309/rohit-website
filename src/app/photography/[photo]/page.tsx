@@ -25,11 +25,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `${photography.name} | Rohit Patnala`,
       description: photography.description || `${photography.name} - Photography by Rohit Patnala.`,
-      url: `https://rohit.solithix.com/photography/${photo}`,
+      url: `https://ro6it.com/photography/${photo}`,
+      siteName: "Rohit Patnala",
+      images: [
+        {
+          url: "https://ro6it.com/home.png",
+          width: 1200,
+          height: 630,
+          alt: `${photography.name} - Featured by Rohit Patnala`,
+        },
+      ],
       type: "article",
     },
     alternates: {
-      canonical: `https://rohit.solithix.com/photography/${photo}`,
+      canonical: `https://ro6it.com/photography/${photo}`,
     },
   };
 }

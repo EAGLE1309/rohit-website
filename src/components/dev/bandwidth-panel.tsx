@@ -55,7 +55,7 @@ export default function BandwidthPanel() {
         onClick={() => setIsOpen(!isOpen)}
         className="bg-black/90 text-white px-3 py-2 rounded-lg shadow-lg hover:bg-black transition-colors border border-white/20"
       >
-        📊 {isOpen ? "Hide" : "Bandwidth"}
+        {isOpen ? "Hide" : "Bandwidth"}
       </button>
 
       {/* Panel */}

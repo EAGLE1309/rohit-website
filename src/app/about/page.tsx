@@ -11,18 +11,19 @@ export const metadata: Metadata = {
   openGraph: {
     title: "About | Rohit Patnala",
     description: "Learn about Rohit Patnala (RO6IT) - a visual artist, DJ, and creative director born June 30, 2004 in Houston, Texas.",
-    url: "https://rohit.solithix.com/about",
+    url: "https://ro6it.com/about",
+    siteName: "Rohit Patnala",
     images: [
       {
-        url: "/about/about-2.png",
-        width: 400,
-        height: 500,
-        alt: "Rohit Patnala portrait",
+        url: "https://ro6it.com/home.png",
+        width: 1200,
+        height: 630,
+        alt: "Rohit Patnala - Visual Artist & Creative Director",
       },
     ],
   },
   alternates: {
-    canonical: "https://rohit.solithix.com/about",
+    canonical: "https://ro6it.com/about",
   },
 };
 

@@ -19,10 +19,19 @@ export const metadata: Metadata = {
     title: "Work & Projects | Rohit Patnala",
     description:
       "Explore the creative portfolio of Rohit Patnala featuring visual art projects, photography, graphic design, and creative direction work.",
-    url: "https://rohit.solithix.com/work",
+    url: "https://ro6it.com/work",
+    siteName: "Rohit Patnala",
+    images: [
+      {
+        url: "https://ro6it.com/home.png",
+        width: 1200,
+        height: 630,
+        alt: "Rohit Patnala - Visual Artist & Creative Director",
+      },
+    ],
   },
   alternates: {
-    canonical: "https://rohit.solithix.com/work",
+    canonical: "https://ro6it.com/work",
   },
 };
 

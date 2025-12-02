@@ -11,10 +11,19 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Rohit Patnala | Visual Artist & Creative Director",
     description: "Welcome to the portfolio of Rohit Patnala - a multidisciplinary visual artist, DJ, and creative director based in Houston, Texas.",
-    url: "https://rohit.solithix.com",
+    url: "https://ro6it.com",
+    siteName: "Rohit Patnala",
+    images: [
+      {
+        url: "https://ro6it.com/home.png",
+        width: 1200,
+        height: 630,
+        alt: "Rohit Patnala - Visual Artist & Creative Director",
+      },
+    ],
   },
   alternates: {
-    canonical: "https://rohit.solithix.com",
+    canonical: "https://ro6it.com",
   },
 };
 

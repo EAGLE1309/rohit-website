@@ -15,10 +15,19 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sounds & Music | Rohit Patnala",
     description: "Listen to DJ mixes, music productions, and soundscapes by Rohit Patnala. Explore the sonic side of RO6IT's creative practice.",
-    url: "https://rohit.solithix.com/sounds",
+    url: "https://ro6it.com/sounds",
+    siteName: "Rohit Patnala",
+    images: [
+      {
+        url: "https://ro6it.com/home.png",
+        width: 1200,
+        height: 630,
+        alt: "RO6IT Sounds & Music showcase",
+      },
+    ],
   },
   alternates: {
-    canonical: "https://rohit.solithix.com/sounds",
+    canonical: "https://ro6it.com/sounds",
   },
 };
 

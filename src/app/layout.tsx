@@ -71,7 +71,7 @@ export const neueMontreal = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://rohit.solithix.com"),
+  metadataBase: new URL("https://ro6it.com"),
   title: {
     default: "Rohit Patnala | Visual Artist & Creative Director",
     template: "%s | Rohit Patnala",
@@ -94,7 +94,7 @@ export const metadata: Metadata = {
   authors: [
     {
       name: "Rohit Patnala",
-      url: "https://rohit.solithix.com",
+      url: "https://ro6it.com",
     },
   ],
   creator: "Rohit Patnala",
@@ -113,14 +113,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://rohit.solithix.com",
+    url: "https://ro6it.com",
     siteName: "Rohit Patnala",
     title: "Rohit Patnala | Visual Artist & Creative Director",
     description:
       "Rohit Patnala is a multidisciplinary visual artist, DJ, and creative director based in Houston, Texas. Specializing in visual art, music, photography, and creative direction.",
     images: [
       {
-        url: "/home.png",
+        url: "https://ro6it.com/home.png",
         width: 1200,
         height: 630,
         alt: "Rohit Patnala - Visual Artist & Creative Director",
@@ -133,10 +133,10 @@ export const metadata: Metadata = {
     site: "@ro6itism",
     title: "Rohit Patnala | Visual Artist & Creative Director",
     description: "Rohit Patnala is a multidisciplinary visual artist, DJ, and creative director based in Houston, Texas.",
-    images: ["/home.png"],
+    images: ["https://ro6it.com/home.png"],
   },
   alternates: {
-    canonical: "https://rohit.solithix.com",
+    canonical: "https://ro6it.com",
   },
 };
 
