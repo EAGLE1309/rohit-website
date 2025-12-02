@@ -9,6 +9,7 @@ import Lenis from "@/components/layout/lenis";
 import { Toaster } from "sonner";
 import { ViewTransitions } from "next-view-transitions";
 import { ThemeProvider } from "next-themes";
+import BandwidthPanel from "@/components/dev/bandwidth-panel";
 
 const DM_mono = DM_Mono({
   subsets: ["latin"],
@@ -146,7 +147,7 @@ export default function RootLayout({
 }>) {
   return (
     <ViewTransitions>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body className={`${DM_mono.variable} ${inter.variable} ${neueMontreal.variable} antialiased`}>
           <Lenis>
             <ThemeProvider
@@ -175,6 +176,7 @@ export default function RootLayout({
               <Navbar />
               {children}
               <Toaster />
+              <BandwidthPanel />
             </ThemeProvider>
           </Lenis>
         </body>

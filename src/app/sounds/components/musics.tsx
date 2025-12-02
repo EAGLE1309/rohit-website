@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { toast } from "sonner";
 import Image from "next/image";
 import CDShineEffect from "./CDShineEffect";
+import { useMediaBandwidth, MediaBandwidthMeter } from "@/hooks/use-media-bandwidth";
 
 const BAR_COUNT = 125; // denser waveform for the 223px viewport
 
@@ -42,6 +43,9 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
   const latestTrackIndex = TRACKS.length > 0 ? TRACKS.length - 1 : null;
 
   const currentTrack = useMemo(() => (currentIndex !== null ? TRACKS[currentIndex] : null), [currentIndex, TRACKS]);
+
+  // Bandwidth tracking for audio streaming
+  const audioBandwidth = useMediaBandwidth(audioRef);
 
   // Init audio element + WebAudio analyser
   useEffect(() => {
@@ -585,6 +589,13 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
           <div className="flex flex-col mt-3 w-[325px] mx-auto items-center justify-between text-foreground gap-1 rounded-sm p-1">
             <span className="text-xs font-medium self-start text-foreground">{currentTrack ? currentTrack.title : "Select Track"}</span>
 
+            {/* Audio Bandwidth Meter */}
+            {currentTrack && (
+              <div className="w-full mb-2">
+                <MediaBandwidthMeter stats={audioBandwidth} label="🎵 Audio Streaming" />
+              </div>
+            )}
+
             <div className="flex w-full justify-between items-center gap-1">
               <p className="text-xs font-medium text-foreground">{formatTimeHMS(currentTime)}</p>
 
@@ -656,6 +667,7 @@ const Card = ({ title, thumb, active, playing, loading }: { title: string; thumb
           <img
             src={thumb}
             alt={title}
+            loading="lazy"
             className={`object-contain w-full min-h-[75px] mx-auto transition-transform duration-500 ease-out ${
               active || playing ? "" : "group-hover:scale-110"
             }`}

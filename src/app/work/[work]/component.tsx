@@ -1,10 +1,14 @@
 "use client";
 
+import { useRef } from "react";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 import { thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
+import { useMediaBandwidth, MediaBandwidthMeter } from "@/hooks/use-media-bandwidth";
 
 export default function WorkDetailsComponent({ project }: { project: any; allProjects: any }) {
   const videoUrl = project?.videoUrl;
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoBandwidth = useMediaBandwidth(videoRef);
 
   return (
     <MaxWidthWrapper className="md:mt-24 overflow-hidden relative">
@@ -19,7 +23,7 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
                   {(() => {
                     const name = project?.name || "";
                     const num = name ? String(name.split("").reduce((acc: any, c: any) => acc + c.charCodeAt(0), 0) % 100).padStart(2, "0") : "--";
-                    return <p className="text-3xl md:text-5xl font-medium">{num}.</p>;
+                    return <span className="text-3xl md:text-5xl font-medium">{num}.</span>;
                   })()}
                 </p>
               </div>
@@ -57,6 +61,7 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
           <div className="w-full mb-8 flex items-start justify-end">
             <div className="w-full overflow-hidden">
               <video
+                ref={videoRef}
                 src={videoUrl}
                 controls
                 controlsList="nodownload noplaybackrate noremoteplayback"
@@ -70,6 +75,10 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
                 <source src={videoUrl} />
                 Your browser does not support the video tag.
               </video>
+              {/* Video Bandwidth Meter */}
+              <div className="mt-2">
+                <MediaBandwidthMeter stats={videoBandwidth} label="🎬 Video Streaming" />
+              </div>
             </div>
           </div>
         </div>
