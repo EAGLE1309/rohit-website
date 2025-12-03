@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from "motion/react";
 
 const filterOptions = [
   { label: "All", value: "all" },
-  { label: "Commercial", value: "selected" },
+  { label: "Commercial", value: "commercial" },
   { label: "Personal", value: "personal" },
   { label: "Photography", value: "photography" },
   { label: "Projects", value: "projects" },
@@ -77,22 +77,6 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                             />
                           ))}
                         </>
-                      )
-                    ) : filter.value === "photography" ? (
-                      photography.length === 0 ? (
-                        <div className="col-span-full text-center text-foreground/60">Nothing to show here</div>
-                      ) : (
-                        photography.map((photo: Photography) => (
-                          <Card
-                            key={photo._id}
-                            id={photo._id}
-                            isPhoto
-                            noBadge
-                            image={thumbnailUrl(photo.image)}
-                            title={photo.name}
-                            subtitle="PHOTOGRAPHY"
-                          />
-                        ))
                       )
                     ) : projects.some((project: Project) => project.category === filter.value) ? (
                       projects.map(
