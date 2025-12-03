@@ -2,7 +2,6 @@
 
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 import Image from "next/image";
-import { ParallaxGridWrapper } from "@/components/work/parallax";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { useState } from "react";
 import Link from "@/components/navigations/link";
@@ -51,7 +50,7 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                     visible: { transition: { staggerChildren: 0.02 } },
                   }}
                 >
-                  <ParallaxGridWrapper className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-28 md:gap-y-16">
+                  <div className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-28 md:gap-y-16">
                     {filter.value === "all" ? (
                       projects.length === 0 && photography.length === 0 ? (
                         <div className="col-span-full text-center text-foreground/60">Nothing to show here</div>
@@ -66,17 +65,23 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                               subtitle={project.category}
                             />
                           ))}
-                          {photography.map((photo: Photography) => (
-                            <Card
-                              key={photo._id}
-                              id={photo._id}
-                              isPhoto
-                              image={thumbnailUrl(photo.image)}
-                              title={photo.name}
-                              subtitle="PHOTOGRAPHY"
-                            />
-                          ))}
                         </>
+                      )
+                    ) : filter.value === "photography" ? (
+                      photography.length === 0 ? (
+                        <div className="col-span-full text-center text-foreground/60">Nothing to show here</div>
+                      ) : (
+                        photography.map((photo: Photography) => (
+                          <Card
+                            key={photo._id}
+                            id={photo._id}
+                            isPhoto
+                            noBadge
+                            image={thumbnailUrl(photo.image)}
+                            title={photo.name}
+                            subtitle="PHOTOGRAPHY"
+                          />
+                        ))
                       )
                     ) : projects.some((project: Project) => project.category === filter.value) ? (
                       projects.map(
@@ -94,7 +99,7 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                     ) : (
                       <div className="col-span-full w-full text-center text-foreground/60">Nothing to show here</div>
                     )}
-                  </ParallaxGridWrapper>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -109,7 +114,7 @@ export default WorksComponent;
 
 const Card = ({
   id = "default",
-  title = "Don Toliver For Bape - [December 2024]",
+  title,
   subtitle,
   isPhoto = false,
   noBadge = false,
@@ -123,6 +128,10 @@ const Card = ({
   image?: string;
 }) => {
   const fallbackSubtitle = isPhoto ? "PHOTOGRAPHY" : "PERSONAL";
+  const hasTitle = Boolean(title?.trim());
+  const hasSubtitle = Boolean(subtitle?.trim());
+  const shouldRenderMeta = !isPhoto && (hasTitle || hasSubtitle);
+  const subtitleText = hasSubtitle ? subtitle?.trim() : !isPhoto ? (fallbackSubtitle || "").trim() : "";
   return (
     <motion.div
       className="w-full group relative flex flex-col items-center text-center gap-3"
@@ -140,10 +149,10 @@ const Card = ({
           />
         </div>
         <div className="flex flex-col items-center text-center gap-1">
-          {!isPhoto && (
+          {shouldRenderMeta && (
             <>
-              <p className="text-xs uppercase font-medium text-foreground">{title}</p>
-              <span className="text-[12px] uppercase text-foreground/55">{(subtitle || fallbackSubtitle || "").trim()}</span>
+              {hasTitle && <p className="text-xs uppercase font-medium text-foreground">{title?.trim()}</p>}
+              {subtitleText && <span className="text-[12px] uppercase text-foreground/55">{subtitleText}</span>}
             </>
           )}
         </div>
