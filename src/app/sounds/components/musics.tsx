@@ -629,10 +629,10 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
         </div>
       </div>
 
-      <Carousel opts={{ loop: true }} className="max-w-[565px]">
+      <Carousel opts={{ loop: true }} className="w-full max-w-[565px]">
         <CarouselContent>
           {TRACKS.map((track: any, index: number) => (
-            <CarouselItem className="basis-1/4 md:basis-1/5" key={track.id} onClick={() => togglePlayForIndex(index)}>
+            <CarouselItem className="w-full basis-1/4 md:basis-1/3" key={track.id} onClick={() => togglePlayForIndex(index)}>
               <Card
                 title={track.title}
                 thumb={track.thumb ?? "/home.png"}
@@ -657,7 +657,7 @@ const Card = ({ title, thumb, active, playing, loading }: { title: string; thumb
     <Tooltip>
       <TooltipTrigger asChild>
         <div
-          className={`relative group overflow-hidden w-full h-full min-h-[75px] transition-all duration-300 ease-in-out cursor-pointer
+          className={`relative group overflow-hidden w-full h-full transition-all duration-300 ease-in-out cursor-pointer
             ${active ? "rounded-2xl" : "hover:rounded-2xl hover:scale-105"}
             ${playing ? "" : ""}
           `}
@@ -670,14 +670,14 @@ const Card = ({ title, thumb, active, playing, loading }: { title: string; thumb
             src={thumb}
             alt={title}
             loading="lazy"
-            className={`object-contain w-full min-h-[75px] mx-auto transition-transform duration-500 ease-out ${
+            className={`object-cover w-full min-w-[75px] h-full min-h-[75px] mx-auto transition-transform duration-500 ease-out ${
               active || playing ? "" : "group-hover:scale-110"
             }`}
           />
 
           {/* Overlay with controls */}
           <div
-            className={`absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all duration-300 ${
+            className={`absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all duration-300  ${
               active || playing ? "opacity-100" : "opacity-0 group-hover:opacity-100"
             }`}
           >
