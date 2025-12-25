@@ -657,7 +657,7 @@ const Card = ({ title, thumb, active, playing, loading }: { title: string; thumb
     <Tooltip>
       <TooltipTrigger asChild>
         <div
-          className={`relative group overflow-hidden w-full h-full transition-all duration-300 ease-in-out cursor-pointer
+          className={`relative group overflow-hidden w-full h-full min-h-[75px] transition-all duration-300 ease-in-out cursor-pointer
             ${active ? "rounded-2xl" : "hover:rounded-2xl hover:scale-105"}
             ${playing ? "" : ""}
           `}
