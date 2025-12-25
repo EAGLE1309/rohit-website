@@ -1,77 +1,122 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { fullImageUrl, blurPlaceholderUrl, thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useState, useEffect, useRef } from "react";
+import { fullImageUrl, blurPlaceholderUrl } from "@/lib/dashboard/sanity-cilent";
 import Image from "next/image";
 
 const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
-  const [selectedImage, setSelectedImage] = useState(photographs[0]?.image);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [shuffledPhotos, setShuffledPhotos] = useState<any[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const clickedImageRef = useRef<HTMLDivElement>(null);
 
-  const blurredPlaceholder = useMemo(() => {
-    if (!selectedImage) return "";
-    return blurPlaceholderUrl(selectedImage);
-  }, [selectedImage]);
+  // Shuffle array while keeping clicked image at the start
+  const shuffleArray = (array: any[], startIndex: number) => {
+    const clicked = array[startIndex];
+    const remaining = array.filter((_, idx) => idx !== startIndex);
 
-  // whenever selectedImage changes, show loader until next image loads
+    // Fisher-Yates shuffle for remaining items
+    for (let i = remaining.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+    }
+
+    return [clicked, ...remaining];
+  };
+
+  // Initialize loading states
   useEffect(() => {
-    setLoading(true);
-  }, [selectedImage]);
+    const initialLoading: { [key: string]: boolean } = {};
+    photographs.forEach((photo) => {
+      initialLoading[photo.id] = true;
+    });
+    setLoading(initialLoading);
+  }, [photographs]);
+
+  const handleImageClick = (index: number) => {
+    if (isExpanded) {
+      setIsExpanded(false);
+      setShuffledPhotos([]);
+    } else {
+      const shuffled = shuffleArray(photographs, index);
+      setShuffledPhotos(shuffled);
+      setIsExpanded(true);
+
+      // Scroll to clicked image after animation starts
+      setTimeout(() => {
+        clickedImageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  };
+
+  const displayPhotos = isExpanded ? shuffledPhotos : photographs;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-16 w-full md:ml-48">
-      {/* Main display image */}
-      {photographs.map((photograph: any) => (
-        <div key={photograph.id} className="relative w-[305px] h-[375px] md:w-[272px] md:h-[425px]">
-          {/* Blurred placeholder sourced via Sanity image builder */}
+    <div
+      ref={containerRef}
+      className={`pb-16 w-full transition-all duration-700 ease-in-out ${
+        isExpanded ? "flex flex-col max-w-[725px] mx-auto gap-8" : "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:ml-48"
+      }`}
+    >
+      {displayPhotos.map((photograph: any, idx: number) => {
+        const photoBlurPlaceholder = blurPlaceholderUrl(photograph.image);
+        const isClickedImage = isExpanded && idx === 0;
+        const uniqueKey = `${photograph.id || `photo-${idx}`}-${isExpanded ? "expanded" : "grid"}`;
+
+        return (
           <div
-            aria-hidden
-            className={`absolute inset-0 overflow-hidden transition-opacity duration-300 ${
-              loading ? "opacity-100" : "opacity-0 pointer-events-none"
+            key={uniqueKey}
+            ref={isClickedImage ? clickedImageRef : null}
+            className={`relative cursor-pointer transition-all duration-700 ease-in-out ${
+              isExpanded ? "w-full" : "w-full h-[375px] md:max-w-[272px] md:h-[425px]"
             }`}
-            style={
-              blurredPlaceholder
-                ? { backgroundImage: `url(${blurredPlaceholder})`, backgroundSize: "cover", backgroundPosition: "center" }
-                : undefined
-            }
+            onClick={() => handleImageClick(isExpanded ? photographs.findIndex((p) => p.id === photograph.id) : idx)}
+            style={{
+              transformOrigin: "center",
+            }}
           >
-            {!blurredPlaceholder && <div className="w-full h-full bg-gray-100 dark:bg-gray-800 animate-pulse" />}
+            <div
+              aria-hidden
+              className={`absolute inset-0 overflow-hidden transition-opacity duration-300 ${
+                loading[photograph.id] ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+              style={
+                photoBlurPlaceholder
+                  ? { backgroundImage: `url(${photoBlurPlaceholder})`, backgroundSize: "cover", backgroundPosition: "center" }
+                  : undefined
+              }
+            >
+              {!photoBlurPlaceholder && <div className="w-full h-full bg-gray-100 dark:bg-gray-800 animate-pulse" />}
+            </div>
+            {isExpanded ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={fullImageUrl(photograph.image, 1200) || ""}
+                alt="Gallery Photo"
+                className={`w-full object-contain transition-all duration-300 ${loading[photograph.id] ? "opacity-0" : "opacity-100"}`}
+                onLoad={() => setLoading((prev) => ({ ...prev, [photograph.id]: false }))}
+                onError={() => setLoading((prev) => ({ ...prev, [photograph.id]: false }))}
+              />
+            ) : (
+              <Image
+                src={fullImageUrl(photograph.image, 600) || ""}
+                alt="Gallery Photo"
+                fill
+                className={`object-cover transition-all duration-300 ${loading[photograph.id] ? "opacity-0" : "opacity-100"}`}
+                placeholder={photoBlurPlaceholder ? "blur" : "empty"}
+                blurDataURL={photoBlurPlaceholder || undefined}
+                priority={idx < 8}
+                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 272px"
+                onLoadingComplete={() => setLoading((prev) => ({ ...prev, [photograph.id]: false }))}
+                onError={() => setLoading((prev) => ({ ...prev, [photograph.id]: false }))}
+              />
+            )}
           </div>
-          <Image
-            src={fullImageUrl(photograph.image, 600) || ""}
-            alt="Selected Photograph"
-            fill
-            className={`object-contain pointer-events-none transition-all duration-300 ${loading ? "opacity-0" : "opacity-100"}`}
-            placeholder={blurredPlaceholder ? "blur" : "empty"}
-            blurDataURL={blurredPlaceholder || undefined}
-            priority
-            // next/image provides onLoadingComplete; fall back to onError as well
-            onLoadingComplete={() => setLoading(false)}
-            onError={() => setLoading(false)}
-          />
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
 
 export default PhotographsComponent;
-
-const Card = ({ title, image, onClick }: { title: string; image: string; onClick: () => void }) => {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <div
-          onClick={onClick}
-          className="relative group overflow-hidden w-full h-full transition-all duration-300 ease-in-out cursor-pointer hover:scale-105"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={thumbnailUrl(image, "sm")} alt={title} className="object-contain w-full min-h-[75px] mx-auto" loading="lazy" />
-        </div>
-      </TooltipTrigger>
-      <TooltipContent>{title}</TooltipContent>
-    </Tooltip>
-  );
-};

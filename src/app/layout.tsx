@@ -149,36 +149,34 @@ export default function RootLayout({
     <ViewTransitions>
       <html lang="en" suppressHydrationWarning>
         <body className={`${DM_mono.variable} ${inter.variable} ${neueMontreal.variable} antialiased`}>
-          <Lenis>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="light"
-              enableSystem={false}
-              themes={[
-                "light",
-                "dark",
-                "one",
-                "two",
-                "three",
-                "four",
-                "five",
-                "six",
-                "seven",
-                "eight",
-                "nine",
-                "ten",
-                "eleven",
-                "twelve",
-                "thirteen",
-                "fourteen",
-              ]}
-            >
-              <Navbar />
-              {children}
-              <Toaster />
-              <BandwidthPanel />
-            </ThemeProvider>
-          </Lenis>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem={false}
+            themes={[
+              "light",
+              "dark",
+              "one",
+              "two",
+              "three",
+              "four",
+              "five",
+              "six",
+              "seven",
+              "eight",
+              "nine",
+              "ten",
+              "eleven",
+              "twelve",
+              "thirteen",
+              "fourteen",
+            ]}
+          >
+            <Navbar />
+            {children}
+            <Toaster />
+            <BandwidthPanel />
+          </ThemeProvider>
         </body>
       </html>
     </ViewTransitions>
