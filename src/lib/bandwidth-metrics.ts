@@ -106,10 +106,10 @@ class BandwidthMetrics {
   private getTypeFromUrl(url: string): BandwidthEntry["type"] {
     const lower = url.toLowerCase();
     if (/\.(jpg|jpeg|png|gif|webp|avif|svg|ico)/.test(lower)) return "image";
-    // Audio: file extensions, proxy-audio endpoint, or R2 audio paths
-    if (/\.(mp3|wav|ogg|m4a|aac|flac)/.test(lower) || lower.includes("proxy-audio") || lower.includes("/audio/")) return "audio";
-    // Video: file extensions or R2 video paths
-    if (/\.(mp4|webm|mov|avi)/.test(lower) || lower.includes("/video/")) return "video";
+    // Audio: file extensions or proxy-audio endpoint
+    if (/(\.mp3|\.wav|\.ogg|\.m4a|\.aac|\.flac)/.test(lower) || lower.includes("proxy-audio")) return "audio";
+    // Video: file extensions
+    if (/(\.mp4|\.webm|\.mov|\.avi)/.test(lower)) return "video";
     if (lower.includes("/api/") || lower.includes("sanity.io")) return "api";
     return "other";
   }

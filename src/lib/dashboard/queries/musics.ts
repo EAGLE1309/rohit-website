@@ -1,13 +1,5 @@
 import { sanityFetch } from "../sanity-cilent";
-import { getPlayableUrl } from "@/lib/r2";
 
-export interface R2Track {
-  url?: string;
-  filename?: string;
-  size?: number;
-  mimeType?: string;
-  duration?: number;
-}
 
 export interface Music {
   _id: string;
@@ -25,7 +17,6 @@ export interface Music {
   };
   cover: any;
   trackUrl?: string;
-  r2Track?: R2Track;
 }
 
 // Fetch all musics
@@ -35,19 +26,14 @@ export const getMusics = async (): Promise<Music[]> => {
       *[_type == "musics"] | order(_createdAt desc){
         ...,
         "trackUrl": track.asset->url,
-        "coverUrl": cover.asset->url,
-        r2Track
+        "coverUrl": cover.asset->url
       }
     `,
     revalidate: 300,
     tags: [],
   });
 
-  // Map to prefer R2 URLs (direct) over Sanity CDN (proxied)
-  return req.map((music) => ({
-    ...music,
-    trackUrl: getPlayableUrl(music.r2Track?.url, music.trackUrl) || music.trackUrl,
-  }));
+  return req;
 };
 
 // Fetch single music by ID
@@ -57,8 +43,7 @@ export const getMusicById = async (id: string): Promise<Music | null> => {
       *[_type == "musics" && _id == $id][0]{
         ...,
         "trackUrl": track.asset->url,
-        "coverUrl": cover.asset->url,
-        r2Track
+        "coverUrl": cover.asset->url
       }
     `,
     params: { id },
@@ -68,11 +53,5 @@ export const getMusicById = async (id: string): Promise<Music | null> => {
 
   if (!req) return null;
 
-  // Prefer R2 URL (direct) over Sanity CDN (proxied)
-  const music = req as Music;
-
-  return {
-    ...music,
-    trackUrl: getPlayableUrl(music.r2Track?.url, music.trackUrl) || music.trackUrl,
-  };
+  return req;
 };

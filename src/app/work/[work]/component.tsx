@@ -11,6 +11,41 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
   const videoBandwidth = useMediaBandwidth(videoRef);
   const isDev = useMemo(() => process.env.NODE_ENV === "development", []);
 
+  // Use Sanity CDN proxy for video streaming
+  const proxiedVideoUrl = useMemo(() => {
+    if (!videoUrl) return null;
+
+    console.log("Original video URL:", videoUrl);
+
+    // Extract Sanity asset ID from the video URL
+    // Sanity URLs follow pattern: https://cdn.sanity.io/files/{projectId}/{dataset}/{assetId}-{format}.{extension}
+    // or: https://cdn.sanity.io/files/{projectId}/{dataset}/{assetId}
+    const sanityUrlPattern = /cdn\.sanity\.io\/files\/[^\/]+\/[^\/]+\/([^-\.]+)/;
+    const match = videoUrl.match(sanityUrlPattern);
+
+    if (match && match[1]) {
+      const assetId = match[1];
+      const proxyUrl = `/api/proxy-video/${assetId}`;
+      console.log("Extracted asset ID:", assetId, "Proxy URL:", proxyUrl);
+      return proxyUrl;
+    }
+
+    // If not a Sanity URL pattern, try to extract the full asset ID differently
+    const alternativePattern = /cdn\.sanity\.io\/files\/[^\/]+\/[^\/]+\/(.+?)(?:-\w+)?\.(?:mp4|mov|webm)/;
+    const altMatch = videoUrl.match(alternativePattern);
+
+    if (altMatch && altMatch[1]) {
+      const assetId = altMatch[1];
+      const proxyUrl = `/api/proxy-video/${assetId}`;
+      console.log("Alternative extraction - asset ID:", assetId, "Proxy URL:", proxyUrl);
+      return proxyUrl;
+    }
+
+    console.log("No Sanity pattern matched, using original URL");
+    // Fallback to original URL if not a Sanity URL
+    return videoUrl;
+  }, [videoUrl]);
+
 
   return (
     <MaxWidthWrapper className="md:mt-24 overflow-hidden relative">
@@ -64,16 +99,17 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
             <div className="w-full overflow-hidden">
               <video
                 ref={videoRef}
-                src={videoUrl}
+                src={proxiedVideoUrl || videoUrl}
                 controls
                 controlsList="nodownload"
                 preload="metadata"
                 poster={thumbnailUrl(project.thumbnail, "lg") ?? undefined}
                 playsInline
                 autoPlay
+                loop
                 className="w-full h-auto max-h-[65vh]"
               >
-                <source src={videoUrl} type="video/mp4" />
+                <source src={proxiedVideoUrl || videoUrl} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
 

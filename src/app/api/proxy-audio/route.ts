@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Proxy for Sanity CDN and R2 media (handles CORS for Web Audio API)
+// Proxy for Sanity CDN media (handles CORS for Web Audio API)
 // Web Audio API requires CORS-compliant media for MediaElementAudioSource
 
 const ALLOWED_ORIGINS = [
@@ -24,9 +24,9 @@ const MIME_TYPES: Record<string, string> = {
 function isAllowedUrl(urlString: string): boolean {
   try {
     const url = new URL(urlString);
-    // Allow both Sanity CDN and R2 URLs for Web Audio API compatibility
+    // Allow only Sanity CDN URLs for Web Audio API compatibility
     return url.protocol === "https:" &&
-      (url.hostname === "cdn.sanity.io" || url.hostname === "cdn.eagledev.in");
+      url.hostname === "cdn.sanity.io";
   } catch {
     return false;
   }
