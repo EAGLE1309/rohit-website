@@ -28,10 +28,11 @@ export async function OPTIONS(req: NextRequest) {
   return new Response(null, { status: 204, headers });
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     const origin = req.headers.get("origin");
     const range = req.headers.get("range");
+    const { id } = await context.params;
 
     // Construct Sanity CDN URL for the video asset
     // Sanity assets follow the pattern: https://cdn.sanity.io/files/{projectId}/{dataset}/{assetId}-{format}.{extension}
@@ -46,13 +47,12 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     // The ID might be the full asset ID or just the base part
     // Try different URL patterns to find the correct one
     const possibleUrls = [
-      `https://cdn.sanity.io/files/${projectId}/${dataset}/${params.id}`,
-      `https://cdn.sanity.io/files/${projectId}/${dataset}/${params.id}-mp4`,
-      `https://cdn.sanity.io/files/${projectId}/${dataset}/${params.id}.mp4`,
+      `https://cdn.sanity.io/files/${projectId}/${dataset}/${id}`,
+      `https://cdn.sanity.io/files/${projectId}/${dataset}/${id}-mp4`,
+      `https://cdn.sanity.io/files/${projectId}/${dataset}/${id}.mp4`,
     ];
 
     let videoResponse: Response | null = null;
-    let workingUrl: string | null = null;
 
     // Try each URL pattern
     for (const url of possibleUrls) {
@@ -67,7 +67,6 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
         if (response.ok) {
           videoResponse = response;
-          workingUrl = url;
           console.log("Success with URL:", url);
           break;
         }
@@ -78,7 +77,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     }
 
     if (!videoResponse) {
-      console.error("All URL patterns failed for asset ID:", params.id);
+      console.error("All URL patterns failed for asset ID:", id);
       return new Response("Video not found - tried all URL patterns", { status: 404 });
     }
 
