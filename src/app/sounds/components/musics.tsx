@@ -4,14 +4,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import {
-  IconPlayerPlayFilled,
-  IconPlayerTrackNext,
-  IconPlayerTrackPrev,
-  IconPlayerPauseFilled,
-  IconPlayerTrackNextFilled,
-  IconPlayerTrackPrevFilled,
-} from "@tabler/icons-react";
+import { IconPlayerPlayFilled, IconPlayerPauseFilled, IconPlayerTrackNextFilled, IconPlayerTrackPrevFilled } from "@tabler/icons-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import Image from "next/image";

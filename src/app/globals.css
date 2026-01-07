@@ -14,6 +14,15 @@ body {
   .cursor-pointer {
     cursor: url("/cursor/red-pointer.cur"), pointer !important;
   }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
 }
 
 .cursor-pointer {
@@ -251,13 +260,14 @@ nav {
     @apply bg-background text-foreground;
   }
   /* Minimal native video controls */
-  video::-webkit-media-controls-panel,
+   video::-webkit-media-controls-panel,
   video::-webkit-media-controls-enclosure,
   video::-webkit-media-controls {
     background: transparent !important;
     box-shadow: none !important;
   }
 
+/*
   video::-webkit-media-controls-timeline,
   video::-webkit-media-controls-fullscreen-button {
     width: 75% !important;
@@ -283,12 +293,12 @@ nav {
   video::-webkit-media-controls-enclosure[controls] > video::-webkit-media-controls-airplay-button {
     display: none !important;
   }
-
+*/
   video::-webkit-media-controls-panel,
   video::-webkit-media-controls {
     padding-left: 12.5%;
     padding-right: 12.5%;
-  }
+  } 
 }
 
 /* Custom keyframes for music card micro-interactions */

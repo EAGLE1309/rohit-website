@@ -56,7 +56,14 @@ export function useMediaBandwidth(mediaRef: React.RefObject<HTMLMediaElement | n
 
       if (typeof window !== "undefined" && window.performance) {
         const entries = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
-        const mediaEntry = entries.find((e) => src.includes(e.name.split("?")[0]) || e.name.includes("proxy-audio"));
+        // Match by source URL, proxy-audio endpoint, or R2 media paths
+        const mediaEntry = entries.find((e) =>
+          src.includes(e.name.split("?")[0]) ||
+          e.name.includes("proxy-audio") ||
+          e.name.includes("/video/") ||
+          e.name.includes("/audio/") ||
+          e.name.includes("cdn.eagledev.in")
+        );
 
         if (mediaEntry) {
           totalBytes = mediaEntry.decodedBodySize || mediaEntry.transferSize || 0;

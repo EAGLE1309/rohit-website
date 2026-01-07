@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "cdn.sanity.io",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.eagledev.in",
+      }
     ],
   },
   // Security headers
@@ -54,9 +58,9 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com data:",
-              "img-src 'self' https://cdn.sanity.io https://images.unsplash.com data: blob:",
-              "media-src 'self' https://cdn.sanity.io blob:",
-              "connect-src 'self' https://cdn.sanity.io https://*.sanity.io",
+              "img-src 'self' https://cdn.sanity.io https://cdn.eagledev.in https://images.unsplash.com data: blob:",
+              "media-src 'self' https://cdn.sanity.io https://cdn.eagledev.in blob:",
+              "connect-src 'self' https://cdn.sanity.io https://cdn.eagledev.in https://*.sanity.io",
               "frame-ancestors 'self'",
               "base-uri 'self'",
               "form-action 'self'",

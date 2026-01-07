@@ -36,11 +36,12 @@ const SoundsPage = async () => {
   const flyers = await getFlyers();
   const photographs = await getPhotography();
 
+  // trackUrl is now a streaming proxy URL from the query
   const TRACKS = musics.map((music: any, index: number) => ({
     id: index,
     title: music.title,
     artist: "Rohit Patnala",
-    src: `/api/proxy-audio?url=${encodeURIComponent(music.trackUrl)}`,
+    src: music.trackUrl,
     // Optimize cover images - 200px WebP at 70% quality
     thumb: music.cover ? thumbnailUrl(music.cover, "sm") : "/home.png",
   }));

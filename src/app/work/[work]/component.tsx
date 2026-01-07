@@ -11,6 +11,7 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
   const videoBandwidth = useMediaBandwidth(videoRef);
   const isDev = useMemo(() => process.env.NODE_ENV === "development", []);
 
+
   return (
     <MaxWidthWrapper className="md:mt-24 overflow-hidden relative">
       <div className="w-full mt-28 flex flex-col gap-3">
@@ -65,17 +66,17 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
                 ref={videoRef}
                 src={videoUrl}
                 controls
-                controlsList="nodownload noplaybackrate noremoteplayback"
+                controlsList="nodownload"
                 preload="metadata"
                 poster={thumbnailUrl(project.thumbnail, "lg") ?? undefined}
                 playsInline
                 autoPlay
-                disablePictureInPicture
                 className="w-full h-auto max-h-[65vh]"
               >
-                <source src={videoUrl} />
+                <source src={videoUrl} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
+
               {/* Video Bandwidth Meter */}
               {isDev && (
                 <div className="mt-2">
