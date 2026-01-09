@@ -103,7 +103,7 @@ export default function VideoPlayer({ videoUrl, poster, captions, className = ""
   const togglePlay = () => {
     const vid = videoRef.current;
     if (!vid) return;
-    if (vid.paused) vid.play().catch(() => {});
+    if (vid.paused) vid.play().catch(() => { });
     else vid.pause();
   };
 

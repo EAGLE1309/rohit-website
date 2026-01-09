@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 import { thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
 import { useMediaBandwidth, MediaBandwidthMeter } from "@/hooks/use-media-bandwidth";
+import { VideoPlayer } from "./video-player";
 
 export default function WorkDetailsComponent({ project }: { project: any; allProjects: any }) {
   const videoUrl = project?.videoUrl;
@@ -11,8 +12,21 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
   const videoBandwidth = useMediaBandwidth(videoRef);
   const isDev = useMemo(() => process.env.NODE_ENV === "development", []);
 
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const handlePlay = () => {
+    if (!videoRef.current) return;
+    if (!isLoaded) {
+      videoRef.current.src = videoUrl;
+      videoRef.current.load();
+      setIsLoaded(true);
+    }
+    videoRef.current.play();
+  };
+
+
   return (
-    <MaxWidthWrapper className="md:mt-24 overflow-hidden relative">
+    <MaxWidthWrapper className="md:mt-8 overflow-hidden relative">
       <div className="w-full mt-28 flex flex-col gap-3">
         {/* Main project */}
         <div className="w-full md:grid md:grid-cols-2 gap-8">
@@ -60,28 +74,8 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
 
           {/* Video section */}
           <div className="w-full mb-8 flex items-start justify-end">
-            <div className="w-full overflow-hidden">
-              <video
-                ref={videoRef}
-                src={videoUrl}
-                controls
-                controlsList="nodownload noplaybackrate noremoteplayback"
-                preload="metadata"
-                poster={thumbnailUrl(project.thumbnail, "lg") ?? undefined}
-                playsInline
-                autoPlay
-                disablePictureInPicture
-                className="w-full h-auto max-h-[65vh]"
-              >
-                <source src={videoUrl} />
-                Your browser does not support the video tag.
-              </video>
-              {/* Video Bandwidth Meter */}
-              {isDev && (
-                <div className="mt-2">
-                  <MediaBandwidthMeter stats={videoBandwidth} label="🎬 Video Streaming" />
-                </div>
-              )}
+            <div className="w-full relative overflow-hidden">
+              <VideoPlayer videoUrl={videoUrl} poster={thumbnailUrl(project.thumbnail, "lg") ?? undefined} />
             </div>
           </div>
         </div>

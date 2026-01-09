@@ -14,6 +14,7 @@ import { useTheme } from "next-themes";
 const items = [
   { title: "Home", href: "/" },
   { title: "Work", href: "/work" },
+  { title: "Projects", href: "/projects" },
   { title: "Sounds", href: "/sounds" },
   { title: "About", href: "/about" },
 ];
@@ -88,9 +89,8 @@ const Navbar = () => {
       <div className="h-auto md:w-[50%] w-full border-2 border-foreground/10 rounded-full px-5 py-1 my-3 mx-auto max-w-screen-xl flex justify-between items-center">
         <Link
           href="/"
-          className={`flex leading-5 items-center text-lg font-medium font-neue gap-3 ${
-            isThemeSliderExpanded ? "opacity-0 pointer-events-none" : "opacity-100"
-          }`}
+          className={`flex leading-5 items-center text-lg font-medium font-neue gap-3 ${isThemeSliderExpanded ? "opacity-0 pointer-events-none" : "opacity-100"
+            }`}
         >
           {theme === "dark" || theme === "one" || theme === "two" || theme === "three" || theme === "four" || theme === "five" || theme === "six" ? (
             <img src="/logo-white.svg" className="w-20 h-full " alt="Logo" />
@@ -113,15 +113,14 @@ const Navbar = () => {
             <Link
               key={item.href}
               href={item.href}
-              className={`font-neue relative z-10 px-3 py-1 text-md transition-colors flex items-center gap-1 ${
-                hoveredHref
-                  ? hoveredHref === item.href
-                    ? "text-accent"
-                    : "text-foreground/55"
-                  : isNavActive(item.href)
+              className={`font-neue relative z-10 px-3 py-1 text-md transition-colors flex items-center gap-1 ${hoveredHref
+                ? hoveredHref === item.href
+                  ? "text-accent"
+                  : "text-foreground/55"
+                : isNavActive(item.href)
                   ? "text-accent"
                   : "text-foreground/55 hover:text-white"
-              }`}
+                }`}
               onMouseEnter={() => {
                 setHoveredHref(item.href);
                 updateIndicator(item.href);
@@ -162,9 +161,8 @@ const Navbar = () => {
       {/* Mobile nav */}
 
       <div
-        className={`md:hidden transition-all bg-background absolute z-[-1] top-0 pt-24 py-12 flex h-screen flex-col items-center gap-2 px-3 ease-in-out duration-300 ${
-          open ? "left-0 w-full" : "left-[-100%] w-0"
-        }`}
+        className={`md:hidden transition-all bg-background absolute z-[-1] top-0 pt-24 py-12 flex h-screen flex-col items-center gap-2 px-3 ease-in-out duration-300 ${open ? "left-0 w-full" : "left-[-100%] w-0"
+          }`}
       >
         {items.map((item) => (
           <Link
