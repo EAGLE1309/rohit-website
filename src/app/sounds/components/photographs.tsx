@@ -1,120 +1,172 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { fullImageUrl, blurPlaceholderUrl } from "@/lib/dashboard/sanity-cilent";
-import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+
+// Helper to generate random IDs
+const generateId = () => Math.random().toString(36).substr(2, 9);
 
 const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
   const [isExpanded, setIsExpanded] = useState(false);
-  const [shuffledPhotos, setShuffledPhotos] = useState<any[]>([]);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [displayPhotos, setDisplayPhotos] = useState<any[]>([]);
+
+  // React 19 safe ref
   const clickedImageRef = useRef<HTMLDivElement>(null);
 
-  // Shuffle array while keeping clicked image at the start
-  const shuffleArray = (array: any[], startIndex: number) => {
-    const clicked = array[startIndex];
-    const remaining = array.filter((_, idx) => idx !== startIndex);
-
-    // Fisher-Yates shuffle for remaining items
-    for (let i = remaining.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
-    }
-
-    return [clicked, ...remaining];
-  };
-
-  // Initialize loading states
+  // Initialize
   useEffect(() => {
     const initialLoading: { [key: string]: boolean } = {};
+    const initialPhotosWithKeys = photographs.map((p) => ({
+      ...p,
+      _renderId: p.id || generateId(),
+    }));
+
     photographs.forEach((photo) => {
-      initialLoading[photo.id] = true;
+      if (photo.id) initialLoading[photo.id] = true;
     });
+
     setLoading(initialLoading);
+    setDisplayPhotos(initialPhotosWithKeys);
   }, [photographs]);
 
+  // --- Handle Clicks ---
   const handleImageClick = (index: number) => {
     if (isExpanded) {
+      // CLOSE: Return to grid
       setIsExpanded(false);
-      setShuffledPhotos([]);
+
+      const resetPhotos = photographs.map(p => ({
+        ...p,
+        _renderId: p.id || generateId()
+      }));
+      setDisplayPhotos(resetPhotos);
+
     } else {
-      const shuffled = shuffleArray(photographs, index);
-      setShuffledPhotos(shuffled);
+      // OPEN: Shuffle and expand
+      const clicked = displayPhotos[index];
+      const remaining = displayPhotos.filter((_, idx) => idx !== index);
+
+      // Shuffle logic
+      for (let i = remaining.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+      }
+
+      setDisplayPhotos([clicked, ...remaining]);
       setIsExpanded(true);
 
-      // Scroll to clicked image after animation starts
       setTimeout(() => {
-        clickedImageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 50);
     }
   };
 
-  const displayPhotos = isExpanded ? shuffledPhotos : photographs;
+  // --- Infinite Scroll ---
+  const loadMorePhotos = useCallback(() => {
+    const nextBatch = [...photographs];
+    nextBatch.sort(() => Math.random() - 0.5);
+
+    const batchWithNewKeys = nextBatch.map(p => ({
+      ...p,
+      _renderId: `${p.id}-copy-${generateId()}`
+    }));
+
+    setDisplayPhotos((prev) => [...prev, ...batchWithNewKeys]);
+  }, [photographs]);
+
+  useEffect(() => {
+    if (!isExpanded) return;
+    const handleScroll = () => {
+      // Buffer of 200px
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 200) {
+        loadMorePhotos();
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isExpanded, loadMorePhotos]);
 
   return (
     <div
-      ref={containerRef}
-      className={`pb-16 w-full transition-all duration-700 ease-in-out ${
-        isExpanded ? "flex flex-col max-w-[725px] mx-auto gap-8" : "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:ml-48"
-      }`}
+      className={`pb-16 w-full transition-all duration-700 ease-in-out ${isExpanded
+        ? "flex flex-col max-w-[725px] mx-auto gap-12" // Increased gap for better feed look
+        : "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:ml-48"
+        }`}
     >
-      {displayPhotos.map((photograph: any, idx: number) => {
-        const photoBlurPlaceholder = blurPlaceholderUrl(photograph.image);
-        const isClickedImage = isExpanded && idx === 0;
-        const uniqueKey = `${photograph.id || `photo-${idx}`}-${isExpanded ? "expanded" : "grid"}`;
+      {/* mode="popLayout" is CRITICAL here. 
+         It allows the 'leaving' items (old grid positions) to exist simultaneously 
+         with the 'entering' items (new column positions) during the shuffle.
+      */}
+      <AnimatePresence mode="popLayout">
+        {displayPhotos.map((photograph: any, idx: number) => {
+          const uniqueKey = photograph._renderId;
+          const isClickedImage = isExpanded && idx === 0;
+          const photoBlurPlaceholder = blurPlaceholderUrl(photograph.image);
 
-        return (
-          <div
-            key={uniqueKey}
-            ref={isClickedImage ? clickedImageRef : null}
-            className={`relative cursor-pointer transition-all duration-700 ease-in-out ${
-              isExpanded ? "w-full" : "w-full h-[375px] md:max-w-[272px] md:h-[425px]"
-            }`}
-            onClick={() => handleImageClick(isExpanded ? photographs.findIndex((p) => p.id === photograph.id) : idx)}
-            style={{
-              transformOrigin: "center",
-            }}
-          >
-            <div
-              aria-hidden
-              className={`absolute inset-0 overflow-hidden transition-opacity duration-300 ${
-                loading[photograph.id] ? "opacity-100" : "opacity-0 pointer-events-none"
-              }`}
-              style={
-                photoBlurPlaceholder
-                  ? { backgroundImage: `url(${photoBlurPlaceholder})`, backgroundSize: "cover", backgroundPosition: "center" }
-                  : undefined
-              }
+          return (
+            <motion.div
+              layout // This prop handles the smooth slide from Grid -> Column
+              key={uniqueKey}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{
+                duration: 0.6,
+                ease: [0.25, 0.1, 0.25, 1.0] // Apple-like easing (easeOutSine-ish)
+              }}
+              ref={isClickedImage ? clickedImageRef : undefined}
+              className={`relative cursor-pointer bg-gray-100 dark:bg-zinc-900 ${isExpanded
+                ? "w-full" // Let container fit content
+                : "w-full h-[375px] md:max-w-[272px] md:h-[425px] overflow-hidden"
+                }`}
+              style={isExpanded && loading[photograph.id] ? { minHeight: '400px' } : undefined}
+              onClick={() => handleImageClick(idx)}
             >
-              {!photoBlurPlaceholder && <div className="w-full h-full bg-gray-100 dark:bg-gray-800 animate-pulse" />}
-            </div>
-            {isExpanded ? (
-              // eslint-disable-next-line @next/next/no-img-element
+              {/* Blur Placeholder */}
+              <div
+                className={`absolute inset-0 z-0 pointer-events-none transition-opacity duration-700 ${loading[photograph.id] ? "opacity-100" : "opacity-0"
+                  }`}
+                style={
+                  photoBlurPlaceholder
+                    ? {
+                      backgroundImage: `url(${photoBlurPlaceholder})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }
+                    : undefined
+                }
+              />
+
+              {/* UNIFIED IMAGE TAG STRATEGY 
+                 We use a standard <img> tag for BOTH states.
+                 This prevents the DOM from destroying/recreating the node, which causes flickering.
+              */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={fullImageUrl(photograph.image, 1200) || ""}
+                src={fullImageUrl(photograph.image) || ""}
                 alt="Gallery Photo"
-                className={`w-full object-contain transition-all duration-300 ${loading[photograph.id] ? "opacity-0" : "opacity-100"}`}
-                onLoad={() => setLoading((prev) => ({ ...prev, [photograph.id]: false }))}
-                onError={() => setLoading((prev) => ({ ...prev, [photograph.id]: false }))}
+                loading="lazy"
+                className={`block w-full transition-all duration-500 ${loading[photograph.id] ? "opacity-0" : "opacity-100"
+                  } ${isExpanded
+                    ? "h-auto object-contain" // Natural aspect ratio, no constraints
+                    : "h-full object-cover"   // Grid: Force Crop
+                  }`}
+                onLoad={() =>
+                  setLoading((prev) => ({ ...prev, [photograph.id]: false }))
+                }
               />
-            ) : (
-              <Image
-                src={fullImageUrl(photograph.image, 600) || ""}
-                alt="Gallery Photo"
-                fill
-                className={`object-cover transition-all duration-300 ${loading[photograph.id] ? "opacity-0" : "opacity-100"}`}
-                placeholder={photoBlurPlaceholder ? "blur" : "empty"}
-                blurDataURL={photoBlurPlaceholder || undefined}
-                priority={idx < 8}
-                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 272px"
-                onLoadingComplete={() => setLoading((prev) => ({ ...prev, [photograph.id]: false }))}
-                onError={() => setLoading((prev) => ({ ...prev, [photograph.id]: false }))}
-              />
-            )}
-          </div>
-        );
-      })}
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
+
+      {isExpanded && (
+        <div className="w-full text-center py-8 opacity-50 text-sm animate-pulse">
+          Loading memories...
+        </div>
+      )}
     </div>
   );
 };

@@ -122,6 +122,7 @@ export const VideoPlayer = ({ videoUrl, poster }: VideoPlayerProps) => {
         poster={poster}
         src={isLoaded ? videoUrl : undefined}
         preload={isLoaded ? "auto" : "none"}
+        loop
         playsInline
         onClick={isLoaded ? togglePlay : handleInitialLoad}
         onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime ?? 0)}
