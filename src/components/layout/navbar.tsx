@@ -14,7 +14,7 @@ import { useTheme } from "next-themes";
 const items = [
   { title: "Home", href: "/" },
   { title: "Work", href: "/work" },
-  { title: "Projects", href: "/projects" },
+  // { title: "Projects", href: "/projects" },
   { title: "Sounds", href: "/sounds" },
   { title: "About", href: "/about" },
 ];
