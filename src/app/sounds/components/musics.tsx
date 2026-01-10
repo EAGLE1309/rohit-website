@@ -6,8 +6,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import {
   IconPlayerPlayFilled,
-  IconPlayerTrackNext,
-  IconPlayerTrackPrev,
   IconPlayerPauseFilled,
   IconPlayerTrackNextFilled,
   IconPlayerTrackPrevFilled,
@@ -53,7 +51,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
   useEffect(() => {
     const audio = new Audio();
     audioRef.current = audio;
-    audio.preload = "metadata";
+    audio.preload = "none";
     audio.volume = volume;
 
     // setup event handlers
@@ -126,7 +124,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
         if (analyserRef.current) analyserRef.current.disconnect();
         if (audioContextRef.current) {
           // don't always close; suspend instead to be safer
-          audioContextRef.current.close().catch(() => {});
+          audioContextRef.current.close().catch(() => { });
         }
       } catch {
         // ignore
@@ -670,16 +668,14 @@ const Card = ({ title, thumb, active, playing, loading }: { title: string; thumb
             src={thumb}
             alt={title}
             loading="lazy"
-            className={`object-cover w-full min-w-[75px] h-full min-h-[75px] mx-auto transition-transform duration-500 ease-out ${
-              active || playing ? "" : "group-hover:scale-110"
-            }`}
+            className={`object-cover w-full min-w-[75px] h-full min-h-[75px] mx-auto transition-transform duration-500 ease-out ${active || playing ? "" : "group-hover:scale-110"
+              }`}
           />
 
           {/* Overlay with controls */}
           <div
-            className={`absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all duration-300  ${
-              active || playing ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-            }`}
+            className={`absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all duration-300  ${active || playing ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              }`}
           >
             {loading ? (
               <div className="relative">
