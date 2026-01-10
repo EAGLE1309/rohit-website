@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useState, } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { Project } from "@/lib/dashboard/queries/projects";
 import { thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -38,6 +38,7 @@ const listItemVariants = {
 const ProjectsComponent = ({ data }: { data: Project[] }) => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>("all");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Extract unique categories
   const categories = Array.from(new Set(data.map(project => project.category).filter(Boolean)));
@@ -53,21 +54,16 @@ const ProjectsComponent = ({ data }: { data: Project[] }) => {
     }, 0);
   };
 
-  const handleProjectSelect = async (projectId: string) => {
-    if (!projectId) {
-      setSelectedProject(null);
-      return;
-    }
+  const handleProjectSelect = (projectId: string) => {
+    if (!projectId) { setSelectedProject(null); return; }
     const project = data.find(p => p._id === projectId);
     if (project) {
       setSelectedProject(project);
-    } else {
-      setSelectedProject(null);
-    }
-  };
-
-  const handleSelectChange = (projectId: string) => {
-    handleProjectSelect(projectId);
+      setTimeout(() => {
+        const el = document.getElementById(`mobile-thumb-${projectId}`);
+        if (el && scrollContainerRef.current) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }, 100);
+    } else setSelectedProject(null);
   };
 
   // Filter and sort logic
@@ -79,11 +75,16 @@ const ProjectsComponent = ({ data }: { data: Project[] }) => {
       : new Date(b._createdAt).getTime() - new Date(a._createdAt).getTime()
     );
 
+  // Auto-select first project on mobile
+  useEffect(() => {
+    if (!selectedProject && filteredProjects.length > 0) setSelectedProject(filteredProjects[0]);
+  }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <div className="w-full relative h-full flex flex-col-reverse md:grid md:grid-cols-7">
+    <div className="w-full relative h-full flex flex-col md:grid md:grid-cols-7 overflow-hidden">
 
       {/* --- LEFT PANEL (DETAILS) --- */}
-      <div className="w-full h-full col-span-5 border-[1.5px] rounded-xl overflow-hidden border-r-0 rounded-r-none border-foreground/45 relative bg-background">
+      <div className="w-full flex-1 md:h-full col-span-5 border-[1.5px] rounded-xl overflow-hidden md:border-r-0 md:rounded-r-none border-foreground/45 relative bg-background order-1 md:order-none">
         <div className="w-full h-full overflow-y-auto scrollbar-hide p-3">
           <AnimatePresence mode="wait">
             {selectedProject ? (
@@ -256,25 +257,38 @@ const ProjectsComponent = ({ data }: { data: Project[] }) => {
       </div>
 
       {/* --- RIGHT PANEL (LIST) --- */}
-      <div className="w-full h-full relative col-span-2 flex flex-col gap-3 rounded-xl rounded-l-none scrollbar-hide border-[1.5px] border-foreground/45 overflow-y-auto bg-background">
+      <div className="w-full md:h-full relative col-span-2 flex flex-col gap-3 rounded-xl md:rounded-l-none overflow-hidden border-[1.5px] md:border-l-[1.5px] border-foreground/45 bg-background z-20 order-2 md:order-none shadow-[0_-5px_20px_rgba(0,0,0,0.05)] md:shadow-none">
 
         <div className="w-full sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
           {/* Mobile Select */}
-          <Select onValueChange={handleSelectChange} value={selectedProject?._id || ""}>
-            <SelectTrigger className="w-full p-3 border-r-0 border-t-0 border-l-0 border-b-[1.5px] border-foreground/45 bg-transparent text-foreground rounded-none focus:ring-0 outline-none">
-              <SelectValue placeholder="Select a project" />
-            </SelectTrigger>
-            <SelectContent className="rounded-none mt-1 bg-white border-[1.5px] border-foreground/45">
-              {data.map((project) => (
-                <SelectItem key={project._id} value={project._id} className="cursor-pointer">
-                  {project.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="md:hidden">
+            <Select onValueChange={handleProjectSelect} value={selectedProject?._id || ""}>
+              <SelectTrigger className="w-full p-3 border-none bg-transparent text-foreground rounded-none focus:ring-0 outline-none text-xs uppercase tracking-wider opacity-70">
+                <SelectValue placeholder="Jump to..." />
+              </SelectTrigger>
+              <SelectContent className="rounded-none mt-1 bg-white border-[1.5px] border-foreground/45">
+                {data.map((project) => (
+                  <SelectItem key={project._id} value={project._id} className="cursor-pointer">{project.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {/* Desktop Select */}
+          <div className="hidden md:block">
+            <Select onValueChange={handleProjectSelect} value={selectedProject?._id || ""}>
+              <SelectTrigger className="w-full p-3 border-r-0 border-t-0 border-l-0 border-b-[1.5px] border-foreground/45 bg-transparent text-foreground rounded-none focus:ring-0 outline-none">
+                <SelectValue placeholder="Select a project" />
+              </SelectTrigger>
+              <SelectContent className="rounded-none mt-1 bg-white border-[1.5px] border-foreground/45">
+                {data.map((project) => (
+                  <SelectItem key={project._id} value={project._id} className="cursor-pointer">{project.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-          {/* Animated Filter Bar */}
-          <div className={`w-full border-b-[1.5px] border-foreground/45 ${allFilters.length > 3 ? "overflow-x-auto scrollbar-hide" : "flex items-center"}`}>
+          {/* Animated Filter Bar - Hidden on mobile */}
+          <div className={`w-full border-b-[1.5px] border-foreground/45 hidden md:flex ${allFilters.length > 3 ? "overflow-x-auto scrollbar-hide" : "items-center"}`}>
             <LayoutGroup>
               <div className={`flex ${allFilters.length > 3 ? "min-w-max" : "w-full items-center"}`}>
                 {allFilters.map((filter) => {
@@ -307,50 +321,41 @@ const ProjectsComponent = ({ data }: { data: Project[] }) => {
           </div>
         </div>
 
-        {/* --- FIXED LIST ANIMATION --- */}
-        <div className="w-full pt-0 p-2.5 min-h-[200px]">
-          {/* mode="wait" ensures the old list is GONE before new one starts */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeFilter} // Triggers the full exit/enter when filter changes
-              variants={listContainerVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="w-full space-y-3"
-            >
-              {filteredProjects.length === 0 ? (
-                <motion.div
-                  variants={listItemVariants}
-                  className="text-center text-foreground/60 py-10"
-                >
-                  Nothing to show here
-                </motion.div>
-              ) : (
-                filteredProjects.map((project, index) => (
-                  <motion.div
-                    key={project._id}
-                    variants={listItemVariants} // Children use these variants
-                    layout // Keeps the smooth sort if order changes within same filter
-                  >
-                    <ProjectsCard
-                      id={project._id}
-                      className="h-full"
-                      isLast={index === filteredProjects.length - 1}
-                      image={thumbnailUrl(project.thumbnail)}
-                      title={project.name}
-                      subtitle={project.category}
-                      onSelect={() => handleProjectSelect(project._id)}
-                      isSelected={selectedProject?._id === project._id}
-                    />
+        {/* --- LIST AREA --- */}
+        <div ref={scrollContainerRef} className="w-full flex-1 p-3 md:p-2.5 min-h-[100px] md:min-h-0 overflow-y-hidden overflow-x-auto md:overflow-x-hidden md:overflow-y-auto scrollbar-hide snap-x snap-mandatory md:snap-none flex flex-row md:flex-col gap-3">
+          {/* Mobile Horizontal Thumbnails */}
+          <div className="md:hidden contents">
+            {filteredProjects.map((project) => {
+              const isSelected = selectedProject?._id === project._id;
+              return (
+                <div key={project._id} id={`mobile-thumb-${project._id}`} onClick={() => handleProjectSelect(project._id)} className="snap-center shrink-0">
+                  <motion.div className={`relative w-20 h-20 rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-300 ${isSelected ? 'border-foreground shadow-lg scale-105' : 'border-transparent opacity-70 scale-95'}`} whileTap={{ scale: 0.9 }}>
+                    <img src={thumbnailUrl(project.thumbnail, "sm")} alt={project.name} className="w-full h-full object-cover" />
+                    {isSelected && <motion.div layoutId="activeRing" className="absolute inset-0 border-[3px] border-white/20 rounded-lg" />}
                   </motion.div>
-                ))
-              )}
-            </motion.div>
-          </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+          {/* Desktop Vertical List */}
+          <div className="hidden md:block w-full">
+            <AnimatePresence mode="wait">
+              <motion.div key={activeFilter} variants={listContainerVariants} initial="hidden" animate="visible" exit="exit" className="w-full space-y-3">
+                {filteredProjects.length === 0 ? (
+                  <motion.div variants={listItemVariants} className="text-center text-foreground/60 py-10">Nothing to show here</motion.div>
+                ) : (
+                  filteredProjects.map((project, index) => (
+                    <motion.div key={project._id} variants={listItemVariants} layout>
+                      <ProjectsCard id={project._id} className="h-full" isLast={index === filteredProjects.length - 1} image={thumbnailUrl(project.thumbnail)} title={project.name} subtitle={project.category} onSelect={() => handleProjectSelect(project._id)} isSelected={selectedProject?._id === project._id} />
+                    </motion.div>
+                  ))
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 
