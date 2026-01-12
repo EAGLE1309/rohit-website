@@ -1,29 +1,11 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 import { thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
-import { useMediaBandwidth, MediaBandwidthMeter } from "@/hooks/use-media-bandwidth";
 import { VideoPlayer } from "./video-player";
 
 export default function WorkDetailsComponent({ project }: { project: any; allProjects: any }) {
   const videoUrl = project?.videoUrl;
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const videoBandwidth = useMediaBandwidth(videoRef);
-  const isDev = useMemo(() => process.env.NODE_ENV === "development", []);
-
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  const handlePlay = () => {
-    if (!videoRef.current) return;
-    if (!isLoaded) {
-      videoRef.current.src = videoUrl;
-      videoRef.current.load();
-      setIsLoaded(true);
-    }
-    videoRef.current.play();
-  };
-
 
   return (
     <MaxWidthWrapper className="md:mt-8 overflow-hidden relative">

@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import posthog from "posthog-js";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import {
   IconPlayerPlayFilled,
@@ -85,9 +86,35 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
         return next;
       });
       setIsPlaying(true);
+      if (currentTrack) {
+        posthog.capture('music_completed', {
+          track_title: currentTrack.title,
+          track_id: currentTrack.id,
+          duration: duration
+        });
+      }
     };
-    const onPlay = () => setIsPlaying(true);
-    const onPause = () => setIsPlaying(false);
+    const onPlay = () => {
+      setIsPlaying(true);
+      if (currentTrack) {
+        posthog.capture('music_played', {
+          track_title: currentTrack.title,
+          track_id: currentTrack.id,
+          source: 'audio_event'
+        });
+      }
+    };
+    const onPause = () => {
+      setIsPlaying(false);
+      if (currentTrack) {
+        posthog.capture('music_paused', {
+          track_title: currentTrack.title,
+          track_id: currentTrack.id,
+          current_time: currentTime,
+          source: 'audio_event'
+        });
+      }
+    };
     const onTimeUpdate = () => setCurrentTime(audio.currentTime);
     const onLoadedMetadata = () => {
       const newDuration = Number.isFinite(audio.duration) ? audio.duration : 0;
@@ -274,6 +301,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
   // toggle / controls (unchanged)
   const togglePlayForIndex = (index: number) => {
     const audio = audioRef.current;
+    const track = TRACKS[index];
 
     if (currentIndex === index) {
       // Same track: simple play / pause toggle
@@ -283,6 +311,11 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
         // toast.message("Paused");
       } else {
         setIsPlaying(true);
+        posthog.capture('music_played', {
+          track_title: track.title,
+          track_id: track.id,
+          source: 'track_click'
+        });
       }
       return;
     }
@@ -305,6 +338,13 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
 
     setCurrentIndex(index);
     setIsPlaying(true);
+
+    posthog.capture('music_track_changed', {
+      track_title: track.title,
+      track_id: track.id,
+      previous_track: currentTrack?.title,
+      source: 'track_selection'
+    });
   };
 
   const handleGlobalPlayPause = () => {
@@ -429,20 +469,34 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
 
   const goToPrevTrack = () => {
     if (!TRACKS.length) return;
-    setCurrentIndex((prevIndex) => {
-      if (prevIndex === null) return TRACKS.length - 1;
-      return prevIndex === 0 ? TRACKS.length - 1 : prevIndex - 1;
-    });
+    const prevIndex = currentIndex === null ? TRACKS.length - 1 : currentIndex === 0 ? TRACKS.length - 1 : currentIndex - 1;
+    const track = TRACKS[prevIndex];
+
+    setCurrentIndex(prevIndex);
     setIsPlaying(true);
+
+    posthog.capture('music_track_changed', {
+      track_title: track.title,
+      track_id: track.id,
+      previous_track: currentTrack?.title,
+      source: 'previous_button'
+    });
   };
 
   const goToNextTrack = () => {
     if (!TRACKS.length) return;
-    setCurrentIndex((prevIndex) => {
-      if (prevIndex === null) return 0;
-      return (prevIndex + 1) % TRACKS.length;
-    });
+    const nextIndex = currentIndex === null ? 0 : (currentIndex + 1) % TRACKS.length;
+    const track = TRACKS[nextIndex];
+
+    setCurrentIndex(nextIndex);
     setIsPlaying(true);
+
+    posthog.capture('music_track_changed', {
+      track_title: track.title,
+      track_id: track.id,
+      previous_track: currentTrack?.title,
+      source: 'next_button'
+    });
   };
 
   // compute played index to color bars up to that index instantly (no slow transition)

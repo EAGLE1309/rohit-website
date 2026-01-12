@@ -56,7 +56,7 @@ const nextConfig: NextConfig = {
               "font-src 'self' https://fonts.gstatic.com data:",
               "img-src 'self' https://cdn.sanity.io https://images.unsplash.com data: blob:",
               "media-src 'self' https://cdn.sanity.io blob:",
-              "connect-src 'self' https://cdn.sanity.io https://*.sanity.io",
+              "connect-src 'self' https://cdn.sanity.io https://*.sanity.io https://webhook.site https://us.i.posthog.com https://eu.i.posthog.com",
               "frame-ancestors 'self'",
               "base-uri 'self'",
               "form-action 'self'",

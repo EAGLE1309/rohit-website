@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from "react";
+import posthog from "posthog-js";
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -66,13 +67,15 @@ export const VideoPlayer = ({ videoUrl, poster }: VideoPlayerProps) => {
       v.play();
       setIsPlaying(true);
       startHideTimer(); // Start timer immediately on play
+      posthog.capture('video_played', { video_url: videoUrl });
     } else {
       v.pause();
       setIsPlaying(false);
       setControlsVisible(true); // Always show controls when paused
       if (hideTimer.current) clearTimeout(hideTimer.current); // Cancel any hide timer
+      posthog.capture('video_paused', { video_url: videoUrl, current_time: currentTime });
     }
-  }, [startHideTimer]);
+  }, [startHideTimer, currentTime, videoUrl]);
 
   // 4. Initial Load (Big Play Button)
   const handleInitialLoad = useCallback(() => {
@@ -86,10 +89,11 @@ export const VideoPlayer = ({ videoUrl, poster }: VideoPlayerProps) => {
         .then(() => {
           setIsPlaying(true);
           startHideTimer();
+          posthog.capture('video_played', { video_url: videoUrl, autoplay: true });
         })
         .catch((err) => console.error("Autoplay blocked/failed", err));
     }
-  }, [isLoaded, startHideTimer]);
+  }, [isLoaded, startHideTimer, videoUrl]);
 
   // 5. Fullscreen Toggle
   const toggleFullscreen = useCallback(() => {
@@ -130,6 +134,7 @@ export const VideoPlayer = ({ videoUrl, poster }: VideoPlayerProps) => {
         onEnded={() => {
           setIsPlaying(false);
           setControlsVisible(true);
+          posthog.capture('video_completed', { video_url: videoUrl, duration: duration });
         }}
         className={`w-full cursor-pointer transition-opacity duration-300 ${isFullscreen
           ? "h-full w-full object-contain"
@@ -144,6 +149,7 @@ export const VideoPlayer = ({ videoUrl, poster }: VideoPlayerProps) => {
             onClick={handleInitialLoad}
             className="group/btn relative flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-md rounded-full border border-white/30 shadow-xl hover:scale-110 transition-transform duration-200"
             aria-label="Load and Play Video"
+            onMouseDown={() => posthog.capture('video_initial_play', { video_url: videoUrl })}
           >
             <div className="w-0 h-0 border-t-[12px] border-t-transparent border-l-[20px] border-l-white border-b-[12px] border-b-transparent ml-1" />
           </button>
