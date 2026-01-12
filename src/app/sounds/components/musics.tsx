@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import posthog from "posthog-js";
+import { usePostHog } from "@posthog/react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import {
   IconPlayerPlayFilled,
@@ -22,6 +22,7 @@ const IS_DEV = process.env.NODE_ENV === "development";
 const BAR_COUNT = 125; // denser waveform for the 223px viewport
 
 const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
+  const posthog = usePostHog();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);

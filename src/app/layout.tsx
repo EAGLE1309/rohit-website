@@ -5,11 +5,12 @@ import { DM_Mono, Inter } from "next/font/google";
 import localFont from "next/font/local";
 
 import Navbar from "@/components/layout/navbar";
-import Lenis from "@/components/layout/lenis";
 import { Toaster } from "sonner";
 import { ViewTransitions } from "next-view-transitions";
 import { ThemeProvider } from "next-themes";
 import BandwidthPanel from "@/components/dev/bandwidth-panel";
+import { PHProvider, PostHogPageView } from "./providers";
+import { Suspense } from "react";
 
 const DM_mono = DM_Mono({
   subsets: ["latin"],
@@ -149,34 +150,39 @@ export default function RootLayout({
     <ViewTransitions>
       <html lang="en" suppressHydrationWarning>
         <body className={`${DM_mono.variable} ${inter.variable} ${neueMontreal.variable} antialiased`}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem={false}
-            themes={[
-              "light",
-              "dark",
-              "one",
-              "two",
-              "three",
-              "four",
-              "five",
-              "six",
-              "seven",
-              "eight",
-              "nine",
-              "ten",
-              "eleven",
-              "twelve",
-              "thirteen",
-              "fourteen",
-            ]}
-          >
-            <Navbar />
-            {children}
-            <Toaster />
-            <BandwidthPanel />
-          </ThemeProvider>
+          <PHProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem={false}
+              themes={[
+                "light",
+                "dark",
+                "one",
+                "two",
+                "three",
+                "four",
+                "five",
+                "six",
+                "seven",
+                "eight",
+                "nine",
+                "ten",
+                "eleven",
+                "twelve",
+                "thirteen",
+                "fourteen",
+              ]}
+            >
+              <Suspense fallback={null}>
+                <PostHogPageView />
+              </Suspense>
+              <Navbar />
+              {children}
+              <Toaster />
+              <BandwidthPanel />
+            </ThemeProvider>
+          </PHProvider>
         </body>
       </html>
     </ViewTransitions>

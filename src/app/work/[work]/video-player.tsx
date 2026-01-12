@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from "react";
-import posthog from "posthog-js";
+import { usePostHog } from "@posthog/react";
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -7,6 +7,7 @@ interface VideoPlayerProps {
 }
 
 export const VideoPlayer = ({ videoUrl, poster }: VideoPlayerProps) => {
+  const posthog = usePostHog();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
@@ -75,7 +76,7 @@ export const VideoPlayer = ({ videoUrl, poster }: VideoPlayerProps) => {
       if (hideTimer.current) clearTimeout(hideTimer.current); // Cancel any hide timer
       posthog.capture('video_paused', { video_url: videoUrl, current_time: currentTime });
     }
-  }, [startHideTimer, currentTime, videoUrl]);
+  }, [startHideTimer, currentTime, videoUrl, posthog]);
 
   // 4. Initial Load (Big Play Button)
   const handleInitialLoad = useCallback(() => {
@@ -93,7 +94,7 @@ export const VideoPlayer = ({ videoUrl, poster }: VideoPlayerProps) => {
         })
         .catch((err) => console.error("Autoplay blocked/failed", err));
     }
-  }, [isLoaded, startHideTimer, videoUrl]);
+  }, [isLoaded, startHideTimer, videoUrl, posthog]);
 
   // 5. Fullscreen Toggle
   const toggleFullscreen = useCallback(() => {
