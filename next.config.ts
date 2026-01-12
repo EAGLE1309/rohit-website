@@ -47,21 +47,6 @@ const nextConfig: NextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
-          {
-            key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://us.i.posthog.com https://eu.i.posthog.com https://posthog.com",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "font-src 'self' https://fonts.gstatic.com data:",
-              "img-src 'self' https://cdn.sanity.io https://images.unsplash.com data: blob:",
-              "media-src 'self' https://cdn.sanity.io blob:",
-              "connect-src 'self' https://cdn.sanity.io https://*.sanity.io https://webhook.site https://us.i.posthog.com https://eu.i.posthog.com https://posthog.com",
-              "frame-ancestors 'self'",
-              "base-uri 'self'",
-              "form-action 'self'",
-            ].join("; "),
-          },
         ],
       },
     ];
