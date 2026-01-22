@@ -190,28 +190,68 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                             >
                               <div className="w-full col-span-1"></div>
                               <div className="w-full col-span-5 prose prose-sm md:prose-base max-w-none text-foreground/70">
-                                {block.content && block.content.map((contentBlock: any, idx: number) => {
-                                  if (contentBlock._type === "block") {
-                                    const style = contentBlock.style || "normal";
-                                    const children = contentBlock.children || [];
-                                    const text = children.map((child: any) => {
-                                      let content = child.text || "";
-                                      if (child.marks?.includes("strong")) {
-                                        content = <strong key={child._key}>{content}</strong>;
-                                      }
-                                      if (child.marks?.includes("em")) {
-                                        content = <em key={child._key}>{content}</em>;
-                                      }
-                                      return content;
-                                    });
+                                {block.content && (() => {
+                                  const elements: React.ReactElement[] = [];
+                                  let currentList: { type: string; items: React.ReactElement[] } | null = null;
 
-                                    if (style === "h2") return <h2 key={idx} className="text-2xl font-bold mt-6 mb-3">{text}</h2>;
-                                    if (style === "h3") return <h3 key={idx} className="text-xl font-bold mt-4 mb-2">{text}</h3>;
-                                    if (style === "blockquote") return <blockquote key={idx} className="border-l-4 border-foreground/30 pl-4 italic my-4">{text}</blockquote>;
-                                    return <p key={idx} className="mb-3 leading-relaxed">{text}</p>;
+                                  block.content.forEach((contentBlock: any, idx: number) => {
+                                    if (contentBlock._type === "block") {
+                                      const style = contentBlock.style || "normal";
+                                      const listItem = contentBlock.listItem;
+                                      const children = contentBlock.children || [];
+                                      const text = children.map((child: any, childIdx: number) => {
+                                        const content = child.text || "";
+                                        if (child.marks?.includes("strong")) {
+                                          return <strong key={child._key || childIdx}>{content}</strong>;
+                                        }
+                                        if (child.marks?.includes("em")) {
+                                          return <em key={child._key || childIdx}>{content}</em>;
+                                        }
+                                        return content;
+                                      });
+
+                                      // Handle list items
+                                      if (listItem === "bullet" || listItem === "number") {
+                                        if (!currentList || currentList.type !== listItem) {
+                                          if (currentList) {
+                                            elements.push(
+                                              currentList.type === "bullet"
+                                                ? <ul key={`list-${elements.length}`} className="list-disc list-inside space-y-1 my-3">{currentList.items}</ul>
+                                                : <ol key={`list-${elements.length}`} className="list-decimal list-inside space-y-1 my-3">{currentList.items}</ol>
+                                            );
+                                          }
+                                          currentList = { type: listItem, items: [] };
+                                        }
+                                        currentList.items.push(<li key={idx} className="leading-relaxed">{text}</li>);
+                                      } else {
+                                        if (currentList) {
+                                          elements.push(
+                                            currentList.type === "bullet"
+                                              ? <ul key={`list-${elements.length}`} className="list-disc list-inside space-y-1 my-3">{currentList.items}</ul>
+                                              : <ol key={`list-${elements.length}`} className="list-decimal list-inside space-y-1 my-3">{currentList.items}</ol>
+                                          );
+                                          currentList = null;
+                                        }
+
+                                        if (style === "h2") elements.push(<h2 key={idx} className="text-2xl font-bold mt-6 mb-3">{text}</h2>);
+                                        else if (style === "h3") elements.push(<h3 key={idx} className="text-xl font-bold mt-4 mb-2">{text}</h3>);
+                                        else if (style === "blockquote") elements.push(<blockquote key={idx} className="border-l-4 border-foreground/30 pl-4 italic my-4">{text}</blockquote>);
+                                        else elements.push(<p key={idx} className="mb-3 leading-relaxed">{text}</p>);
+                                      }
+                                    }
+                                  });
+
+                                  if (currentList) {
+                                    const list = currentList as { type: string; items: React.ReactElement[] };
+                                    elements.push(
+                                      list.type === "bullet"
+                                        ? <ul key={`list-${elements.length}`} className="list-disc list-inside space-y-1 my-3">{list.items}</ul>
+                                        : <ol key={`list-${elements.length}`} className="list-decimal list-inside space-y-1 my-3">{list.items}</ol>
+                                    );
                                   }
-                                  return null;
-                                })}
+
+                                  return elements;
+                                })()}
                               </div>
                             </motion.div>
                           );
