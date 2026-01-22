@@ -84,7 +84,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
     <div className="w-full relative h-full flex flex-col md:grid md:grid-cols-7 overflow-hidden">
 
       {/* --- LEFT PANEL (DETAILS) --- */}
-      <div className="w-full flex-1 md:h-full col-span-5 border-[1.5px] rounded-xl overflow-hidden md:border-r-0 md:rounded-r-none border-foreground/45 relative bg-background order-1 md:order-none">
+      <div className="w-full flex-1 md:h-full col-span-5 overflow-hidden relative order-1 md:order-none">
         <div className="w-full h-full overflow-y-auto scrollbar-hide p-3">
           <AnimatePresence mode="wait">
             {selectedProject ? (
@@ -161,7 +161,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                   {/* Thumbnail Preview */}
                   {selectedProject?.thumbnail && (
                     <motion.div
-                      className="w-full overflow-hidden rounded-md border-[1.5px] border-foreground/45"
+                      className="w-full overflow-hidden rounded-md"
                       initial={{ scale: 0.98, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ duration: 0.5, delay: 0.1 }}
@@ -235,7 +235,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
 
                                         if (style === "h2") elements.push(<h2 key={idx} className="text-2xl font-bold mt-6 mb-3">{text}</h2>);
                                         else if (style === "h3") elements.push(<h3 key={idx} className="text-xl font-bold mt-4 mb-2">{text}</h3>);
-                                        else if (style === "blockquote") elements.push(<blockquote key={idx} className="border-l-4 border-foreground/30 pl-4 italic my-4">{text}</blockquote>);
+                                        else if (style === "blockquote") elements.push(<blockquote key={idx} className="pl-4 italic my-4">{text}</blockquote>);
                                         else elements.push(<p key={idx} className="mb-3 leading-relaxed">{text}</p>);
                                       }
                                     }
@@ -266,7 +266,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                               className="w-full space-y-2"
                             >
                               {block.video && (
-                                <div className="w-full overflow-hidden rounded-md border-[1.5px] border-foreground/45">
+                                <div className="w-full overflow-hidden rounded-md">
                                   <video
                                     src={block.video.asset?.url}
                                     controls
@@ -290,7 +290,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                               className="w-full space-y-2"
                             >
                               {block.image && (
-                                <div className="w-full overflow-hidden rounded-md border-[1.5px] border-foreground/45">
+                                <div className="w-full overflow-hidden rounded-md">
                                   <motion.img
                                     whileHover={{ scale: 1.05 }}
                                     transition={{ duration: 0.7, ease: "easeOut" }}
@@ -353,7 +353,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
       </div>
 
       {/* --- RIGHT PANEL (LIST) --- */}
-      <div className="w-full md:h-full relative col-span-2 flex flex-col gap-3 rounded-xl md:rounded-l-none overflow-hidden border-[1.5px] md:border-l-[1.5px] border-foreground/45 bg-background z-20 order-2 md:order-none shadow-[0_-5px_20px_rgba(0,0,0,0.05)] md:shadow-none">
+      <div className="w-full md:h-full relative col-span-2 flex flex-col gap-3 mt-7 overflow-hidden z-20 order-2 md:order-none shadow-[0_-5px_20px_rgba(0,0,0,0.05)] md:shadow-none">
 
         <div className="w-full sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
           {/* Mobile Select */}
@@ -362,9 +362,15 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
               <SelectTrigger className="w-full p-3 border-none bg-transparent text-foreground rounded-none focus:ring-0 outline-none text-xs uppercase tracking-wider opacity-70">
                 <SelectValue placeholder="Jump to..." />
               </SelectTrigger>
-              <SelectContent className="rounded-none mt-1 bg-white border-[1.5px] border-foreground/45">
+              <SelectContent className="mt-1 bg-background border-[1.5px] border-foreground rounded-none [&_*]:rounded-none">
                 {data.map((project) => (
-                  <SelectItem key={project._id} value={project._id} className="cursor-pointer">{project.name}</SelectItem>
+                  <SelectItem
+                    key={project._id}
+                    value={project._id}
+                    className="cursor-pointer transition-colors duration-200 data-[highlighted]:bg-foreground data-[highlighted]:text-background data-[state=checked]:bg-foreground data-[state=checked]:text-background"
+                  >
+                    {project.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -372,19 +378,25 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
           {/* Desktop Select */}
           <div className="hidden md:block">
             <Select onValueChange={handleProjectSelect} value={selectedProject?._id || ""}>
-              <SelectTrigger className="w-full p-3 border-r-0 border-t-0 border-l-0 border-b-[1.5px] border-foreground/45 bg-transparent text-foreground rounded-none focus:ring-0 outline-none">
+              <SelectTrigger className="w-full p-3 border-foreground border-r-[1.5px] border-t-[1.5px] border-l-[1.5px] bg-transparent text-foreground rounded-none focus:ring-0 outline-none">
                 <SelectValue placeholder="Select a project" />
               </SelectTrigger>
-              <SelectContent className="rounded-none mt-1 bg-white border-[1.5px] border-foreground/45">
+              <SelectContent className="mt-1 bg-background border-[1.5px] border-foreground rounded-none [&_*]:rounded-none">
                 {data.map((project) => (
-                  <SelectItem key={project._id} value={project._id} className="cursor-pointer">{project.name}</SelectItem>
+                  <SelectItem
+                    key={project._id}
+                    value={project._id}
+                    className="cursor-pointer transition-colors duration-200 data-[highlighted]:bg-foreground data-[highlighted]:text-background data-[state=checked]:bg-foreground data-[state=checked]:text-background"
+                  >
+                    {project.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
           {/* Animated Filter Bar - Hidden on mobile */}
-          <div className={`w-full border-b-[1.5px] border-foreground/45 hidden md:flex ${allFilters.length > 3 ? "overflow-x-auto scrollbar-hide" : "items-center"}`}>
+          <div className={`w-full border-[1.5px] border-t-[0px] border-foreground hidden md:flex ${allFilters.length > 3 ? "overflow-x-auto scrollbar-hide" : "items-center"}`}>
             <LayoutGroup>
               <div className={`flex ${allFilters.length > 3 ? "min-w-max" : "w-full items-center"}`}>
                 {allFilters.map((filter) => {
@@ -418,16 +430,16 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
         </div>
 
         {/* --- LIST AREA --- */}
-        <div ref={scrollContainerRef} className="w-full flex-1 p-3 md:p-2.5 min-h-[100px] md:min-h-0 overflow-y-hidden overflow-x-auto md:overflow-x-hidden md:overflow-y-auto scrollbar-hide snap-x snap-mandatory md:snap-none flex flex-row md:flex-col gap-3">
+        <div ref={scrollContainerRef} className="w-full flex-1 p-3 md:pb-7 md:p-0 min-h-[100px] md:min-h-0 overflow-y-hidden overflow-x-auto md:overflow-x-hidden md:overflow-y-auto scrollbar-hide snap-x snap-mandatory md:snap-none flex flex-row md:flex-col gap-3">
           {/* Mobile Horizontal Thumbnails */}
           <div className="md:hidden contents">
             {filteredProjects.map((project) => {
               const isSelected = selectedProject?._id === project._id;
               return (
                 <div key={project._id} id={`mobile-thumb-${project._id}`} onClick={() => handleProjectSelect(project._id)} className="snap-center shrink-0">
-                  <motion.div className={`relative w-20 h-20 rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-300 ${isSelected ? 'border-foreground shadow-lg scale-105' : 'border-transparent opacity-70 scale-95'}`} whileTap={{ scale: 0.9 }}>
+                  <motion.div className={`relative w-20 h-20 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 ${isSelected ? 'shadow-lg scale-105' : 'opacity-70 scale-95'}`} whileTap={{ scale: 0.9 }}>
                     <img src={thumbnailUrl(project.thumbnail, "sm")} alt={project.name} className="w-full h-full object-cover" />
-                    {isSelected && <motion.div layoutId="activeRing" className="absolute inset-0 border-[3px] border-white/20 rounded-lg" />}
+                    {isSelected && <motion.div layoutId="activeRing" className="absolute inset-0 bg-white/20 rounded-lg" />}
                   </motion.div>
                 </div>
               );
@@ -440,9 +452,9 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                 {filteredProjects.length === 0 ? (
                   <motion.div variants={listItemVariants} className="text-center text-foreground/60 py-10">Nothing to show here</motion.div>
                 ) : (
-                  filteredProjects.map((project, index) => (
+                  filteredProjects.map((project) => (
                     <motion.div key={project._id} variants={listItemVariants} layout>
-                      <ProjectsCard id={project._id} className="h-full" isLast={index === filteredProjects.length - 1} image={thumbnailUrl(project.thumbnail)} title={project.name} subtitle={project.category} onSelect={() => handleProjectSelect(project._id)} isSelected={selectedProject?._id === project._id} />
+                      <ProjectsCard id={project._id} className="h-full" image={thumbnailUrl(project.thumbnail)} title={project.name} subtitle={project.category} service={project.service || ""} onSelect={() => handleProjectSelect(project._id)} isSelected={selectedProject?._id === project._id} />
                     </motion.div>
                   ))
                 )}
