@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useState, useRef, useEffect } from "react";
-import type { Project } from "@/lib/dashboard/queries/projects";
+import type { ProjectMain, CaseStudyBlock } from "@/lib/dashboard/queries/projects-main";
 import { thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ProjectsCard from "./card";
@@ -35,8 +35,8 @@ const listItemVariants = {
   },
 };
 
-const ProjectsComponent = ({ data }: { data: Project[] }) => {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
+  const [selectedProject, setSelectedProject] = useState<ProjectMain | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -122,20 +122,21 @@ const ProjectsComponent = ({ data }: { data: Project[] }) => {
                       </div>
                     </div>
 
-                    {/* About Section */}
-                    <div className="w-full grid grid-cols-3 md:grid-cols-5 gap-8">
-                      <span className="w-full col-span-1"></span>
-                      <div className="w-full col-span-4">
-                        <motion.p
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: 0.2 }}
-                          className="text-sm md:text-base text-foreground/55 leading-relaxed"
-                        >
-                          {selectedProject?.description}
-                        </motion.p>
+                    {selectedProject?.description && (
+                      <div className="w-full grid grid-cols-3 md:grid-cols-5 gap-8">
+                        <span className="w-full col-span-1"></span>
+                        <div className="w-full col-span-4">
+                          <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="text-sm md:text-base text-foreground/55 leading-relaxed"
+                          >
+                            {selectedProject.description}
+                          </motion.p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   {/* Project Details Section */}
@@ -144,14 +145,14 @@ const ProjectsComponent = ({ data }: { data: Project[] }) => {
                     <div className="w-fit col-span-4 grid grid-cols-2 text-sm md:text-base text-foreground/55">
                       <div className="flex flex-col gap-1">
                         <p className="text-foreground">Category</p>
-                        <p className="text-foreground">Service</p>
-                        <p className="text-foreground">Client</p>
+                        {selectedProject?.service && <p className="text-foreground">Service</p>}
+                        {selectedProject?.client && <p className="text-foreground">Client</p>}
                         <p className="text-foreground">Created</p>
                       </div>
                       <div className="flex flex-col gap-1">
-                        <p>{selectedProject?.category.charAt(0).toUpperCase() + selectedProject?.category.slice(1) || "Personal"}</p>
-                        <p>Mix Media Video</p>
-                        <p>N/A</p>
+                        <p>{selectedProject?.category.charAt(0).toUpperCase() + selectedProject?.category.slice(1) || "None"}</p>
+                        {selectedProject?.service && <p>{selectedProject.service}</p>}
+                        {selectedProject?.client && <p>{selectedProject.client}</p>}
                         <p>{new Date(selectedProject?._createdAt || "").toLocaleDateString()}</p>
                       </div>
                     </div>
@@ -175,71 +176,126 @@ const ProjectsComponent = ({ data }: { data: Project[] }) => {
                     </motion.div>
                   )}
 
-                  {/* Project Content */}
-                  <div className="w-full">
-                    <div className="w-full col-span-1"></div>
-                    <div className="w-full col-span-4 space-y-8">
-                      {/* Overview */}
-                      <div className="space-y-3">
-                        <h3 className="text-xl font-bold">Overview</h3>
-                        <p className="text-sm md:text-base text-foreground/55 leading-relaxed">
-                          In December 2024, BAPE partnered with Don Toliver...
-                        </p>
-                      </div>
-                      {/* Objective */}
-                      <div className="space-y-3">
-                        <h3 className="text-xl font-bold">Objective</h3>
-                        <p className="text-sm md:text-base text-foreground/55 leading-relaxed">
-                          Create a bold, mixed-media commercial...
-                        </p>
-                      </div>
-                      {/* My Role */}
-                      <div className="space-y-3">
-                        <h3 className="text-xl font-bold">My Role</h3>
-                        <div className="space-y-2 text-sm md:text-base text-foreground/55 leading-relaxed">
-                          <p><strong>Assistant Director + Lead Editor</strong></p>
-                          <ul className="list-disc list-inside space-y-1">
-                            <li>Supported on-set direction...</li>
-                            <li>Operated camera setups...</li>
-                            <li>Led the complete editing workflow...</li>
-                            <li>Integrated mixed-media overlays...</li>
-                          </ul>
-                        </div>
-                      </div>
-
-                      {/* Extra Images Grid */}
-                      {selectedProject?.thumbnail && (
-                        <div className="w-full grid grid-cols-2 gap-8">
-                          {/* Reusing thumbnail for demo, ideally these are different images */}
-                          {[1, 2].map((i) => (
+                  {/* Case Study Content */}
+                  {selectedProject?.caseStudyContent && selectedProject.caseStudyContent.length > 0 && (
+                    <div className="w-full space-y-8">
+                      {selectedProject.caseStudyContent.map((block: CaseStudyBlock) => {
+                        if (block._type === "textBlock") {
+                          return (
                             <motion.div
-                              key={i}
-                              whileHover={{ y: -5 }}
-                              className="overflow-hidden border-[1.5px] border-foreground/45"
+                              key={block._key}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="w-full grid grid-cols-3 md:grid-cols-5 gap-8"
                             >
-                              <img
-                                src={thumbnailUrl(selectedProject.thumbnail, "lg")}
-                                alt={selectedProject.name}
-                                className="w-full aspect-video object-cover hover:scale-110 transition-transform duration-700"
-                              />
-                            </motion.div>
-                          ))}
-                        </div>
-                      )}
+                              <div className="w-full col-span-1"></div>
+                              <div className="w-full col-span-5 prose prose-sm md:prose-base max-w-none text-foreground/70">
+                                {block.content && block.content.map((contentBlock: any, idx: number) => {
+                                  if (contentBlock._type === "block") {
+                                    const style = contentBlock.style || "normal";
+                                    const children = contentBlock.children || [];
+                                    const text = children.map((child: any) => {
+                                      let content = child.text || "";
+                                      if (child.marks?.includes("strong")) {
+                                        content = <strong key={child._key}>{content}</strong>;
+                                      }
+                                      if (child.marks?.includes("em")) {
+                                        content = <em key={child._key}>{content}</em>;
+                                      }
+                                      return content;
+                                    });
 
-                      {/* Approach & Outcome */}
-                      <div className="space-y-3">
-                        <h3 className="text-xl font-bold">Creative Approach</h3>
-                        <div className="space-y-3 text-sm md:text-base text-foreground/55 leading-relaxed">
-                          <p>The campaign leaned into a gritty...</p>
-                          <ul className="list-disc list-inside space-y-1">
-                            <li>Rapid cuts + stylized transitions...</li>
-                            <li>Mixed-media overlays...</li>
-                          </ul>
-                        </div>
-                      </div>
+                                    if (style === "h2") return <h2 key={idx} className="text-2xl font-bold mt-6 mb-3">{text}</h2>;
+                                    if (style === "h3") return <h3 key={idx} className="text-xl font-bold mt-4 mb-2">{text}</h3>;
+                                    if (style === "blockquote") return <blockquote key={idx} className="border-l-4 border-foreground/30 pl-4 italic my-4">{text}</blockquote>;
+                                    return <p key={idx} className="mb-3 leading-relaxed">{text}</p>;
+                                  }
+                                  return null;
+                                })}
+                              </div>
+                            </motion.div>
+                          );
+                        }
+
+                        if (block._type === "videoBlock") {
+                          return (
+                            <motion.div
+                              key={block._key}
+                              initial={{ opacity: 0, scale: 0.98 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              className="w-full space-y-2"
+                            >
+                              {block.video && (
+                                <div className="w-full overflow-hidden rounded-md border-[1.5px] border-foreground/45">
+                                  <video
+                                    src={block.video.asset?.url}
+                                    controls
+                                    className="w-full aspect-video object-cover"
+                                  />
+                                </div>
+                              )}
+                              {block.caption && (
+                                <p className="text-sm text-foreground/55 text-center">{block.caption}</p>
+                              )}
+                            </motion.div>
+                          );
+                        }
+
+                        if (block._type === "imageBlock") {
+                          return (
+                            <motion.div
+                              key={block._key}
+                              initial={{ opacity: 0, scale: 0.98 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              className="w-full space-y-2"
+                            >
+                              {block.image && (
+                                <div className="w-full overflow-hidden rounded-md border-[1.5px] border-foreground/45">
+                                  <motion.img
+                                    whileHover={{ scale: 1.05 }}
+                                    transition={{ duration: 0.7, ease: "easeOut" }}
+                                    src={thumbnailUrl(block.image, "lg")}
+                                    alt={block.caption || ""}
+                                    className="w-full aspect-video object-cover"
+                                  />
+                                </div>
+                              )}
+                              {block.caption && (
+                                <p className="text-sm text-foreground/55 text-center">{block.caption}</p>
+                              )}
+                            </motion.div>
+                          );
+                        }
+
+                        if (block._type === "imageGrid") {
+                          const gridCols = block.layout === "four-column" ? "grid-cols-4" : block.layout === "three-column" ? "grid-cols-3" : "grid-cols-2";
+                          return (
+                            <motion.div
+                              key={block._key}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              className={`w-full grid ${gridCols} gap-4`}
+                            >
+                              {block.images && block.images.map((image: any, idx: number) => (
+                                <motion.div
+                                  key={idx}
+                                  className="overflow-hidden rounded-md"
+                                >
+                                  <img
+                                    src={thumbnailUrl(image, "lg")}
+                                    alt={`Grid image ${idx + 1}`}
+                                    className="w-full aspect-video object-cover hover:scale-110 transition-transform duration-700"
+                                  />
+                                </motion.div>
+                              ))}
+                            </motion.div>
+                          );
+                        }
+
+                        return null;
+                      })}
                     </div>
-                  </div>
+                  )}
                 </div>
               </motion.div>
             ) : (
