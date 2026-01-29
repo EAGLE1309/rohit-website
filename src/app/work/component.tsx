@@ -13,10 +13,10 @@ import { motion, AnimatePresence } from "motion/react";
 const filterOptions = [
   { label: "All", value: "all" },
   { label: "Branded // Commercial", value: "commercial" },
+  { label: "Events", value: "events" },
   { label: "Personal", value: "personal" },
   { label: "Photography", value: "photography" },
   { label: "Projects", value: "projects" },
-  { label: "Events", value: "events" },
   { label: "Archives", value: "archives" },
 ];
 
