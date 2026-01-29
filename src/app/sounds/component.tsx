@@ -37,7 +37,7 @@ const SoundsComponent = ({ tracks, flyers, gallery }: { tracks: any; flyers: any
         }`}
     >
       <div
-        className={`mb-5 pl-8 flex md:flex-col gap-3 md:gap-0 ${"md:fixed md:top-1/2 md:-translate-y-1/2 md:left-[max(0.25rem,calc(50vw-640px+0.875rem))]"}`}
+        className={`mb-5 flex justify-center md:justify-start md:pl-0 md:flex-col gap-3 md:gap-0 ${"md:fixed md:top-1/2 md:-translate-y-1/2 md:left-[max(0.25rem,calc(50vw-640px+0.875rem))]"}`}
       >
         <Link href={`?id=music`} className={`text-xs md:text-sm uppercase font-medium md:font-normal cursor-pointer`}>
           Music
