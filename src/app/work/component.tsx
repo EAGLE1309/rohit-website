@@ -3,7 +3,7 @@
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "@/components/navigations/link";
 import { thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
 import type { Project } from "@/lib/dashboard/queries/projects";
@@ -20,8 +20,20 @@ const filterOptions = [
   { label: "Archives", value: "archives" },
 ];
 
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
 const WorksComponent = ({ projects, photography }: { projects: Project[]; photography: Photography[] }) => {
   const [activeTab, setActiveTab] = useState("all");
+
+  const shuffledProjects = useMemo(() => shuffleArray(projects), [projects]);
+  const shuffledPhotography = useMemo(() => shuffleArray(photography), [photography]);
 
   return (
     <MaxWidthWrapper className="pt-28 relative">
@@ -57,13 +69,13 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                     },
                   }}
                 >
-                  <div className="w-full columns-2 md:columns-3 lg:columns-5 mb-12 gap-8 space-y-8!">
+                  <div className="w-full columns-2 md:columns-3 lg:columns-5 mb-12 gap-3 md:gap-8 space-y-3 md:space-y-8!">
                     {filter.value === "all" ? (
                       projects.length === 0 && photography.length === 0 ? (
                         <div className="w-full flex items-center justify-center h-64 text-center text-foreground/60 font-mono" style={{ columnSpan: 'all' }}>Nothing to show here</div>
                       ) : (
                         <>
-                          {projects.map((project: Project) => (
+                          {shuffledProjects.map((project: Project) => (
                             <Card
                               key={project._id}
                               id={project._id}
@@ -78,7 +90,7 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                       photography.length === 0 ? (
                         <div className="w-full flex items-center justify-center h-64 text-center text-foreground/60 font-mono" style={{ columnSpan: 'all' }}>Nothing to show here</div>
                       ) : (
-                        photography.map((photo: Photography) => (
+                        shuffledPhotography.map((photo: Photography) => (
                           <Card
                             key={photo._id}
                             id={photo._id}
@@ -91,7 +103,7 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                         ))
                       )
                     ) : projects.some((project: Project) => project.category === filter.value) ? (
-                      projects
+                      shuffledProjects
                         .filter((project: Project) => project.category === filter.value)
                         .map((project: Project) => (
                           <Card
@@ -158,8 +170,8 @@ const Card = ({
         {!isPhoto && <div className="flex flex-col items-start text-left p-2 pt-0 gap-1">
           {shouldRenderMeta && (
             <>
-              {hasTitle && <p className="text-sm uppercase font-medium text-foreground">{title?.trim()}</p>}
-              {subtitleText && <span className="text-sm font-mono text-foreground/75">{subtitleText.slice(0, 1).toUpperCase() + subtitleText.slice(1)}</span>}
+              {hasTitle && <p className="text-xs md:text-sm uppercase font-medium text-foreground">{title?.trim()}</p>}
+              {subtitleText && <span className="text-xs md:text-sm font-mono text-foreground/75">{subtitleText.slice(0, 1).toUpperCase() + subtitleText.slice(1)}</span>}
             </>
           )}
         </div>

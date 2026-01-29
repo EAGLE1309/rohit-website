@@ -43,6 +43,10 @@ const GalleryComponent = ({ gallery }: { gallery: any[] }) => {
       }));
       setDisplayPhotos(resetPhotos);
 
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 50);
+
     } else {
       // OPEN: Shuffle and expand
       const clicked = displayPhotos[index];
@@ -92,7 +96,7 @@ const GalleryComponent = ({ gallery }: { gallery: any[] }) => {
     <div
       className={`pb-16 w-full transition-all duration-700 ease-in-out ${isExpanded
         ? "flex flex-col max-w-[725px] mx-auto gap-12" // Increased gap for better feed look
-        : "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:ml-48"
+        : "columns-2 md:columns-3 lg:columns-5 gap-8 space-y-8 md:ml-48"
         }`}
     >
       {/* mode="popLayout" is CRITICAL here. 
@@ -119,7 +123,7 @@ const GalleryComponent = ({ gallery }: { gallery: any[] }) => {
               ref={isClickedImage ? clickedImageRef : undefined}
               className={`relative cursor-pointer bg-gray-100 dark:bg-zinc-900 ${isExpanded
                 ? "w-full" // Let container fit content
-                : "w-full h-[375px] md:max-w-[272px] md:h-[425px] overflow-hidden"
+                : "w-full break-inside-avoid mb-8 overflow-hidden"
                 }`}
               style={isExpanded && loading[photograph.id] ? { minHeight: '400px' } : undefined}
               onClick={() => handleImageClick(idx)}
