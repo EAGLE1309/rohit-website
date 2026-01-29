@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 // Helper to generate random IDs
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
-const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
+const GalleryComponent = ({ gallery }: { gallery: any[] }) => {
   const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
   const [isExpanded, setIsExpanded] = useState(false);
   const [displayPhotos, setDisplayPhotos] = useState<any[]>([]);
@@ -18,18 +18,18 @@ const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
   // Initialize
   useEffect(() => {
     const initialLoading: { [key: string]: boolean } = {};
-    const initialPhotosWithKeys = photographs.map((p) => ({
+    const initialPhotosWithKeys = gallery.map((p) => ({
       ...p,
       _renderId: p.id || generateId(),
     }));
 
-    photographs.forEach((photo) => {
+    gallery.forEach((photo) => {
       if (photo.id) initialLoading[photo.id] = true;
     });
 
     setLoading(initialLoading);
     setDisplayPhotos(initialPhotosWithKeys);
-  }, [photographs]);
+  }, [gallery]);
 
   // --- Handle Clicks ---
   const handleImageClick = (index: number) => {
@@ -37,7 +37,7 @@ const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
       // CLOSE: Return to grid
       setIsExpanded(false);
 
-      const resetPhotos = photographs.map(p => ({
+      const resetPhotos = gallery.map(p => ({
         ...p,
         _renderId: p.id || generateId()
       }));
@@ -65,7 +65,7 @@ const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
 
   // --- Infinite Scroll ---
   const loadMorePhotos = useCallback(() => {
-    const nextBatch = [...photographs];
+    const nextBatch = [...gallery];
     nextBatch.sort(() => Math.random() - 0.5);
 
     const batchWithNewKeys = nextBatch.map(p => ({
@@ -74,7 +74,7 @@ const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
     }));
 
     setDisplayPhotos((prev) => [...prev, ...batchWithNewKeys]);
-  }, [photographs]);
+  }, [gallery]);
 
   useEffect(() => {
     if (!isExpanded) return;
@@ -171,4 +171,4 @@ const PhotographsComponent = ({ photographs }: { photographs: any[] }) => {
   );
 };
 
-export default PhotographsComponent;
+export default GalleryComponent;

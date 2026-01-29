@@ -3,11 +3,12 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useState, useRef, useEffect } from "react";
-import type { ProjectMain, CaseStudyBlock } from "@/lib/dashboard/queries/projects-main";
+import type { ProjectMain, CaseStudyBlock, VideoBlock } from "@/lib/dashboard/queries/projects-main";
 import { thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ProjectsCard from "./card";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+import { VideoPlayer } from "@/app/work/[work]/video-player";
 
 // Add these variant definitions outside or inside your component
 const listContainerVariants = {
@@ -258,25 +259,49 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                         }
 
                         if (block._type === "videoBlock") {
+                          // Collect all consecutive video blocks for grid display
+                          const videoBlocks: VideoBlock[] = [];
+                          let currentIndex = selectedProject.caseStudyContent!.indexOf(block);
+
+                          // Check if this is the first video in a sequence
+                          const prevBlock = selectedProject.caseStudyContent![currentIndex - 1];
+                          if (prevBlock?._type === "videoBlock") {
+                            return null; // Skip - already rendered in previous grid
+                          }
+
+                          // Collect consecutive video blocks
+                          while (currentIndex < selectedProject.caseStudyContent!.length) {
+                            const currentBlock = selectedProject.caseStudyContent![currentIndex];
+                            if (currentBlock._type === "videoBlock") {
+                              videoBlocks.push(currentBlock as VideoBlock);
+                              currentIndex++;
+                            } else {
+                              break;
+                            }
+                          }
+
                           return (
                             <motion.div
                               key={block._key}
                               initial={{ opacity: 0, scale: 0.98 }}
                               animate={{ opacity: 1, scale: 1 }}
-                              className="w-full space-y-2"
+                              className="w-full columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4"
                             >
-                              {block.video && (
-                                <div className="w-full overflow-hidden rounded-md">
-                                  <video
-                                    src={block.video.asset?.url}
-                                    controls
-                                    className="w-full aspect-video object-cover"
-                                  />
+                              {videoBlocks.map((videoBlock) => (
+                                <div key={videoBlock._key} className="break-inside-avoid space-y-2 mb-4">
+                                  {(videoBlock.videoUrl || videoBlock.video?.asset?.url) && (
+                                    <div className="w-full overflow-hidden">
+                                      <VideoPlayer
+                                        videoUrl={videoBlock.videoUrl || videoBlock.video?.asset?.url}
+                                        poster={thumbnailUrl(selectedProject.thumbnail, "lg")}
+                                      />
+                                    </div>
+                                  )}
+                                  {videoBlock.caption && (
+                                    <p className="text-sm text-foreground/55 text-center">{videoBlock.caption}</p>
+                                  )}
                                 </div>
-                              )}
-                              {block.caption && (
-                                <p className="text-sm text-foreground/55 text-center">{block.caption}</p>
-                              )}
+                              ))}
                             </motion.div>
                           );
                         }

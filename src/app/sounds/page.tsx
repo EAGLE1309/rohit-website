@@ -6,6 +6,7 @@ import { getFlyers } from "@/lib/dashboard/queries/flyers";
 import { getPhotography } from "@/lib/dashboard/queries/photography";
 import { Suspense } from "react";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
+import { getGallery } from "@/lib/dashboard/queries/gallery";
 
 export const metadata: Metadata = {
   title: "Sounds & Music",
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
 const SoundsPage = async () => {
   const musics = await getMusics();
   const flyers = await getFlyers();
-  const photographs = await getPhotography();
+  const gallery = await getGallery();
 
   const TRACKS = musics.map((music: any, index: number) => ({
     id: index,
@@ -49,7 +50,7 @@ const SoundsPage = async () => {
     <Suspense
       fallback={<MaxWidthWrapper className="h-[100vh] w-full overflow-hidden flex items-center justify-center gap-3">Loading...</MaxWidthWrapper>}
     >
-      <SoundsComponent tracks={TRACKS} flyers={flyers} photographs={photographs} />;
+      <SoundsComponent tracks={TRACKS} flyers={flyers} gallery={gallery} />;
     </Suspense>
   );
 };

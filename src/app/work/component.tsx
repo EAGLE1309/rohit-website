@@ -16,6 +16,7 @@ const filterOptions = [
   { label: "Personal", value: "personal" },
   { label: "Photography", value: "photography" },
   { label: "Projects", value: "projects" },
+  { label: "Events", value: "events" },
   { label: "Archives", value: "archives" },
 ];
 
@@ -37,7 +38,7 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
             </TabsTrigger>
           ))}
         </TabsList>
-        {filterOptions.map((filter, index) => (
+        {filterOptions.map((filter) => (
           <TabsContent key={filter.value} value={filter.value}>
             <AnimatePresence mode="wait">
               {activeTab === filter.value && (
@@ -46,14 +47,20 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                   animate="visible"
                   exit="hidden"
                   variants={{
-                    hidden: {},
-                    visible: { transition: { staggerChildren: 0.02 } },
+                    hidden: { opacity: 0 },
+                    visible: {
+                      opacity: 1,
+                      transition: {
+                        staggerChildren: 0.03,
+                        staggerDirection: 1,
+                      },
+                    },
                   }}
                 >
-                  <div className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-28 md:gap-y-16">
+                  <div className="w-full columns-2 md:columns-3 lg:columns-5 mb-12 gap-8 space-y-8!">
                     {filter.value === "all" ? (
                       projects.length === 0 && photography.length === 0 ? (
-                        <div className="col-span-full text-center text-foreground/60">Nothing to show here</div>
+                        <div className="w-full flex items-center justify-center h-64 text-center text-foreground/60 font-mono" style={{ columnSpan: 'all' }}>Nothing to show here</div>
                       ) : (
                         <>
                           {projects.map((project: Project) => (
@@ -69,7 +76,7 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                       )
                     ) : filter.value === "photography" ? (
                       photography.length === 0 ? (
-                        <div className="col-span-full text-center text-foreground/60">Nothing to show here</div>
+                        <div className="w-full flex items-center justify-center h-64 text-center text-foreground/60 font-mono" style={{ columnSpan: 'all' }}>Nothing to show here</div>
                       ) : (
                         photography.map((photo: Photography) => (
                           <Card
@@ -84,20 +91,19 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                         ))
                       )
                     ) : projects.some((project: Project) => project.category === filter.value) ? (
-                      projects.map(
-                        (project: Project) =>
-                          project.category === filter.value && (
-                            <Card
-                              key={project._id}
-                              id={project._id}
-                              image={thumbnailUrl(project.thumbnail)}
-                              title={project.name}
-                              subtitle={project.category}
-                            />
-                          )
-                      )
+                      projects
+                        .filter((project: Project) => project.category === filter.value)
+                        .map((project: Project) => (
+                          <Card
+                            key={project._id}
+                            id={project._id}
+                            image={thumbnailUrl(project.thumbnail)}
+                            title={project.name}
+                            subtitle={project.category}
+                          />
+                        ))
                     ) : (
-                      <div className="col-span-full w-full text-center text-foreground/60">Nothing to show here</div>
+                      <div className="w-full flex items-center justify-center h-64 text-center text-foreground/60 font-mono" style={{ columnSpan: 'all' }}>Nothing to show here</div>
                     )}
                   </div>
                 </motion.div>
@@ -127,35 +133,37 @@ const Card = ({
   noBadge?: boolean;
   image?: string;
 }) => {
-  const fallbackSubtitle = isPhoto ? "PHOTOGRAPHY" : "PERSONAL";
   const hasTitle = Boolean(title?.trim());
-  const hasSubtitle = Boolean(subtitle?.trim());
+  const hasSubtitle = Boolean(subtitle?.trim()) && subtitle?.trim().toLowerCase() !== "none";
   const shouldRenderMeta = !isPhoto && (hasTitle || hasSubtitle);
-  const subtitleText = hasSubtitle ? subtitle?.trim() : !isPhoto ? (fallbackSubtitle || "").trim() : "";
+  const subtitleText = hasSubtitle ? subtitle?.trim() : "";
+
   return (
     <motion.div
-      className="w-full group relative flex flex-col items-center text-center gap-3"
+      className={`w-full group relative flex flex-col items-start ${isPhoto ? '' : 'bg-foreground/5'} text-left gap-3 break-inside-avoid mb-4`}
       variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
     >
       {!noBadge && isPhoto && <div className="absolute py-0.5 px-1 text-xs z-[1] top-2 left-2 font-medium bg-white">PHOTO</div>}
-      <Link href={isPhoto ? `/photography/${id}` : `/work/${id}`} className="w-full flex flex-col items-center text-center gap-3">
-        <div className="overflow-hidden">
+      <Link href={isPhoto ? `/photography/${id}` : `/work/${id}`} className="w-full flex flex-col items-start text-left gap-3">
+        <div className="overflow-hidden w-full">
           <Image
-            className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+            className="w-full h-auto object-contain transition-transform duration-500 ease-out group-hover:scale-[1.05]"
             src={image || "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=270&fit=crop"}
             alt="Work 1"
             width={400}
-            height={500}
+            height={400}
+            style={{ width: '100%', height: 'auto' }}
           />
         </div>
-        <div className="flex flex-col items-center text-center gap-1">
+        {!isPhoto && <div className="flex flex-col items-start text-left p-2 pt-0 gap-1">
           {shouldRenderMeta && (
             <>
-              {hasTitle && <p className="text-xs uppercase font-medium text-foreground">{title?.trim()}</p>}
-              {subtitleText && <span className="text-[12px] uppercase text-foreground/55">{subtitleText}</span>}
+              {hasTitle && <p className="text-sm uppercase font-medium text-foreground">{title?.trim()}</p>}
+              {subtitleText && <span className="text-sm font-mono text-foreground/75">{subtitleText.slice(0, 1).toUpperCase() + subtitleText.slice(1)}</span>}
             </>
           )}
         </div>
+        }
       </Link>
     </motion.div>
   );

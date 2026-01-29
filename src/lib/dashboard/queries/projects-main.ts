@@ -10,6 +10,7 @@ export interface VideoBlock {
   _type: "videoBlock";
   _key: string;
   video: any;
+  videoUrl?: string;
   caption?: string;
 }
 
@@ -70,7 +71,8 @@ export const getProjectsMain = async (): Promise<ProjectMain[]> => {
         },
         _type == "videoBlock" => {
           video,
-          caption
+          caption,
+          "videoUrl": video.asset->url
         },
         _type == "imageBlock" => {
           image,

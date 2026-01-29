@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { fullImageUrl, thumbnailUrl, blurPlaceholderUrl } from "@/lib/dashboard/sanity-cilent";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
 import Image from "next/image";
 
 const FlyersComponent = ({ flyers }: { flyers: any[] }) => {
@@ -27,9 +27,8 @@ const FlyersComponent = ({ flyers }: { flyers: any[] }) => {
         {/* Blurred placeholder sourced via Sanity image builder */}
         <div
           aria-hidden
-          className={`absolute w-[305px] h-[375px] md:w-[272px] md:h-[275px] inset-0 overflow-hidden transition-opacity duration-300 ${
-            loading ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
+          className={`absolute w-[305px] h-[375px] md:w-[272px] md:h-[275px] inset-0 overflow-hidden transition-opacity duration-300 ${loading ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
           style={
             blurredPlaceholder ? { backgroundImage: `url(${blurredPlaceholder})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined
           }
@@ -71,17 +70,12 @@ export default FlyersComponent;
 
 const Card = ({ title, image, onClick }: { title: string; image: string; onClick: () => void }) => {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <div
-          onClick={onClick}
-          className="relative group overflow-hidden w-full h-full transition-all duration-300 ease-in-out cursor-pointer hover:scale-105"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={thumbnailUrl(image, "sm")} alt={title} className="object-contain w-full min-h-[75px] mx-auto" loading="lazy" />
-        </div>
-      </TooltipTrigger>
-      <TooltipContent>{title}</TooltipContent>
-    </Tooltip>
+    <div
+      onClick={onClick}
+      className="relative group overflow-hidden w-full h-full transition-all duration-300 ease-in-out cursor-pointer hover:scale-105"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={thumbnailUrl(image, "sm")} alt={title} className="object-contain w-full min-h-[75px] mx-auto" loading="lazy" />
+    </div>
   );
 };

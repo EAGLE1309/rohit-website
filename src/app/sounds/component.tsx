@@ -6,13 +6,13 @@ import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import FlyersComponent from "./components/flyers";
-import PhotographsComponent from "./components/photographs";
+import PhotographsComponent from "./components/gallery";
 
 interface Types {
   id: "music" | "flyers" | "gallery";
 }
 
-const SoundsComponent = ({ tracks, flyers, photographs }: { tracks: any; flyers: any; photographs: any }) => {
+const SoundsComponent = ({ tracks, flyers, gallery }: { tracks: any; flyers: any; gallery: any }) => {
   const searchParams = useSearchParams();
   const type = searchParams.get("id") as Types["id"];
 
@@ -33,9 +33,8 @@ const SoundsComponent = ({ tracks, flyers, photographs }: { tracks: any; flyers:
 
   return (
     <MaxWidthWrapper
-      className={`w-full mt-24 md:mt-28 relative flex flex-col md:flex-row ${
-        isGallery ? "min-h-screen h-full md:h-[80vh] justify-center" : "h-full md:h-[80vh] overflow-hidden items-center justify-center"
-      }`}
+      className={`w-full mt-24 md:mt-28 relative flex flex-col md:flex-row ${isGallery ? "min-h-screen h-full md:h-[80vh] justify-center" : "h-full md:h-[80vh] overflow-hidden items-center justify-center"
+        }`}
     >
       <div
         className={`mb-5 pl-8 flex md:flex-col gap-3 md:gap-0 ${"md:fixed md:top-1/2 md:-translate-y-1/2 md:left-[max(0.25rem,calc(50vw-640px+0.875rem))]"}`}
@@ -59,7 +58,7 @@ const SoundsComponent = ({ tracks, flyers, photographs }: { tracks: any; flyers:
       ) : type === "flyers" ? (
         <FlyersComponent flyers={flyers} />
       ) : (
-        <PhotographsComponent photographs={photographs} />
+        <PhotographsComponent gallery={gallery} />
       )}
     </MaxWidthWrapper>
   );
