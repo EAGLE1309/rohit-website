@@ -81,7 +81,7 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                               id={project._id}
                               image={thumbnailUrl(project.thumbnail)}
                               title={project.name}
-                              subtitle={project.category}
+                              subtitle={[...project.category].sort()}
                             />
                           ))}
                         </>
@@ -102,16 +102,16 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
                           />
                         ))
                       )
-                    ) : projects.some((project: Project) => project.category === filter.value) ? (
+                    ) : projects.some((project: Project) => project.category.includes(filter.value)) ? (
                       shuffledProjects
-                        .filter((project: Project) => project.category === filter.value)
+                        .filter((project: Project) => project.category.includes(filter.value))
                         .map((project: Project) => (
                           <Card
                             key={project._id}
                             id={project._id}
                             image={thumbnailUrl(project.thumbnail)}
                             title={project.name}
-                            subtitle={project.category}
+                            subtitle={[...project.category].sort()}
                           />
                         ))
                     ) : (
@@ -140,15 +140,18 @@ const Card = ({
 }: {
   id?: string;
   title?: string;
-  subtitle?: string | null;
+  subtitle?: string | string[] | null;
   isPhoto?: boolean;
   noBadge?: boolean;
   image?: string;
 }) => {
   const hasTitle = Boolean(title?.trim());
-  const hasSubtitle = Boolean(subtitle?.trim()) && subtitle?.trim().toLowerCase() !== "none";
+  const subtitleString = Array.isArray(subtitle)
+    ? subtitle.map(cat => cat.charAt(0).toUpperCase() + cat.slice(1)).join(', ')
+    : subtitle;
+  const hasSubtitle = Boolean(subtitleString?.trim()) && subtitleString?.trim().toLowerCase() !== "none";
   const shouldRenderMeta = !isPhoto && (hasTitle || hasSubtitle);
-  const subtitleText = hasSubtitle ? subtitle?.trim() : "";
+  const subtitleText = hasSubtitle ? subtitleString?.trim() : "";
 
   return (
     <motion.div
@@ -171,7 +174,7 @@ const Card = ({
           {shouldRenderMeta && (
             <>
               {hasTitle && <p className="text-xs md:text-sm uppercase font-medium text-foreground">{title?.trim()}</p>}
-              {subtitleText && <span className="text-xs md:text-sm font-mono text-foreground/75">{subtitleText.slice(0, 1).toUpperCase() + subtitleText.slice(1)}</span>}
+              {subtitleText && <span className="text-xs md:text-sm font-mono text-foreground/75">{subtitleText}</span>}
             </>
           )}
         </div>

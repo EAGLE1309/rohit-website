@@ -6,10 +6,9 @@ interface VideoPlayerProps {
   videoUrl: string;
   poster: string;
   className?: string;
-  onAspectRatioDetected?: (isHorizontal: boolean) => void;
 }
 
-export const VideoPlayer = ({ videoUrl, poster, className, onAspectRatioDetected }: VideoPlayerProps) => {
+export const VideoPlayer = ({ videoUrl, poster, className }: VideoPlayerProps) => {
   const posthog = usePostHog();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -30,21 +29,6 @@ export const VideoPlayer = ({ videoUrl, poster, className, onAspectRatioDetected
     const s = Math.floor(sec % 60);
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   }, []);
-
-  // 0. Preload video metadata to detect aspect ratio early
-  useEffect(() => {
-    if (!videoUrl) return;
-    const tempVideo = document.createElement("video");
-    tempVideo.preload = "metadata";
-    tempVideo.src = videoUrl;
-    tempVideo.onloadedmetadata = () => {
-      const aspectRatio = tempVideo.videoWidth / tempVideo.videoHeight;
-      onAspectRatioDetected?.(aspectRatio >= 1.4);
-    };
-    return () => {
-      tempVideo.src = "";
-    };
-  }, [videoUrl, onAspectRatioDetected]);
 
   // 1. Fullscreen Listener
   useEffect(() => {
@@ -153,8 +137,6 @@ export const VideoPlayer = ({ videoUrl, poster, className, onAspectRatioDetected
           if (v) {
             setDuration(v.duration ?? 0);
             const aspectRatio = v.videoWidth / v.videoHeight;
-            // Consider horizontal if aspect ratio >= 1.4 (roughly 16:10 or wider)
-            onAspectRatioDetected?.(aspectRatio >= 1.4);
           }
         }}
         onEnded={() => {

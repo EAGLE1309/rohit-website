@@ -10,7 +10,8 @@ export interface Project {
   name: string;
   role: string;
   description: string;
-  category: string;
+  category: string[];
+  isHorizontalVideo: boolean;
   thumbnail: any;
   video: any;
 }
