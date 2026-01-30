@@ -10,6 +10,153 @@ import ProjectsCard from "./card";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { VideoPlayer } from "@/app/work/[work]/video-player";
 
+// Embed type detector
+const getEmbedType = (url: string) => {
+  if (!url) return null;
+
+  if (/instagram\.com/.test(url)) return "instagram";
+  if (/spotify\.com/.test(url)) return "spotify";
+  if (/soundcloud\.com/.test(url)) return "soundcloud";
+  if (/facebook\.com/.test(url)) return "facebook";
+  if (/twitter\.com|x\.com/.test(url)) return "twitter";
+  if (/untitled\.stream|untitled\.app/.test(url)) return "untitled";
+
+  return null;
+};
+
+// Embed renderer component
+const Embed = ({ url }: { url: string }) => {
+  const type = getEmbedType(url);
+
+  if (!type) return null;
+
+  if (type === "instagram") {
+    // Match only post/reel/tv embeds
+    const match = url.match(/instagram\.com\/(p|reel|tv)\/([^/?#&]+)/);
+    const postId = match?.[2];
+
+    // If it's a profile or unsupported IG URL → fallback UI
+    if (!postId) {
+      return (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group block w-full max-w-md my-6 p-3 md:p-4 rounded-2xl border-2 border-foreground/15 bg-background hover:border-pink-500/45 transition-all duration-300 ease-out dark:bg-neutral-900 dark:border-neutral-800"
+        >
+          <div className="flex items-center justify-between gap-2 md:gap-4">
+            <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
+              {/* Instagram Gradient Ring */}
+              <div className="p-[2px] rounded-full bg-gradient-to-tr from-[#f09433] via-[#bc1888] to-[#2cc6ff] flex-shrink-0">
+                <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-white dark:bg-neutral-900 flex items-center justify-center">
+                  {/* Simple SVG Instagram Icon */}
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-4 h-4 md:w-5 md:h-5 text-foreground"
+                  >
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <p className="font-bold text-sm md:text-lg text-foreground group-hover:text-pink-600 transition-colors truncate">
+                  {url.replace("https://www.instagram.com/", "@").replace("https://instagram.com/", "@")}
+                </p>
+                <p className="text-[10px] md:text-xs font-medium text-foreground/55 uppercase tracking-wider">
+                  Instagram Profile
+                </p>
+              </div>
+            </div>
+
+            {/* External Link Arrow */}
+            <div className="text-foreground group-hover:text-pink-500 transition-colors flex-shrink-0">
+              <svg width="18" height="18" className="md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+            </div>
+          </div>
+        </a>
+      );
+    }
+
+    // Valid post/reel embed
+    return (
+      <iframe
+        src={`https://www.instagram.com/p/${postId}/embed`}
+        className="w-full max-w-xl mx-auto my-4 md:my-6 rounded-xl border border-foreground/10"
+        height={520}
+        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+        loading="lazy"
+        allowFullScreen
+      />
+    );
+  }
+
+
+  if (type === "spotify") {
+    const embedUrl = url.replace("open.spotify.com", "open.spotify.com/embed");
+    return (
+      <iframe
+        src={embedUrl}
+        className="w-full h-[152px] my-4 md:my-6 rounded-lg"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"
+      />
+    );
+  }
+
+  if (type === "soundcloud") {
+    return (
+      <iframe
+        className="w-full h-[166px] my-4 md:my-6 rounded-lg"
+        src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}`}
+        allow="autoplay"
+        loading="lazy"
+      />
+    );
+  }
+
+  if (type === "facebook") {
+    return (
+      <iframe
+        className="w-full max-w-xl mx-auto my-4 md:my-6 rounded-lg"
+        src={`https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(url)}`}
+        height={500}
+        loading="lazy"
+      />
+    );
+  }
+
+  if (type === "twitter") {
+    return (
+      <blockquote className="my-4 md:my-6 p-4 border-l-4 border-foreground/30">
+        <a href={url} target="_blank" rel="noopener noreferrer" className="text-foreground underline hover:text-foreground/55 font-medium transition-colors text-sm md:text-base">
+          View post on Twitter/X
+        </a>
+      </blockquote>
+    );
+  }
+
+  if (type === "untitled") {
+    return (
+      <iframe
+        src={url.replace("untitled.stream", "embed.untitled.stream")}
+        className="w-full h-[160px] my-4 md:my-6 rounded-lg"
+        allow="autoplay"
+        loading="lazy"
+      />
+    );
+  }
+
+  return null;
+};
+
 // Add these variant definitions outside or inside your component
 const listContainerVariants = {
   hidden: { opacity: 0 },
@@ -100,69 +247,73 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                 <div className="w-full flex flex-col gap-8">
 
                   {/* Project Header */}
-                  <div className="w-full flex flex-col gap-5">
-                    <div className="w-full grid grid-cols-3 md:grid-cols-5 gap-8">
-                      <div className="w-full col-span-1">
-                        <p className="text-3xl md:text-5xl font-medium">
-                          {(() => {
-                            const name = selectedProject?.name || "";
-                            const num = name ? String(name.split("").reduce((acc: any, c: any) => acc + c.charCodeAt(0), 0) % 100).padStart(2, "0") : "--";
-                            return <span className="text-3xl md:text-5xl font-medium">{num}.</span>;
-                          })()}
-                        </p>
-                      </div>
-                      <div className="w-full col-span-4">
-                        <motion.div
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.1 }}
-                          className="text-3xl md:text-5xl uppercase font-medium"
-                        >
-                          {selectedProject?.name}
-                        </motion.div>
-                      </div>
+                  <div className="w-full flex gap-3">
+                    <p className="text-3xl md:text-4xl font-medium">
+                      {(() => {
+                        const name = selectedProject?.name || "";
+                        const num = name ? String(name.split("").reduce((acc: any, c: any) => acc + c.charCodeAt(0), 0) % 100).padStart(2, "0") : "--";
+                        return <span className="text-3xl md:text-4xl font-medium">{num}.</span>;
+                      })()}
+                    </p>
+                    <div className="w-full">
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-3xl md:text-4xl font-medium"
+                      >
+                        {selectedProject?.name}
+                      </motion.div>
                     </div>
-
-                    {selectedProject?.description && (
-                      <div className="w-full grid grid-cols-3 md:grid-cols-5 gap-8">
-                        <span className="w-full col-span-1"></span>
-                        <div className="w-full col-span-4">
-                          <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.2 }}
-                            className="text-sm md:text-base text-foreground/55 leading-relaxed"
-                          >
-                            {selectedProject.description}
-                          </motion.p>
-                        </div>
-                      </div>
-                    )}
                   </div>
 
+                  {/* About section */}
+                  {selectedProject?.description && (
+                    <div className="w-full flex flex-col gap-3">
+                      <div className="w-full">
+                        <p className="text-sm md:text-lg font-mono text-foreground/55">About</p>
+                      </div>
+                      <div className="w-full">
+                        <motion.p
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.2 }}
+                          className="text-sm md:text-base leading-relaxed"
+                        >
+                          {selectedProject.description}
+                        </motion.p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Project Details Section */}
-                  <div className="w-full grid grid-cols-3 md:grid-cols-5 gap-8">
-                    <div className="w-full col-span-1"></div>
-                    <div className="w-fit col-span-4 grid grid-cols-2 text-sm md:text-base text-foreground/55">
-                      <div className="flex flex-col gap-1">
-                        <p className="text-foreground">Category</p>
-                        {selectedProject?.service && <p className="text-foreground">Service</p>}
-                        {selectedProject?.client && <p className="text-foreground">Client</p>}
-                        <p className="text-foreground">Created</p>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <p>{selectedProject?.category.charAt(0).toUpperCase() + selectedProject?.category.slice(1) || "None"}</p>
-                        {selectedProject?.service && <p>{selectedProject.service}</p>}
-                        {selectedProject?.client && <p>{selectedProject.client}</p>}
-                        <p>{new Date(selectedProject?._createdAt || "").toLocaleDateString()}</p>
-                      </div>
+                  <div className="w-full flex flex-col gap-3">
+                    <div className="w-full">
+                      <p className="text-sm font-mono text-foreground/55 md:text-base">Project Details</p>
+                    </div>
+                    <div className="w-full flex flex-col gap-2 text-sm md:text-base">
+                      <p><span className="font-mono text-foreground/55">Category : </span> {selectedProject?.category.charAt(0).toUpperCase() + selectedProject?.category.slice(1) || "None"}</p>
+                      <span className="w-1/5 border-t-2 border-foreground/35" />
+                      {selectedProject?.service && (
+                        <>
+                          <p><span className="font-mono text-foreground/55">Service : </span> {selectedProject.service}</p>
+                          <span className="w-1/5 border-t-2 border-foreground/35" />
+                        </>
+                      )}
+                      {selectedProject?.client && (
+                        <>
+                          <p><span className="font-mono text-foreground/55">Client : </span> {selectedProject.client}</p>
+                          <span className="w-1/5 border-t-2 border-foreground/35" />
+                        </>
+                      )}
+                      <p><span className="font-mono text-foreground/55">Created : </span> {new Date(selectedProject?._createdAt || "").toLocaleDateString()}</p>
                     </div>
                   </div>
 
                   {/* Thumbnail Preview */}
                   {selectedProject?.thumbnail && (
                     <motion.div
-                      className="w-full overflow-hidden rounded-md"
+                      className="w-full overflow-hidden"
                       initial={{ scale: 0.98, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ duration: 0.5, delay: 0.1 }}
@@ -187,28 +338,81 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                               key={block._key}
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
-                              className="w-full grid grid-cols-3 md:grid-cols-5 gap-8"
+                              className="w-full flex flex-col gap-4"
                             >
-                              <div className="w-full col-span-1"></div>
-                              <div className="w-full col-span-5 prose prose-sm md:prose-base max-w-none text-foreground/70">
+                              <div className="w-full prose prose-sm md:prose-base max-w-none">
                                 {block.content && (() => {
                                   const elements: React.ReactElement[] = [];
                                   let currentList: { type: string; items: React.ReactElement[] } | null = null;
 
                                   block.content.forEach((contentBlock: any, idx: number) => {
+                                    if (contentBlock._type === "code") {
+                                      elements.push(
+                                        <pre key={contentBlock._key || idx} className="bg-foreground/5 p-4 rounded overflow-x-auto my-4">
+                                          <code className="font-mono text-sm text-foreground">{contentBlock.code}</code>
+                                        </pre>
+                                      );
+                                      return;
+                                    }
+
                                     if (contentBlock._type === "block") {
                                       const style = contentBlock.style || "normal";
                                       const listItem = contentBlock.listItem;
                                       const children = contentBlock.children || [];
+                                      const markDefs = contentBlock.markDefs || [];
+
                                       const text = children.map((child: any, childIdx: number) => {
                                         const content = child.text || "";
-                                        if (child.marks?.includes("strong")) {
-                                          return <strong key={child._key || childIdx}>{content}</strong>;
+                                        const marks = child.marks || [];
+
+                                        let element: React.ReactNode = content;
+
+                                        if (marks.includes("code")) {
+                                          element = (
+                                            <code key={child._key || childIdx} className="px-1.5 py-0.5 bg-foreground/10 text-foreground font-mono text-sm rounded">
+                                              {content}
+                                            </code>
+                                          );
+                                        } else {
+                                          if (marks.includes("strong")) {
+                                            element = <strong key={child._key || childIdx} className="font-semibold text-foreground">{element}</strong>;
+                                          }
+                                          if (marks.includes("em")) {
+                                            element = <em key={child._key || childIdx} className="italic">{element}</em>;
+                                          }
+                                          if (marks.includes("underline")) {
+                                            element = <span key={child._key || childIdx} className="underline">{element}</span>;
+                                          }
+                                          if (marks.includes("strike-through")) {
+                                            element = <span key={child._key || childIdx} className="line-through">{element}</span>;
+                                          }
                                         }
-                                        if (child.marks?.includes("em")) {
-                                          return <em key={child._key || childIdx}>{content}</em>;
+
+                                        const linkKey = marks.find((m: string) => markDefs.some((def: any) => def._key === m));
+                                        if (linkKey) {
+                                          const link = markDefs.find((def: any) => def._key === linkKey);
+                                          if (link?._type === "link") {
+                                            const embedType = getEmbedType(link.href);
+
+                                            if (embedType) {
+                                              return <Embed key={child._key || childIdx} url={link.href} />;
+                                            }
+
+                                            element = (
+                                              <a
+                                                key={child._key || childIdx}
+                                                href={link.href}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-foreground underline hover:text-foreground/55 font-medium transition-colors"
+                                              >
+                                                {element}
+                                              </a>
+                                            );
+                                          }
                                         }
-                                        return content;
+
+                                        return element;
                                       });
 
                                       // Handle list items
@@ -217,27 +421,29 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                                           if (currentList) {
                                             elements.push(
                                               currentList.type === "bullet"
-                                                ? <ul key={`list-${elements.length}`} className="list-disc list-inside space-y-1 my-3">{currentList.items}</ul>
-                                                : <ol key={`list-${elements.length}`} className="list-decimal list-inside space-y-1 my-3">{currentList.items}</ol>
+                                                ? <ul key={`list-${elements.length}`} className="list-disc list-outside ml-5 space-y-2 my-4 text-foreground/80">{currentList.items}</ul>
+                                                : <ol key={`list-${elements.length}`} className="list-decimal list-outside ml-5 space-y-2 my-4 text-foreground/80">{currentList.items}</ol>
                                             );
                                           }
                                           currentList = { type: listItem, items: [] };
                                         }
-                                        currentList.items.push(<li key={idx} className="leading-relaxed">{text}</li>);
+                                        currentList.items.push(<li key={idx} className="leading-relaxed pl-1">{text}</li>);
                                       } else {
                                         if (currentList) {
                                           elements.push(
                                             currentList.type === "bullet"
-                                              ? <ul key={`list-${elements.length}`} className="list-disc list-inside space-y-1 my-3">{currentList.items}</ul>
-                                              : <ol key={`list-${elements.length}`} className="list-decimal list-inside space-y-1 my-3">{currentList.items}</ol>
+                                              ? <ul key={`list-${elements.length}`} className="list-disc list-outside ml-5 space-y-2 my-4 text-foreground/80">{currentList.items}</ul>
+                                              : <ol key={`list-${elements.length}`} className="list-decimal list-outside ml-5 space-y-2 my-4 text-foreground/80">{currentList.items}</ol>
                                           );
                                           currentList = null;
                                         }
 
-                                        if (style === "h2") elements.push(<h2 key={idx} className="text-2xl font-bold mt-6 mb-3">{text}</h2>);
-                                        else if (style === "h3") elements.push(<h3 key={idx} className="text-xl font-bold mt-4 mb-2">{text}</h3>);
-                                        else if (style === "blockquote") elements.push(<blockquote key={idx} className="pl-4 italic my-4">{text}</blockquote>);
-                                        else elements.push(<p key={idx} className="mb-3 leading-relaxed">{text}</p>);
+                                        if (style === "h1") elements.push(<h1 key={contentBlock._key || idx} className="text-3xl md:text-4xl font-semibold text-foreground mt-8 mb-4">{text}</h1>);
+                                        else if (style === "h2") elements.push(<h2 key={contentBlock._key || idx} className="text-2xl md:text-3xl font-semibold text-foreground mt-7 mb-3">{text}</h2>);
+                                        else if (style === "h3") elements.push(<h3 key={contentBlock._key || idx} className="text-xl md:text-2xl font-medium text-foreground mt-6 mb-2">{text}</h3>);
+                                        else if (style === "h4") elements.push(<h4 key={contentBlock._key || idx} className="text-lg md:text-xl font-medium text-foreground mt-5 mb-2">{text}</h4>);
+                                        else if (style === "blockquote") elements.push(<blockquote key={contentBlock._key || idx} className="pl-4 border-l-4 border-foreground/30 italic text-foreground/70 my-4 py-1">{text}</blockquote>);
+                                        else elements.push(<p key={contentBlock._key || idx} className="mb-4 leading-relaxed text-foreground/80 text-sm md:text-base">{text}</p>);
                                       }
                                     }
                                   });
@@ -246,8 +452,8 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                                     const list = currentList as { type: string; items: React.ReactElement[] };
                                     elements.push(
                                       list.type === "bullet"
-                                        ? <ul key={`list-${elements.length}`} className="list-disc list-inside space-y-1 my-3">{list.items}</ul>
-                                        : <ol key={`list-${elements.length}`} className="list-decimal list-inside space-y-1 my-3">{list.items}</ol>
+                                        ? <ul key={`list-${elements.length}`} className="list-disc list-outside ml-5 space-y-2 my-4 text-foreground/80">{list.items}</ul>
+                                        : <ol key={`list-${elements.length}`} className="list-decimal list-outside ml-5 space-y-2 my-4 text-foreground/80">{list.items}</ol>
                                     );
                                   }
 
@@ -280,25 +486,35 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                             }
                           }
 
+                          const videoCount = videoBlocks.length;
+                          const getGridCols = () => {
+                            if (videoCount <= 4) return 2;
+                            if (videoCount <= 9) return 3;
+                            return 4;
+                          };
+                          const cols = getGridCols();
+
                           return (
                             <motion.div
                               key={block._key}
                               initial={{ opacity: 0, scale: 0.98 }}
                               animate={{ opacity: 1, scale: 1 }}
-                              className="w-full columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4"
+                              className="w-full grid gap-4"
+                              style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
                             >
                               {videoBlocks.map((videoBlock) => (
-                                <div key={videoBlock._key} className="break-inside-avoid space-y-2 mb-4">
+                                <div key={videoBlock._key} className="bg-foreground/10 pb-2 space-y-1">
                                   {(videoBlock.videoUrl || videoBlock.video?.asset?.url) && (
                                     <div className="w-full overflow-hidden">
                                       <VideoPlayer
+                                        size="small"
                                         videoUrl={videoBlock.videoUrl || videoBlock.video?.asset?.url}
                                         poster={thumbnailUrl(selectedProject.thumbnail, "lg")}
                                       />
                                     </div>
                                   )}
                                   {videoBlock.caption && (
-                                    <p className="text-sm text-foreground/55 text-center">{videoBlock.caption}</p>
+                                    <p className="text-sm text-foreground text-center font-mono">{videoBlock.caption}</p>
                                   )}
                                 </div>
                               ))}
@@ -315,7 +531,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                               className="w-full space-y-2"
                             >
                               {block.image && (
-                                <div className="w-full overflow-hidden rounded-md">
+                                <div className="w-full overflow-hidden">
                                   <motion.img
                                     whileHover={{ scale: 1.05 }}
                                     transition={{ duration: 0.7, ease: "easeOut" }}

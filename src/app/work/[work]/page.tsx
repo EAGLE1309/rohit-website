@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description:
       project.description ||
       `${project.name} - A creative project by Rohit Patnala. ${project.category} work showcasing visual art and creative direction.`,
-    keywords: [project.name, project.category, "Rohit Patnala project", "creative work", "visual art", "RO6IT"],
+    keywords: [project.name, ...(Array.isArray(project.category) ? project.category : [project.category]), "Rohit Patnala project", "creative work", "visual art", "RO6IT"],
     openGraph: {
       title: `${project.name} | Rohit Patnala`,
       description: project.description || `${project.name} - A creative project by Rohit Patnala.`,

@@ -6,13 +6,29 @@ interface VideoPlayerProps {
   videoUrl: string;
   poster: string;
   className?: string;
+  size?: "default" | "small";
 }
 
-export const VideoPlayer = ({ videoUrl, poster, className }: VideoPlayerProps) => {
+export const VideoPlayer = ({ videoUrl, poster, className, size = "default" }: VideoPlayerProps) => {
   const posthog = usePostHog();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const hideTimer = useRef<NodeJS.Timeout | null>(null);
+
+  // Size-based styling
+  const isSmall = size === "small";
+  const playButtonSize = isSmall ? "w-10 h-10" : "w-20 h-20";
+  const playIconSize = isSmall ? "border-t-[6px] border-l-[10px] border-b-[6px]" : "border-t-[12px] border-l-[20px] border-b-[12px]";
+  const controlsWidth = isSmall ? "w-[92%] max-w-[92%]" : "w-[90%] md:w-[80%]";
+  const controlsPadding = isSmall ? "px-1.5 py-1" : "px-4 py-2";
+  const controlsBottom = isSmall ? "bottom-1.5" : "bottom-4";
+  const controlsGap = isSmall ? "gap-1" : "gap-4";
+  const timeTextSize = isSmall ? "text-[10px]" : "text-sm";
+  const timeMinWidth = isSmall ? "min-w-[50px] max-w-[50px]" : "min-w-[85px]";
+  const sliderHeight = isSmall ? "h-1" : "h-2";
+  const sliderThumbSize = isSmall ? "[&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2" : "[&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3";
+  const buttonTextSize = isSmall ? "text-sm" : "text-lg";
+  const playPauseSize = isSmall ? "text-xs" : "text-base";
 
   // State
   const [isLoaded, setIsLoaded] = useState(false);
@@ -155,11 +171,11 @@ export const VideoPlayer = ({ videoUrl, poster, className }: VideoPlayerProps) =
         <div className="absolute inset-0 flex items-center justify-center z-10 bg-black/10 hover:bg-black/20 transition-colors">
           <button
             onClick={handleInitialLoad}
-            className="group/btn relative flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-md rounded-full border border-white/30 shadow-xl hover:scale-110 transition-transform duration-200"
+            className={`group/btn relative flex items-center justify-center ${playButtonSize} bg-white/20 backdrop-blur-md rounded-full border border-white/30 shadow-xl hover:scale-110 transition-transform duration-200`}
             aria-label="Load and Play Video"
             onMouseDown={() => posthog.capture('video_initial_play', { video_url: videoUrl })}
           >
-            <div className="w-0 h-0 border-t-[12px] border-t-transparent border-l-[20px] border-l-white border-b-[12px] border-b-transparent ml-1" />
+            <div className={`w-0 h-0 ${playIconSize} border-t-transparent border-l-white border-b-transparent ml-1`} />
           </button>
         </div>
       )}
@@ -168,20 +184,20 @@ export const VideoPlayer = ({ videoUrl, poster, className }: VideoPlayerProps) =
       {isLoaded && (
         <div
           className={`
-            absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] md:w-[80%]
-            bg-black/35 backdrop-blur-md rounded-xl px-4 py-2
-            flex items-center gap-4 text-white shadow-2xl border border-white/10
+            absolute ${controlsBottom} left-1/2 -translate-x-1/2 ${controlsWidth}
+            bg-black/35 backdrop-blur-md rounded-xl ${controlsPadding}
+            flex items-center ${controlsGap} text-white shadow-2xl border border-white/10
             transition-all duration-500 ease-in-out z-20
             ${controlsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}
           `}
         >
           {/* Play/Pause */}
-          <button onClick={togglePlay} className="hover:text-gray-300 transition-colors">
+          <button onClick={togglePlay} className={`hover:text-gray-300 transition-colors ${playPauseSize}`}>
             {isPlaying ? "⏸" : "▶"}
           </button>
 
           {/* Time */}
-          <span className="text-sm font-sans min-w-[85px] select-none">
+          <span className={`${timeTextSize} font-sans ${timeMinWidth} select-none`}>
             {formatTime(currentTime)} / {formatTime(duration)}
           </span>
 
@@ -198,11 +214,11 @@ export const VideoPlayer = ({ videoUrl, poster, className }: VideoPlayerProps) =
               setCurrentTime(t);
             }}
             // Added z-50 to ensure dragging slider doesn't lose focus easily
-            className="relative z-50 flex-1 h-2 bg-white/30 rounded-lg accent-white cursor-pointer focus:outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:hover:scale-125 [&::-webkit-slider-thumb]:transition-transform"
+            className={`relative z-50 flex-1 min-w-0 ${sliderHeight} bg-white/30 rounded-lg accent-white cursor-pointer focus:outline-none [&::-webkit-slider-thumb]:appearance-none ${sliderThumbSize} [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:hover:scale-125 [&::-webkit-slider-thumb]:transition-transform`}
           />
 
           {/* Fullscreen Button */}
-          <button onClick={toggleFullscreen} className="hover:text-gray-300 transition-colors text-lg">
+          <button onClick={toggleFullscreen} className={`hover:text-gray-300 transition-colors ${buttonTextSize}`}>
             ⛶
           </button>
         </div>

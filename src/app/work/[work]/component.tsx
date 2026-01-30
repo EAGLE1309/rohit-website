@@ -28,29 +28,35 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
               </div>
             </div>
 
-            <div className="flex flex-col my-8 md:my-0 gap-8">
+            <div className="flex flex-col max-w-xl my-8 md:my-0 gap-8">
               {/* About section */}
               <div className="w-full flex flex-col gap-3">
                 <div className="w-full col-span-1 md:col-span-2">
-                  <p className="text-sm md:text-base">About</p>
+                  <p className="text-sm md:text-base font-mono text-foreground/55">About</p>
                 </div>
                 <div className="w-full col-span-2 md:col-span-3">
-                  <p className="text-sm md:text-base text-foreground/55 leading-relaxed">{project?.description}</p>
+                  <p className="text-sm md:text-base leading-relaxed">{project?.description}</p>
                 </div>
               </div>
 
               {/* Project Details section */}
               <div className="w-full flex flex-col gap-3">
                 <div className="w-full col-span-1 md:col-span-2">
-                  <p className="text-sm md:text-base">Project Details</p>
+                  <p className="text-sm font-mono text-foreground/55 md:text-base">Project Details</p>
                 </div>
-                <div className="w-full col-span-2 md:col-span-3 flex flex-col gap-2 text-sm md:text-base text-foreground/55">
-                  <p>Category - {project?.category?.map((cat: string) => cat.charAt(0).toUpperCase() + cat.slice(1)).join(", ") || "Personal"} </p>
-                  <span className="w-full border-t border-foreground" />
-                  <p>Role - {project?.role || "Director"} </p>
-                  <span className="w-full border-t border-foreground" />
-                  <p>Client - {project?.client || "N/A"}</p>
-                  <span className="w-full border-t border-foreground" />
+                <div className="w-full col-span-2 md:col-span-3 flex flex-col gap-2 text-sm md:text-base">
+                  <p><span className="font-mono text-foreground/55">Category : </span> {Array.isArray(project?.category) ? project?.category?.map((cat: string) => cat.charAt(0).toUpperCase() + cat.slice(1)).join(", ") : (project?.category ? project.category.charAt(0).toUpperCase() + project.category.slice(1) : "Personal")} </p>
+                  <span className="w-[75%] border-t-2 border-foreground/35" />
+                  <p className="max-w-[75%]"><span className="font-mono text-foreground/55">Role : </span> {project?.role || "Director"} </p>
+                  <span className="w-[75%] border-t-2 border-foreground/35" />
+                  {
+                    !project?.client && (
+                      <>
+                        <p><span className="font-mono text-foreground/55">Client : </span> {project?.client || "N/A"}</p>
+                        <span className="w-[75%] border-t-2 border-foreground/35" />
+                      </>
+                    )
+                  }
                 </div>
               </div>
             </div>
