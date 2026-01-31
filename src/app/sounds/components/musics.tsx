@@ -16,6 +16,8 @@ import { toast } from "sonner";
 import Image from "next/image";
 import CDShineEffect from "./CDShineEffect";
 import { useMediaBandwidth, MediaBandwidthMeter } from "@/hooks/use-media-bandwidth";
+import loading from "@/app/work/loading";
+import Link from "next/link";
 
 const IS_DEV = process.env.NODE_ENV === "development";
 
@@ -685,7 +687,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
       <Carousel opts={{ loop: true }} className="w-full max-w-[565px]">
         <CarouselContent>
           {TRACKS.map((track: any, index: number) => (
-            <CarouselItem className="w-full basis-1/4 md:basis-1/3" key={track.id} onClick={() => togglePlayForIndex(index)}>
+            <CarouselItem className="w-full basis-1/4 md:basis-1/5" key={track.id} onClick={() => togglePlayForIndex(index)}>
               <Card
                 title={track.title}
                 thumb={track.thumb ?? "/home.png"}
@@ -695,6 +697,15 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
               />
             </CarouselItem>
           ))}
+
+          <CarouselItem className="w-full basis-1/4 md:basis-1/5">
+            <SpotifyCard />
+          </CarouselItem>
+
+          <CarouselItem className="w-full basis-1/4 md:basis-1/5">
+            <SoundCloudCard />
+          </CarouselItem>
+
         </CarouselContent>
         <CarouselPrevious />
         <CarouselNext />
@@ -710,7 +721,7 @@ const Card = ({ title, thumb, active, playing, loading }: { title: string; thumb
     <Tooltip>
       <TooltipTrigger asChild>
         <div
-          className={`relative group overflow-hidden w-full h-full transition-all duration-300 ease-in-out cursor-pointer
+          className={`relative group overflow-hidden w-full h-full aspect-square transition-all duration-300 ease-in-out cursor-pointer
             ${active ? "rounded-2xl" : "hover:rounded-2xl hover:scale-105"}
             ${playing ? "" : ""}
           `}
@@ -767,3 +778,63 @@ const Card = ({ title, thumb, active, playing, loading }: { title: string; thumb
     </Tooltip>
   );
 };
+
+const SoundCloudCard = () => {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Link
+          href="https://soundcloud.com/user-735813520"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block"
+        >
+          <div className="relative group overflow-hidden w-full h-full hover:rounded-2xl aspect-square transition-all duration-300 ease-in-out cursor-pointer">
+            {/* Image with subtle zoom on hover */}
+            <img
+              src={"/soundcloud.png"}
+              alt={"Rohit's Soundcloud"}
+              loading="lazy"
+              className="object-cover w-full min-w-[75px] h-full min-h-[75px] mx-auto transition-transform duration-500 ease-out group-hover:scale-110"
+            />
+          </div>
+        </Link>
+      </TooltipTrigger>
+      <TooltipContent>
+        <div className="text-center">
+          <p className="font-medium">Soundcloud</p>
+        </div>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
+const SpotifyCard = () => {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Link
+          href="https://open.spotify.com/user/31ik6ub332n34ficmjm6b4cdkt4i"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block"
+        >
+          <div className="relative group overflow-hidden hover:rounded-2xl w-full h-full aspect-square transition-all duration-300 ease-in-out cursor-pointer">
+            {/* Image with subtle zoom on hover */}
+            <img
+              src="/spotify.png"
+              alt="Rohit's Spotify"
+              loading="lazy"
+              className="object-cover w-full min-w-[75px] h-full min-h-[75px] mx-auto transition-transform duration-500 ease-out group-hover:scale-110"
+            />
+          </div>
+        </Link>
+      </TooltipTrigger>
+      <TooltipContent>
+        <div className="text-center">
+          <p className="font-medium">Spotify</p>
+        </div>
+      </TooltipContent>
+    </Tooltip>
+  );
+}

@@ -58,9 +58,6 @@ const AboutPage = () => {
             <a href="https://instagram.com/ro6it" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
               <IconBrandInstagram className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
-            <a href="https://twitter.com/ro6itism" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
-              <IconBrandTwitter className="size-5 transition-all hover:-translate-y-0.5" />
-            </a>
             <a
               href="https://soundcloud.com/user-735813520"
               target="_blank"
