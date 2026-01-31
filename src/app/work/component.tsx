@@ -16,7 +16,6 @@ const filterOptions = [
   { label: "Events", value: "events" },
   { label: "Personal", value: "personal" },
   { label: "Photography", value: "photography" },
-  { label: "Projects", value: "projects" },
   { label: "Archives", value: "archives" },
 ];
 

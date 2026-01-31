@@ -312,7 +312,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                           <span className="w-1/5 border-t-2 border-foreground/35" />
                         </>
                       )}
-                      <p><span className="font-mono text-foreground/55">Created : </span> {new Date(selectedProject?.date || selectedProject?._createdAt || "").toLocaleDateString()}</p>
+                      <p><span className="font-mono text-foreground/55">Created : </span> {new Date(selectedProject?.date || selectedProject?._createdAt || "").toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
                     </div>
                   </div>
 
