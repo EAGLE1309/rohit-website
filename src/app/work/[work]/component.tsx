@@ -9,10 +9,10 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
   const videoUrl = project?.videoUrl;
 
   return (
-    <MaxWidthWrapper className={`md:mt-24 overflow-hidden relative ${project?.isHorizontalVideo ? "" : "h-[calc(100dvh-5.6875rem)]"}`}>
+    <MaxWidthWrapper className={`mt-16 md:mt-24 overflow-hidden relative ${project?.isHorizontalVideo ? "" : "lg:h-[calc(100dvh-5.6875rem)]"}`}>
       <div className="w-full h-full flex flex-col gap-3 py-8">
         {/* Main project */}
-        <div className={`w-full h-full gap-8 overflow-hidden ${project?.isHorizontalVideo ? "flex flex-col" : "md:flex"}`}>
+        <div className={`w-full h-full gap-8 overflow-hidden ${project?.isHorizontalVideo ? "flex flex-col" : "flex flex-col md:flex-row"}`}>
           <div className={`${project?.isHorizontalVideo ? "w-full" : "flex-1 min-w-0"} flex flex-col justify-between gap-8 ${project?.isHorizontalVideo ? "" : "h-full overflow-y-auto"}`}>
             {/* Title section */}
             <div className="w-full flex flex-col gap-3">
