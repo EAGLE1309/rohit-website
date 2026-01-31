@@ -213,15 +213,21 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
       }, 100);
     } else setSelectedProject(null);
   };
-
   // Filter and sort logic
   const filteredProjects = data
     .filter((project) => project.name)
     .filter((project) => activeFilter === "all" ? true : project.category === activeFilter)
-    .sort((a, b) => activeFilter === "all"
-      ? a.name.localeCompare(b.name)
-      : new Date(b._createdAt).getTime() - new Date(a._createdAt).getTime()
-    );
+    .sort((a, b) => {
+      // If both have index, sort by index (higher index first)
+      if (a.index !== undefined && b.index !== undefined) {
+        return b.index - a.index;
+      }
+      // If only one has index, prioritize the one with index
+      if (a.index !== undefined) return -1;
+      if (b.index !== undefined) return 1;
+      // If neither has index, sort alphabetically by name
+      return a.name.localeCompare(b.name);
+    });
 
   // Auto-select first project on mobile
   useEffect(() => {
@@ -311,7 +317,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                   </div>
 
                   {/* Thumbnail Preview */}
-                  {selectedProject?.thumbnail && (
+                  {selectedProject?.thumbnail && !selectedProject?.hideThumbnail && (
                     <motion.div
                       className="w-full overflow-hidden"
                       initial={{ scale: 0.98, opacity: 0 }}
@@ -443,7 +449,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                                         else if (style === "h3") elements.push(<h3 key={contentBlock._key || idx} className="text-xl md:text-2xl font-medium text-foreground mt-6 mb-2">{text}</h3>);
                                         else if (style === "h4") elements.push(<h4 key={contentBlock._key || idx} className="text-lg md:text-xl font-medium text-foreground mt-5 mb-2">{text}</h4>);
                                         else if (style === "blockquote") elements.push(<blockquote key={contentBlock._key || idx} className="pl-4 border-l-4 border-foreground/30 italic text-foreground/70 my-4 py-1">{text}</blockquote>);
-                                        else elements.push(<p key={contentBlock._key || idx} className="mb-4 leading-relaxed text-foreground/80 text-sm md:text-base">{text}</p>);
+                                        else elements.push(<div key={contentBlock._key || idx} className="mb-4 leading-relaxed text-foreground/80 text-sm md:text-base">{text}</div>);
                                       }
                                     }
                                   });
@@ -537,7 +543,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                                     transition={{ duration: 0.7, ease: "easeOut" }}
                                     src={thumbnailUrl(block.image, "lg")}
                                     alt={block.caption || ""}
-                                    className="w-full aspect-video object-cover"
+                                    className=""
                                   />
                                 </div>
                               )}
@@ -549,23 +555,37 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                         }
 
                         if (block._type === "imageGrid") {
-                          const gridCols = block.layout === "four-column" ? "grid-cols-4" : block.layout === "three-column" ? "grid-cols-3" : "grid-cols-2";
+                          const imageCount = block.images?.length || 0;
+                          const columnCount = imageCount === 1
+                            ? 2
+                            : block.layout === "four-column"
+                              ? 4
+                              : block.layout === "three-column"
+                                ? 3
+                                : 2;
                           return (
                             <motion.div
                               key={block._key}
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
-                              className={`w-full grid ${gridCols} gap-4`}
+                              className="w-full"
+                              style={{
+                                columnCount: columnCount,
+                                columnGap: '1rem',
+                              }}
                             >
                               {block.images && block.images.map((image: any, idx: number) => (
                                 <motion.div
                                   key={idx}
-                                  className="overflow-hidden rounded-md"
+                                  className="overflow-hidden mb-4 break-inside-avoid"
+                                  initial={{ opacity: 0, y: 20 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: idx * 0.1 }}
                                 >
                                   <img
                                     src={thumbnailUrl(image, "lg")}
                                     alt={`Grid image ${idx + 1}`}
-                                    className="w-full aspect-video object-cover hover:scale-110 transition-transform duration-700"
+                                    className="w-full h-auto object-cover hover:scale-110 transition-transform duration-700"
                                   />
                                 </motion.div>
                               ))}

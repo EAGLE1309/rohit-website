@@ -36,8 +36,8 @@ export async function GET(req: NextRequest) {
     const fetchOptions: RequestInit = {
       headers: rangeHeader
         ? {
-            Range: rangeHeader,
-          }
+          Range: rangeHeader,
+        }
         : undefined,
     };
     if (!rangeHeader) {
