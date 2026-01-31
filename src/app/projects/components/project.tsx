@@ -312,7 +312,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                           <span className="w-1/5 border-t-2 border-foreground/35" />
                         </>
                       )}
-                      <p><span className="font-mono text-foreground/55">Created : </span> {new Date(selectedProject?._createdAt || "").toLocaleDateString()}</p>
+                      <p><span className="font-mono text-foreground/55">Created : </span> {new Date(selectedProject?.date || selectedProject?._createdAt || "").toLocaleDateString()}</p>
                     </div>
                   </div>
 
@@ -471,7 +471,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                         }
 
                         if (block._type === "videoBlock") {
-                          // Collect all consecutive video blocks for grid display
+                          // Collect all consecutive video blocks for masonry display
                           const videoBlocks: VideoBlock[] = [];
                           let currentIndex = selectedProject.caseStudyContent!.indexOf(block);
 
@@ -495,8 +495,9 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                           const videoCount = videoBlocks.length;
                           const getGridCols = () => {
                             if (videoCount <= 4) return 2;
-                            if (videoCount <= 9) return 3;
-                            return 4;
+                            if (videoCount <= 6) return 3;
+                            if (videoCount <= 9) return 4;
+                            return 3;
                           };
                           const cols = getGridCols();
 
@@ -506,10 +507,13 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                               initial={{ opacity: 0, scale: 0.98 }}
                               animate={{ opacity: 1, scale: 1 }}
                               className="w-full grid gap-4"
-                              style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+                              style={{
+                                gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+                                gridAutoRows: 'auto'
+                              }}
                             >
                               {videoBlocks.map((videoBlock) => (
-                                <div key={videoBlock._key} className="bg-foreground/10 pb-2 space-y-1">
+                                <div key={videoBlock._key} className="bg-foreground/10 h-fit pb-2 space-y-1">
                                   {(videoBlock.videoUrl || videoBlock.video?.asset?.url) && (
                                     <div className="w-full overflow-hidden">
                                       <VideoPlayer
