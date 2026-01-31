@@ -96,7 +96,7 @@ const GalleryComponent = ({ gallery }: { gallery: any[] }) => {
     <div
       className={`pb-16 w-full transition-all duration-700 ease-in-out ${isExpanded
         ? "flex flex-col max-w-[725px] mx-auto gap-12" // Increased gap for better feed look
-        : "columns-2 md:columns-3 lg:columns-5 gap-8 space-y-8 md:ml-48"
+        : "columns-2 md:columns-3 lg:columns-4 gap-5 space-y-5! md:ml-48"
         }`}
     >
       {/* mode="popLayout" is CRITICAL here. 
