@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import type { Metadata } from "next";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
-import { IconBrandInstagram, IconBrandSoundcloud, IconBrandTwitter, IconMail } from "@tabler/icons-react";
+import { IconBrandInstagram, IconBrandLinkedin, IconBrandSoundcloud, IconBrandSpotify, IconBrandYoutube, IconMail } from "@tabler/icons-react";
 
 export const metadata: Metadata = {
   title: "About",
@@ -65,6 +65,15 @@ const AboutPage = () => {
               className="hover:text-gray-600 transition-colors"
             >
               <IconBrandSoundcloud className="size-5 transition-all hover:-translate-y-0.5" />
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
+              <IconBrandLinkedin className="size-5 transition-all hover:-translate-y-0.5" />
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
+              <IconBrandSpotify className="size-5 transition-all hover:-translate-y-0.5" />
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
+              <IconBrandYoutube className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
           </div>
         </div>

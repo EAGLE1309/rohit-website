@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from "motion/react";
 
 const filterOptions = [
   { label: "All", value: "all" },
-  { label: "Branded // Commercial", value: "commercial" },
+  { label: "Branded + Commercial", value: "commercial" },
   { label: "Events", value: "events" },
   { label: "Personal", value: "personal" },
   { label: "Photography", value: "photography" },

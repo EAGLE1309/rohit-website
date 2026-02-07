@@ -43,6 +43,7 @@ export interface ProjectMain {
   date?: string;
   thumbnail: any;
   hideThumbnail?: boolean;
+  hideInfo?: boolean;
   client?: string;
   service?: string;
   category: "commercial" | "personal" | "projects" | "archives" | "none";
@@ -63,6 +64,7 @@ export const getProjectsMain = async (): Promise<ProjectMain[]> => {
       date,
       thumbnail,
       hideThumbnail,
+      hideInfo,
       client,
       service,
       category,
@@ -109,6 +111,7 @@ export const getProjectMainById = async (id: string): Promise<ProjectMain | null
       date,
       thumbnail,
       hideThumbnail,
+      hideInfo,
       client,
       service,
       category,
