@@ -519,7 +519,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                                       <VideoPlayer
                                         size="small"
                                         videoUrl={videoBlock.videoUrl || videoBlock.video?.asset?.url}
-                                        poster={thumbnailUrl(selectedProject.thumbnail, "lg")}
+                                        poster={videoBlock.cover ? thumbnailUrl(videoBlock.cover, "lg") : thumbnailUrl(selectedProject.thumbnail, "lg")}
                                       />
                                     </div>
                                   )}

@@ -11,6 +11,7 @@ export interface VideoBlock {
   _key: string;
   video: any;
   videoUrl?: string;
+  cover?: any;
   caption?: string;
 }
 
@@ -40,7 +41,6 @@ export interface ProjectMain {
   name: string;
   description: string;
   date?: string;
-  video: any;
   thumbnail: any;
   hideThumbnail?: boolean;
   client?: string;
@@ -61,7 +61,6 @@ export const getProjectsMain = async (): Promise<ProjectMain[]> => {
       name,
       description,
       date,
-      video,
       thumbnail,
       hideThumbnail,
       client,
@@ -75,8 +74,9 @@ export const getProjectsMain = async (): Promise<ProjectMain[]> => {
         },
         _type == "videoBlock" => {
           video,
-          caption,
-          "videoUrl": video.asset->url
+          "videoUrl": video.asset->url,
+          cover,
+          caption
         },
         _type == "imageBlock" => {
           image,
@@ -107,7 +107,6 @@ export const getProjectMainById = async (id: string): Promise<ProjectMain | null
       name,
       description,
       date,
-      video,
       thumbnail,
       hideThumbnail,
       client,
@@ -121,8 +120,9 @@ export const getProjectMainById = async (id: string): Promise<ProjectMain | null
         },
         _type == "videoBlock" => {
           video,
-          caption,
-          "videoUrl": video.asset->url
+          "videoUrl": video.asset->url,
+          cover,
+          caption
         },
         _type == "imageBlock" => {
           image,
@@ -132,8 +132,7 @@ export const getProjectMainById = async (id: string): Promise<ProjectMain | null
           images,
           layout
         }
-      },
-      "videoUrl": video.asset->url
+      }
     }`,
     params: { id },
     revalidate: 300,
