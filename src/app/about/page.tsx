@@ -33,46 +33,45 @@ const AboutPage = () => {
       <div className="relative flex items-center justify-center">
         {/* Center Bio Content */}
         <div className="text-center space-y-4 max-w-lg mx-auto px-6 py-8">
-          <img src="/about/about-2.png" alt="Rogit portrait 1" className="mx-auto w-32 h-40 object-cover" />
+          <img src="/about/about-3.jpg" alt="Rogit portrait 1" className="mx-auto w-32 h-40 object-cover" />
           <h1 className="text-3xl font-bold tracking-wide">RO6IT</h1>
           <p className="text-xs md:text-sm text-foreground">
-            I’m a visual artist, DJ, and creative director <br />
+
+            Rohit Patnala is a visual artist, DJ, and creative director with roots in the South Asian diaspora
             (b. June 30, 2004 — Houston, Texas).
           </p>
 
           <p className="text-xs md:text-sm text-foreground">
-            I began my creative practice at the age of nine, making sports edits on Vine a small beginning that evolved into a deep fascination with
-            culture and its movements. What started as playful experimentation quickly became a lifelong study of rhythm, image, and emotion.
+
+            He began his creative practice at the age of nine, making sports edits on Vine, an entry point that evolved into a deeper fascination with culture and became a sustained study over time, spanning pop culture, technology, music, fashion, art, and philosophy. These disciplines continue to influence how he thinks and creates, with his work drawing from the reference points of these worlds and guided by a pursuit of cohesion across mediums and experiences.
           </p>
 
           <p className="text-xs md:text-sm text-foreground">
-            Overtime, my interests expanded into pop culture, music, fashion, art, and philosophy disciplines that continue to shape the way I think
-            and create. My work exists at the intersection of these worlds, guided by a pursuit of seamlessness across mediums and experiences.
-          </p>
+
+            Resume and EPK available upon request. For all inquiries, please reach out via email.  </p>
 
           {/* Social Media Icons */}
           <div className="flex justify-center gap-4 pt-4">
-            <a href="mailto:ropatnala@gmail.com" className="hover:text-gray-600 transition-colors">
+            <a href="mailto:ropatnala@gmail.com">
               <IconMail className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
-            <a href="https://instagram.com/ro6it" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
+            <a href="https://instagram.com/ro6it" target="_blank" rel="noopener noreferrer" >
               <IconBrandInstagram className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
             <a
               href="https://soundcloud.com/user-735813520"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-gray-600 transition-colors"
             >
               <IconBrandSoundcloud className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
-            <a href="#" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
+            <a href="#" target="_blank" rel="noopener noreferrer">
               <IconBrandLinkedin className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
-            <a href="#" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
+            <a href="#" target="_blank" rel="noopener noreferrer">
               <IconBrandSpotify className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
-            <a href="#" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
+            <a href="#" target="_blank" rel="noopener noreferrer">
               <IconBrandYoutube className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
           </div>
