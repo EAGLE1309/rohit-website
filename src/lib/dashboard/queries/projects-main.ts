@@ -40,7 +40,8 @@ export interface ProjectMain {
   index: number;
   name: string;
   description: string;
-  date?: string;
+  startDate?: string;
+  endDate?: string;
   thumbnail: any;
   hideThumbnail?: boolean;
   hideInfo?: boolean;
@@ -61,7 +62,8 @@ export const getProjectsMain = async (): Promise<ProjectMain[]> => {
       index,
       name,
       description,
-      date,
+      startDate,
+      endDate,
       thumbnail,
       hideThumbnail,
       hideInfo,
@@ -108,7 +110,8 @@ export const getProjectMainById = async (id: string): Promise<ProjectMain | null
       index,
       name,
       description,
-      date,
+      startDate,
+      endDate,
       thumbnail,
       hideThumbnail,
       hideInfo,

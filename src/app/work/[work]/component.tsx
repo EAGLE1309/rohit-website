@@ -16,7 +16,6 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
           <div className={`${project?.isHorizontalVideo ? "w-full" : "flex-1 min-w-0"} flex flex-col justify-between gap-8 ${project?.isHorizontalVideo ? "" : "h-full overflow-y-auto"}`}>
             {/* Title section */}
             <div className="w-full flex flex-col gap-3">
-
               <div className="w-full">
                 <div className="text-3xl md:text-4xl font-medium">{project?.name}</div>
               </div>

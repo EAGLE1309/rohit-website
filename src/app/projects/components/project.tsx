@@ -255,9 +255,12 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                   {/* About section */}
                   {selectedProject?.description && (
                     <div className="w-full flex flex-col gap-3">
-                      <div className="w-full">
-                        <p className="text-sm md:text-lg font-mono text-foreground/55">About</p>
-                      </div>
+                      {
+                        selectedProject.startDate && (
+                          <p className="font-mono">{new Date(selectedProject.startDate + "T00:00:00").toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} - {selectedProject.endDate ? new Date(selectedProject.endDate + "T00:00:00").toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : "Present"}</p>
+                        )
+                      }
+
                       <div className="w-full">
                         <motion.p
                           initial={{ opacity: 0 }}
@@ -274,12 +277,8 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                   {/* Project Details Section, hidden if hideInfo is true */}
                   {!selectedProject?.hideInfo && (
                     <div className="w-full flex flex-wrap gap-x-5 gap-y-1 text-sm md:text-base">
-                      <p><span className="font-mono text-foreground/55">Category:</span> {selectedProject?.category?.charAt(0).toUpperCase() + selectedProject?.category?.slice(1) || "None"}</p>
                       {selectedProject?.service && <p><span className="font-mono text-foreground/55">Service:</span> {selectedProject.service}</p>}
                       {selectedProject?.client && <p><span className="font-mono text-foreground/55">Client:</span> {selectedProject.client}</p>}
-                      {(selectedProject?.date || selectedProject?._createdAt) && (
-                        <p><span className="font-mono text-foreground/55">Date:</span> {new Date(selectedProject?.date || selectedProject?._createdAt || "").toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
-                      )}
                     </div>
                   )}
 
