@@ -60,7 +60,7 @@ const GalleryComponent = ({ gallery }: { gallery: any[] }) => {
   }, [displayPhotos, columnCount, isExpanded]);
 
   // --- Handle Clicks ---
-  const handleImageClick = (index: number) => {
+  const handleImageClick = useCallback((index: number) => {
     if (isExpanded) {
       // CLOSE: Return to grid
       setIsExpanded(false);
@@ -77,23 +77,25 @@ const GalleryComponent = ({ gallery }: { gallery: any[] }) => {
 
     } else {
       // OPEN: Shuffle and expand
-      const clicked = displayPhotos[index];
-      const remaining = displayPhotos.filter((_, idx) => idx !== index);
+      setDisplayPhotos((prev) => {
+        const clicked = prev[index];
+        const remaining = prev.filter((_, idx) => idx !== index);
 
-      // Shuffle logic
-      for (let i = remaining.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
-      }
+        // Shuffle logic
+        for (let i = remaining.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+        }
 
-      setDisplayPhotos([clicked, ...remaining]);
+        return [clicked, ...remaining];
+      });
       setIsExpanded(true);
 
       setTimeout(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }, 50);
     }
-  };
+  }, [isExpanded, gallery]);
 
   // --- Infinite Scroll ---
   const loadMorePhotos = useCallback(() => {
@@ -110,17 +112,23 @@ const GalleryComponent = ({ gallery }: { gallery: any[] }) => {
 
   useEffect(() => {
     if (!isExpanded) return;
+    let ticking = false;
     const handleScroll = () => {
-      // Buffer of 200px
-      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 200) {
-        loadMorePhotos();
-      }
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        // Buffer of 200px
+        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 200) {
+          loadMorePhotos();
+        }
+        ticking = false;
+      });
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isExpanded, loadMorePhotos]);
 
-  const renderPhoto = (photograph: any, idx: number) => {
+  const renderPhoto = useCallback((photograph: any, idx: number) => {
     const uniqueKey = photograph._renderId;
     const isClickedImage = isExpanded && idx === 0;
     const photoBlurPlaceholder = blurPlaceholderUrl(photograph.image);
@@ -171,7 +179,7 @@ const GalleryComponent = ({ gallery }: { gallery: any[] }) => {
         />
       </motion.div>
     );
-  };
+  }, [isExpanded, loading, handleImageClick]);
 
   return (
     <div className="pb-16 w-full">

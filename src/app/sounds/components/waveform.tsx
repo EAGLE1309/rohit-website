@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 type Track = { title: string; duration?: number };
 
 export default function WavePlayerCard({
@@ -84,8 +86,8 @@ export default function WavePlayerCard({
 /* ---------- Waveform component (SVG) ---------- */
 /* Dense audio waveform visualization with white vertical bars */
 function Waveform({ width = "100%", height = 1, bars = 80, progress = 0 }: { width?: string; height?: number; bars?: number; progress?: number }) {
-  // Generate waveform pattern similar to the reference image
-  const generateWaveformData = () => {
+  // Generate waveform pattern similar to the reference image (memoized — only recalculates when bars changes)
+  const waveformData = useMemo(() => {
     const data: number[] = [];
 
     // Create a complex waveform pattern with multiple frequency components
@@ -115,9 +117,7 @@ function Waveform({ width = "100%", height = 1, bars = 80, progress = 0 }: { wid
     }
 
     return data;
-  };
-
-  const waveformData = generateWaveformData();
+  }, [bars]);
 
   const barWidth = 3;
   const barGap = 2;

@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback, memo } from "react";
 import { usePostHog } from "@posthog/react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import {
@@ -16,7 +16,6 @@ import { toast } from "sonner";
 import Image from "next/image";
 import CDShineEffect from "./CDShineEffect";
 import { useMediaBandwidth, MediaBandwidthMeter } from "@/hooks/use-media-bandwidth";
-import loading from "@/app/work/loading";
 import Link from "next/link";
 
 const IS_DEV = process.env.NODE_ENV === "development";
@@ -47,6 +46,24 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
   const latestTrackIndex = TRACKS.length > 0 ? TRACKS.length - 1 : null;
 
   const currentTrack = useMemo(() => (currentIndex !== null ? TRACKS[currentIndex] : null), [currentIndex, TRACKS]);
+
+  // Pre-compute static waveform bar values (these never change)
+  const staticBarData = useMemo(() => {
+    return Array.from({ length: BAR_COUNT }, (_, i) => {
+      const position = i / BAR_COUNT;
+      const wave1 = Math.sin(position * Math.PI * 3.5) * 0.35;
+      const wave2 = Math.sin(position * Math.PI * 7.2 + 1.3) * 0.25;
+      const wave3 = Math.sin(position * Math.PI * 14.5 + 0.9) * 0.2;
+      const wave4 = Math.cos(position * Math.PI * 23 + 2.1) * 0.15;
+      const seed = Math.sin(i * 7.919) * Math.cos(i * 3.141);
+      const variation = 0.5 + Math.abs(seed) * 0.5;
+      let shapeAmplitude = (wave1 + wave2 + wave3 + wave4 + 0.55) * variation;
+      shapeAmplitude = Math.max(0, Math.min(1, shapeAmplitude));
+      const envelopeCurve = Math.sin(position * Math.PI);
+      const barWidth = i % 3 === 0 ? 2 : 1;
+      return { shapeAmplitude, envelopeCurve, barWidth };
+    });
+  }, []);
 
   // Bandwidth tracking for audio streaming
   const audioBandwidth = useMediaBandwidth(audioRef);
@@ -302,7 +319,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
   }, [currentTrack, isPlaying]);
 
   // toggle / controls (unchanged)
-  const togglePlayForIndex = (index: number) => {
+  const togglePlayForIndex = useCallback((index: number) => {
     const audio = audioRef.current;
     const track = TRACKS[index];
 
@@ -348,9 +365,9 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
       previous_track: currentTrack?.title,
       source: 'track_selection'
     });
-  };
+  }, [currentIndex, isPlaying, currentTrack, TRACKS, posthog]);
 
-  const handleGlobalPlayPause = () => {
+  const handleGlobalPlayPause = useCallback(() => {
     if (currentIndex === null) {
       if (latestTrackIndex !== null) {
         setCurrentIndex(latestTrackIndex);
@@ -365,9 +382,9 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
     } else {
       setIsPlaying(true);
     }
-  };
+  }, [currentIndex, isPlaying, latestTrackIndex]);
 
-  const handleWaveformPlayToggle = () => {
+  const handleWaveformPlayToggle = useCallback(() => {
     if (currentIndex === null) {
       if (latestTrackIndex === null) return;
       setCurrentIndex(latestTrackIndex);
@@ -375,9 +392,9 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
       return;
     }
     setIsPlaying((prev) => !prev);
-  };
+  }, [currentIndex, latestTrackIndex]);
 
-  const seekFromClientX = (clientX: number) => {
+  const seekFromClientX = useCallback((clientX: number) => {
     const audio = audioRef.current;
     const waveform = waveformRef.current;
     if (!audio || !waveform || duration === 0) return;
@@ -389,9 +406,9 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
 
     audio.currentTime = newTime;
     setCurrentTime(newTime);
-  };
+  }, [duration]);
 
-  const handleWaveformPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+  const handleWaveformPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (duration === 0) return;
     e.preventDefault();
     isSeekingRef.current = true;
@@ -403,15 +420,15 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
       }
     }
     seekFromClientX(e.clientX);
-  };
+  }, [seekFromClientX]);
 
-  const handleWaveformPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+  const handleWaveformPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!isSeekingRef.current) return;
     e.preventDefault();
     seekFromClientX(e.clientX);
-  };
+  }, [seekFromClientX]);
 
-  const stopSeeking = (e: React.PointerEvent<HTMLDivElement>) => {
+  const stopSeeking = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!isSeekingRef.current) return;
     e.preventDefault();
     isSeekingRef.current = false;
@@ -422,17 +439,17 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
         // ignore release errors
       }
     }
-  };
+  }, []);
 
-  const handleWaveformPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+  const handleWaveformPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!isSeekingRef.current) return;
     seekFromClientX(e.clientX);
     stopSeeking(e);
-  };
+  }, [seekFromClientX, stopSeeking]);
 
-  const handleWaveformPointerCancel = (e: React.PointerEvent<HTMLDivElement>) => {
+  const handleWaveformPointerCancel = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     stopSeeking(e);
-  };
+  }, [stopSeeking]);
 
   const formatTime = (time: number) => {
     const mins = Math.floor(time / 60);
@@ -470,7 +487,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
     }
   };
 
-  const goToPrevTrack = () => {
+  const goToPrevTrack = useCallback(() => {
     if (!TRACKS.length) return;
     const prevIndex = currentIndex === null ? TRACKS.length - 1 : currentIndex === 0 ? TRACKS.length - 1 : currentIndex - 1;
     const track = TRACKS[prevIndex];
@@ -484,9 +501,9 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
       previous_track: currentTrack?.title,
       source: 'previous_button'
     });
-  };
+  }, [TRACKS, currentIndex, currentTrack, posthog]);
 
-  const goToNextTrack = () => {
+  const goToNextTrack = useCallback(() => {
     if (!TRACKS.length) return;
     const nextIndex = currentIndex === null ? 0 : (currentIndex + 1) % TRACKS.length;
     const track = TRACKS[nextIndex];
@@ -500,7 +517,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
       previous_track: currentTrack?.title,
       source: 'next_button'
     });
-  };
+  }, [TRACKS, currentIndex, currentTrack, posthog]);
 
   // compute played index to color bars up to that index instantly (no slow transition)
   const progress = duration > 0 ? Math.max(0, Math.min(1, currentTime / duration)) : 0;
@@ -575,47 +592,24 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
               <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-white/15 pointer-events-none" />
               {/* Bars now stretch across the full player width (no inner padding) */}
               <div className="relative z-10 flex h-full w-full items-center justify-between" style={{ gap: "2px" }}>
-                {Array.from({ length: BAR_COUNT }).map((_, i) => {
+                {staticBarData.map((bar, i) => {
                   // Get real-time audio level from analyser
                   const audioLevel = levels[i] ?? 12;
 
                   // Normalize analyser output (typically 8-42 range) to 0-1
                   const normalizedAudio = Math.max(0, Math.min(1, (audioLevel - 8) / 34));
 
-                  // Generate deterministic waveform shape pattern
-                  const position = i / BAR_COUNT;
-
-                  // Create complex wave pattern with multiple frequencies (like real audio)
-                  const wave1 = Math.sin(position * Math.PI * 3.5) * 0.35;
-                  const wave2 = Math.sin(position * Math.PI * 7.2 + 1.3) * 0.25;
-                  const wave3 = Math.sin(position * Math.PI * 14.5 + 0.9) * 0.2;
-                  const wave4 = Math.cos(position * Math.PI * 23 + 2.1) * 0.15;
-
-                  // Per-bar variation for natural look
-                  const seed = Math.sin(i * 7.919) * Math.cos(i * 3.141);
-                  const variation = 0.5 + Math.abs(seed) * 0.5;
-
-                  // Combine waveform shape
-                  let shapeAmplitude = (wave1 + wave2 + wave3 + wave4 + 0.55) * variation;
-                  shapeAmplitude = Math.max(0, Math.min(1, shapeAmplitude));
-
                   // Blend real audio with waveform shape (70% audio, 30% shape for realism)
-                  const blendedAmplitude = normalizedAudio * 0.7 + shapeAmplitude * 0.5;
+                  const blendedAmplitude = normalizedAudio * 0.7 + bar.shapeAmplitude * 0.5;
 
                   // Apply envelope for natural audio waveform look (louder in middle)
-                  const envelopeCurve = Math.sin(position * Math.PI);
-                  const finalAmplitude = blendedAmplitude * (0.3 + envelopeCurve * 0.7);
+                  const finalAmplitude = blendedAmplitude * (0.3 + bar.envelopeCurve * 0.7);
 
                   // Map to pixel height
-                  const minBarHeight = 0;
-                  const maxBarHeight = 75;
-                  const barHeight = minBarHeight + finalAmplitude * (maxBarHeight - minBarHeight);
+                  const barHeight = finalAmplitude * 75;
 
                   // Determine if bar has been played
                   const isPlayed = i <= playedIndex;
-
-                  // Variable bar width for visual texture
-                  const barWidth = i % 3 === 0 ? 2 : 1;
 
                   return (
                     <div
@@ -623,7 +617,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
                       className="rounded-full transition-[height] duration-100 ease-out"
                       style={{
                         height: `${barHeight}px`,
-                        width: `${barWidth}px`,
+                        width: `${bar.barWidth}px`,
                         backgroundColor: isPlayed ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.35)",
                         boxShadow: isPlayed ? "0 0 4px rgba(255,255,255,0.4)" : "none",
                       }}
@@ -707,7 +701,7 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
 
 export default MusicsComponent;
 
-const Card = ({ title, thumb, active, playing, loading }: { title: string; thumb: string; active: boolean; playing: boolean; loading?: boolean }) => {
+const Card = memo(({ title, thumb, active, playing, loading }: { title: string; thumb: string; active: boolean; playing: boolean; loading?: boolean }) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -768,9 +762,10 @@ const Card = ({ title, thumb, active, playing, loading }: { title: string; thumb
       </TooltipContent>
     </Tooltip>
   );
-};
+});
+Card.displayName = "Card";
 
-const SoundCloudCard = () => {
+const SoundCloudCard = memo(() => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -798,9 +793,10 @@ const SoundCloudCard = () => {
       </TooltipContent>
     </Tooltip>
   );
-}
+});
+SoundCloudCard.displayName = "SoundCloudCard";
 
-const SpotifyCard = () => {
+const SpotifyCard = memo(() => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -828,4 +824,5 @@ const SpotifyCard = () => {
       </TooltipContent>
     </Tooltip>
   );
-}
+});
+SpotifyCard.displayName = "SpotifyCard";

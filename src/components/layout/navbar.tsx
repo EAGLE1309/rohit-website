@@ -79,9 +79,19 @@ const Navbar = () => {
   }, [updateIndicator]);
 
   useEffect((): (() => void) => {
-    const handleResize = () => updateIndicator();
+    let rafId: number | null = null;
+    const handleResize = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        updateIndicator();
+        rafId = null;
+      });
+    };
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, [updateIndicator]);
 
   return (

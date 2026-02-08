@@ -225,7 +225,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
 
       {/* --- LEFT PANEL (DETAILS) --- */}
       <div className="w-full flex-1 md:h-full col-span-5 overflow-hidden relative order-1 md:order-none">
-        <div className="w-full h-full overflow-y-auto scrollbar-hide p-3">
+        <div className="w-full h-full overflow-y-auto scrollbar-hide md:p-3">
           <AnimatePresence mode="wait">
             {selectedProject ? (
               <motion.div
@@ -546,31 +546,33 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                         if (block._type === "imageGrid") {
                           const images = block.images || [];
                           const imageCount = images.length;
-                          const colCount = imageCount === 1
+                          const desktopColCount = imageCount === 1
                             ? 1
                             : block.layout === "four-column"
                               ? 4
                               : block.layout === "three-column"
                                 ? 3
                                 : 2;
+                          const mobileColCount = Math.min(desktopColCount, 2);
 
                           // Distribute images into columns in row-first order
                           // e.g. 6 images, 3 cols: col0=[0,3], col1=[1,4], col2=[2,5]
                           // Reading across: row0=[0,1,2], row1=[3,4,5] ✓
-                          const imgColumns: any[][] = Array.from({ length: colCount }, () => []);
-                          images.forEach((img: any, i: number) => {
-                            imgColumns[i % colCount].push({ img, idx: i });
-                          });
+                          const buildColumns = (cols: number) => {
+                            const result: any[][] = Array.from({ length: cols }, () => []);
+                            images.forEach((img: any, i: number) => {
+                              result[i % cols].push({ img, idx: i });
+                            });
+                            return result;
+                          };
 
-                          return (
-                            <motion.div
-                              key={block._key}
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              className="w-full flex gap-4"
-                            >
-                              {imgColumns.map((col, colIdx) => (
-                                <div key={colIdx} className="flex-1 flex flex-col gap-4">
+                          const desktopColumns = buildColumns(desktopColCount);
+                          const mobileColumns = mobileColCount !== desktopColCount ? buildColumns(mobileColCount) : null;
+
+                          const renderGrid = (columns: any[][], key: string) => (
+                            <>
+                              {columns.map((col, colIdx) => (
+                                <div key={`${key}-${colIdx}`} className="flex-1 flex flex-col gap-4">
                                   {col.map(({ img, idx }: { img: any; idx: number }) => (
                                     <motion.div
                                       key={idx}
@@ -588,6 +590,32 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                                   ))}
                                 </div>
                               ))}
+                            </>
+                          );
+
+                          return (
+                            <motion.div
+                              key={block._key}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              className="w-full"
+                            >
+                              {mobileColumns ? (
+                                <>
+                                  {/* Mobile: max 2 columns */}
+                                  <div className="flex gap-4 md:hidden">
+                                    {renderGrid(mobileColumns, "mobile")}
+                                  </div>
+                                  {/* Desktop: original column count */}
+                                  <div className="hidden md:flex gap-4">
+                                    {renderGrid(desktopColumns, "desktop")}
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="flex gap-4">
+                                  {renderGrid(desktopColumns, "default")}
+                                </div>
+                              )}
                             </motion.div>
                           );
                         }

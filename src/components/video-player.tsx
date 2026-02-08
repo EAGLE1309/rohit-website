@@ -66,8 +66,10 @@ export default function VideoPlayer({ videoUrl, poster, captions, className = ""
     vid.addEventListener("pause", onPause);
 
     // handle network stalls
-    vid.addEventListener("waiting", () => setIsLoading(true));
-    vid.addEventListener("canplay", () => setIsLoading(false));
+    const onWaiting = () => setIsLoading(true);
+    const onCanPlay = () => setIsLoading(false);
+    vid.addEventListener("waiting", onWaiting);
+    vid.addEventListener("canplay", onCanPlay);
 
     return () => {
       vid.removeEventListener("loadedmetadata", onLoaded);
@@ -75,6 +77,8 @@ export default function VideoPlayer({ videoUrl, poster, captions, className = ""
       vid.removeEventListener("progress", onProgress);
       vid.removeEventListener("playing", onPlay);
       vid.removeEventListener("pause", onPause);
+      vid.removeEventListener("waiting", onWaiting);
+      vid.removeEventListener("canplay", onCanPlay);
     };
   }, [videoUrl]);
 

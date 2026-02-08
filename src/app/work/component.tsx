@@ -3,7 +3,7 @@
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo } from "react";
 import Link from "@/components/navigations/link";
 import { thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
 import type { Project } from "@/lib/dashboard/queries/projects";
@@ -129,7 +129,7 @@ const WorksComponent = ({ projects, photography }: { projects: Project[]; photog
 
 export default WorksComponent;
 
-const Card = ({
+const Card = memo(({
   id = "default",
   title,
   subtitle,
@@ -181,4 +181,5 @@ const Card = ({
       </Link>
     </motion.div>
   );
-};
+});
+Card.displayName = "Card";
