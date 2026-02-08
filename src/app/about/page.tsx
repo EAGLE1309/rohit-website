@@ -29,15 +29,16 @@ export const metadata: Metadata = {
 
 const AboutPage = () => {
   return (
-    <MaxWidthWrapper className="mt-28">
-      <div className="relative flex items-center justify-center">
+    <MaxWidthWrapper className="mt-24 h-full gap-1">
+      <div className="relative flex items-center justify-center h-full">
         {/* Center Bio Content */}
-        <div className="text-center space-y-4 max-w-lg mx-auto px-6 py-8">
-          <img src="/about/about-3.jpg" alt="Rogit portrait 1" className="mx-auto w-32 h-40 object-cover" />
+        <div className="text-center space-y-4 max-w-2xl mx-auto px-6 py-8">
+          <img src="/about/about-3.jpg" alt="Rogit portrait 1" className="mx-auto h-40 object-cover" />
           <h1 className="text-3xl font-bold tracking-wide">RO6IT</h1>
           <p className="text-xs md:text-sm text-foreground">
 
             Rohit Patnala is a visual artist, DJ, and creative director with roots in the South Asian diaspora
+            <br />
             (b. June 30, 2004 — Houston, Texas).
           </p>
 
@@ -65,13 +66,13 @@ const AboutPage = () => {
             >
               <IconBrandSoundcloud className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.linkedin.com/in/ropatnala" target="_blank" rel="noopener noreferrer">
               <IconBrandLinkedin className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href="https://open.spotify.com/user/31ik6ub332n34ficmjm6b4cdkt4i" target="_blank" rel="noopener noreferrer">
               <IconBrandSpotify className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.youtube.com/@ro6it" target="_blank" rel="noopener noreferrer">
               <IconBrandYoutube className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
           </div>

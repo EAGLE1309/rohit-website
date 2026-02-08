@@ -697,15 +697,6 @@ const MusicsComponent = ({ TRACKS }: { TRACKS: any }) => {
               />
             </CarouselItem>
           ))}
-
-          <CarouselItem className="w-full basis-1/4 md:basis-1/5">
-            <SpotifyCard />
-          </CarouselItem>
-
-          <CarouselItem className="w-full basis-1/4 md:basis-1/5">
-            <SoundCloudCard />
-          </CarouselItem>
-
         </CarouselContent>
         <CarouselPrevious />
         <CarouselNext />
