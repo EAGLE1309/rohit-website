@@ -62,7 +62,7 @@ const AboutPage = () => {
 
             Rohit Patnala is a visual artist, DJ, and creative director with roots in the South Asian diaspora
             <br />
-            (b. June 30, 2004 — Houston, Texas).
+            (b. 2004 — Houston, Texas).
           </p>
 
           <p className="text-xs md:text-sm text-foreground">
