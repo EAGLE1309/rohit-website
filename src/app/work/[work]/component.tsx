@@ -16,13 +16,7 @@ export default function WorkDetailsComponent({ project }: { project: any; allPro
           <div className={`${project?.isHorizontalVideo ? "w-full" : "flex-1 min-w-0"} flex flex-col justify-between gap-8 ${project?.isHorizontalVideo ? "" : "h-full overflow-y-auto"}`}>
             {/* Title section */}
             <div className="w-full flex flex-col gap-3">
-              <p className="text-3xl md:text-4xl font-medium">
-                {(() => {
-                  const name = project?.name || "";
-                  const num = name ? String(name.split("").reduce((acc: any, c: any) => acc + c.charCodeAt(0), 0) % 100).padStart(2, "0") : "--";
-                  return <span className="text-3xl md:text-4xl font-medium">{num}.</span>;
-                })()}
-              </p>
+
               <div className="w-full">
                 <div className="text-3xl md:text-4xl font-medium">{project?.name}</div>
               </div>

@@ -240,13 +240,6 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
 
                   {/* Project Header */}
                   <div className="w-full flex gap-3">
-                    <p className="text-3xl md:text-4xl font-medium">
-                      {(() => {
-                        const name = selectedProject?.name || "";
-                        const num = name ? String(name.split("").reduce((acc: any, c: any) => acc + c.charCodeAt(0), 0) % 100).padStart(2, "0") : "--";
-                        return <span className="text-3xl md:text-4xl font-medium">{num}.</span>;
-                      })()}
-                    </p>
                     <div className="w-full">
                       <motion.div
                         initial={{ opacity: 0, x: -20 }}
