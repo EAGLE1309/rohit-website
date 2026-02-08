@@ -6,14 +6,30 @@ import { IconBrandInstagram, IconBrandLinkedin, IconBrandSoundcloud, IconBrandSp
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Learn about Rohit Patnala (RO6IT) - a visual artist, DJ, and creative director born June 30, 2004 in Houston, Texas. Discover his journey from sports edits on Vine to multidisciplinary creative practice.",
-  keywords: ["about Rohit Patnala", "RO6IT bio", "Houston visual artist", "Texas creative director", "artist biography", "DJ Houston"],
+    "Rohit Patnala (RO6IT) is a visual artist, DJ, and creative director with roots in the South Asian diaspora (b. June 30, 2004 — Houston, Texas). He began his creative practice at nine, making sports edits on Vine — an entry point that evolved into a sustained study spanning pop culture, technology, music, fashion, art, and philosophy.",
+  keywords: [
+    "about Rohit Patnala",
+    "RO6IT bio",
+    "Houston visual artist",
+    "Texas creative director",
+    "artist biography",
+    "DJ Houston",
+    "South Asian diaspora artist",
+    "multidisciplinary creative",
+  ],
   openGraph: {
     title: "About | Rohit Patnala",
-    description: "Learn about Rohit Patnala (RO6IT) - a visual artist, DJ, and creative director born June 30, 2004 in Houston, Texas.",
+    description:
+      "Rohit Patnala (RO6IT) is a visual artist, DJ, and creative director with roots in the South Asian diaspora, based in Houston, Texas. Discover his journey from sports edits on Vine to multidisciplinary creative practice.",
     url: "https://ro6it.com/about",
     siteName: "Rohit Patnala",
     images: [
+      {
+        url: "https://ro6it.com/about/about-3.jpg",
+        width: 1200,
+        height: 800,
+        alt: "Rohit Patnala portrait — visual artist and creative director",
+      },
       {
         url: "https://ro6it.com/home.png",
         width: 1200,
@@ -21,6 +37,13 @@ export const metadata: Metadata = {
         alt: "Rohit Patnala - Visual Artist & Creative Director",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About | Rohit Patnala",
+    description:
+      "Rohit Patnala (RO6IT) — visual artist, DJ, and creative director with roots in the South Asian diaspora, based in Houston, Texas.",
+    images: ["https://ro6it.com/about/about-3.jpg"],
   },
   alternates: {
     canonical: "https://ro6it.com/about",
@@ -33,7 +56,7 @@ const AboutPage = () => {
       <div className="relative flex items-center justify-center h-full">
         {/* Center Bio Content */}
         <div className="text-center space-y-4 max-w-2xl mx-auto px-6 py-8">
-          <img src="/about/about-3.jpg" alt="Rogit portrait 1" className="mx-auto h-40 object-cover" />
+          <img src="/about/about-3.jpg" alt="Rohit Patnala portrait — visual artist, DJ, and creative director from Houston, Texas" className="mx-auto h-40 object-cover" />
           <h1 className="text-3xl font-bold tracking-wide">RO6IT</h1>
           <p className="text-xs md:text-sm text-foreground">
 

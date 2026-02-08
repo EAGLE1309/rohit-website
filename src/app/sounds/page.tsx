@@ -3,7 +3,6 @@ import SoundsComponent from "./component";
 import { getMusics } from "@/lib/dashboard/queries/musics";
 import { thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
 import { getFlyers } from "@/lib/dashboard/queries/flyers";
-import { getPhotography } from "@/lib/dashboard/queries/photography";
 import { Suspense } from "react";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 import { getGallery } from "@/lib/dashboard/queries/gallery";
@@ -26,6 +25,13 @@ export const metadata: Metadata = {
         alt: "RO6IT Sounds & Music showcase",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sounds & Music | Rohit Patnala",
+    description:
+      "Listen to DJ mixes, music productions, and soundscapes by Rohit Patnala. Explore the sonic side of RO6IT's creative practice.",
+    images: ["https://ro6it.com/home.png"],
   },
   alternates: {
     canonical: "https://ro6it.com/sounds",
