@@ -82,11 +82,3 @@ For more details, see [Next.js deployment documentation](https://nextjs.org/docs
 
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Learn Next.js](https://nextjs.org/learn)
-
-## Contributing
-
-Feel free to open issues or pull requests for improvements.
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
