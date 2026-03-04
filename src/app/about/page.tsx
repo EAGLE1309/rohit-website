@@ -1,19 +1,35 @@
 /* eslint-disable @next/next/no-img-element */
 import type { Metadata } from "next";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
-import { IconBrandInstagram, IconBrandSoundcloud, IconBrandTwitter, IconMail } from "@tabler/icons-react";
+import { IconBrandInstagram, IconBrandLinkedin, IconBrandSoundcloud, IconBrandSpotify, IconBrandYoutube, IconMail } from "@tabler/icons-react";
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Learn about Rohit Patnala (RO6IT) - a visual artist, DJ, and creative director born June 30, 2004 in Houston, Texas. Discover his journey from sports edits on Vine to multidisciplinary creative practice.",
-  keywords: ["about Rohit Patnala", "RO6IT bio", "Houston visual artist", "Texas creative director", "artist biography", "DJ Houston"],
+    "Rohit Patnala (RO6IT) is a visual artist, DJ, and creative director with roots in the South Asian diaspora (b. June 30, 2004 — Houston, Texas). He began his creative practice at nine, making sports edits on Vine — an entry point that evolved into a sustained study spanning pop culture, technology, music, fashion, art, and philosophy.",
+  keywords: [
+    "about Rohit Patnala",
+    "RO6IT bio",
+    "Houston visual artist",
+    "Texas creative director",
+    "artist biography",
+    "DJ Houston",
+    "South Asian diaspora artist",
+    "multidisciplinary creative",
+  ],
   openGraph: {
     title: "About | Rohit Patnala",
-    description: "Learn about Rohit Patnala (RO6IT) - a visual artist, DJ, and creative director born June 30, 2004 in Houston, Texas.",
+    description:
+      "Rohit Patnala (RO6IT) is a visual artist, DJ, and creative director with roots in the South Asian diaspora, based in Houston, Texas. Discover his journey from sports edits on Vine to multidisciplinary creative practice.",
     url: "https://ro6it.com/about",
     siteName: "Rohit Patnala",
     images: [
+      {
+        url: "https://ro6it.com/about/about-3.jpg",
+        width: 1200,
+        height: 800,
+        alt: "Rohit Patnala portrait — visual artist and creative director",
+      },
       {
         url: "https://ro6it.com/home.png",
         width: 1200,
@@ -22,6 +38,13 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "About | Rohit Patnala",
+    description:
+      "Rohit Patnala (RO6IT) — visual artist, DJ, and creative director with roots in the South Asian diaspora, based in Houston, Texas.",
+    images: ["https://ro6it.com/about/about-3.jpg"],
+  },
   alternates: {
     canonical: "https://ro6it.com/about",
   },
@@ -29,42 +52,51 @@ export const metadata: Metadata = {
 
 const AboutPage = () => {
   return (
-    <MaxWidthWrapper className="mt-28">
-      <div className="relative flex items-center justify-center">
+    <MaxWidthWrapper className="mt-24 h-full gap-1">
+      <div className="relative flex items-center justify-center h-full">
         {/* Center Bio Content */}
-        <div className="text-center space-y-4 max-w-lg mx-auto px-6 py-8">
-          <img src="/about/about-2.png" alt="Rogit portrait 1" className="mx-auto w-32 h-40 object-cover" />
+        <div className="text-center space-y-4 max-w-2xl mx-auto px-6 py-8">
+          <img src="/about/about-3.jpg" alt="Rohit Patnala portrait — visual artist, DJ, and creative director from Houston, Texas" className="mx-auto h-40 object-cover" />
           <h1 className="text-3xl font-bold tracking-wide">RO6IT</h1>
           <p className="text-xs md:text-sm text-foreground">
-            I’m a visual artist, DJ, and creative director <br />
-            (b. June 30, 2004 — Houston, Texas).
+
+            Rohit Patnala is a visual artist, DJ, and creative director with roots in the South Asian diaspora
+            <br />
+            (b. 2004 — Houston, Texas).
           </p>
 
           <p className="text-xs md:text-sm text-foreground">
-            I began my creative practice at the age of nine, making sports edits on Vine a small beginning that evolved into a deep fascination with
-            culture and its movements. What started as playful experimentation quickly became a lifelong study of rhythm, image, and emotion.
+
+            He began his creative practice at the age of nine, making sports edits on Vine, an entry point that evolved into a deeper fascination with culture and became a sustained study over time, spanning pop culture, technology, music, fashion, art, and philosophy. These disciplines continue to influence how he thinks and creates, with his work drawing from the reference points of these worlds and guided by a pursuit of cohesion across mediums and experiences.
           </p>
 
           <p className="text-xs md:text-sm text-foreground">
-            Overtime, my interests expanded into pop culture, music, fashion, art, and philosophy disciplines that continue to shape the way I think
-            and create. My work exists at the intersection of these worlds, guided by a pursuit of seamlessness across mediums and experiences.
-          </p>
+
+            Resume and EPK available upon request. For all inquiries, please reach out via email.  </p>
 
           {/* Social Media Icons */}
           <div className="flex justify-center gap-4 pt-4">
-            <a href="mailto:ropatnala@gmail.com" className="hover:text-gray-600 transition-colors">
+            <a href="mailto:ropatnala@gmail.com">
               <IconMail className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
-            <a href="https://instagram.com/ro6it" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
+            <a href="https://instagram.com/ro6it" target="_blank" rel="noopener noreferrer" >
               <IconBrandInstagram className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
             <a
               href="https://soundcloud.com/user-735813520"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-gray-600 transition-colors"
             >
               <IconBrandSoundcloud className="size-5 transition-all hover:-translate-y-0.5" />
+            </a>
+            <a href="https://www.linkedin.com/in/ropatnala" target="_blank" rel="noopener noreferrer">
+              <IconBrandLinkedin className="size-5 transition-all hover:-translate-y-0.5" />
+            </a>
+            <a href="https://open.spotify.com/user/31ik6ub332n34ficmjm6b4cdkt4i" target="_blank" rel="noopener noreferrer">
+              <IconBrandSpotify className="size-5 transition-all hover:-translate-y-0.5" />
+            </a>
+            <a href="https://www.youtube.com/@ro6it" target="_blank" rel="noopener noreferrer">
+              <IconBrandYoutube className="size-5 transition-all hover:-translate-y-0.5" />
             </a>
           </div>
         </div>

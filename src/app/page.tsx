@@ -4,13 +4,23 @@ import { HoverGif } from "@/components/hover-gif";
 import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
 
 export const metadata: Metadata = {
-  title: "Rohit Patnala | Visual Artist & Creative Director",
+  title: "Rohit Patnala | Visual Artist, DJ & Creative Director — Houston",
   description:
-    "Welcome to the portfolio of Rohit Patnala - a multidisciplinary visual artist, DJ, and creative director based in Houston, Texas. Explore creative works, photography, and music.",
-  keywords: ["Rohit Patnala portfolio", "visual artist Houston", "creative director Texas", "RO6IT", "multidisciplinary artist"],
+    "Portfolio of Rohit Patnala (RO6IT) — a multidisciplinary visual artist, DJ, and creative director, based in Houston, Texas. Explore visual art, photography, music, graphic design, and creative direction.",
+  keywords: [
+    "Rohit Patnala portfolio",
+    "visual artist Houston",
+    "creative director Texas",
+    "RO6IT",
+    "multidisciplinary artist",
+    "Houston DJ",
+    "South Asian diaspora artist",
+    "photography portfolio",
+  ],
   openGraph: {
-    title: "Rohit Patnala | Visual Artist & Creative Director",
-    description: "Welcome to the portfolio of Rohit Patnala - a multidisciplinary visual artist, DJ, and creative director based in Houston, Texas.",
+    title: "Rohit Patnala | Visual Artist, DJ & Creative Director",
+    description:
+      "Portfolio of Rohit Patnala (RO6IT) — multidisciplinary visual artist, DJ, and creative director based in Houston, Texas.",
     url: "https://ro6it.com",
     siteName: "Rohit Patnala",
     images: [
@@ -18,9 +28,16 @@ export const metadata: Metadata = {
         url: "https://ro6it.com/home.png",
         width: 1200,
         height: 630,
-        alt: "Rohit Patnala - Visual Artist & Creative Director",
+        alt: "Rohit Patnala — Visual Artist, DJ & Creative Director",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rohit Patnala | Visual Artist, DJ & Creative Director",
+    description:
+      "Portfolio of Rohit Patnala (RO6IT) — multidisciplinary visual artist, DJ, and creative director based in Houston, Texas.",
+    images: ["https://ro6it.com/home.png"],
   },
   alternates: {
     canonical: "https://ro6it.com",

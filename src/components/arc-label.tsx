@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React from "react";
@@ -42,18 +41,17 @@ export default function ArcLabel({
   const [now, setNow] = React.useState<Date>(() => new Date());
   React.useEffect(() => {
     if (!liveClock) return;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
     const tick = () => setNow(new Date());
     // update exactly at the start of each second or minute
     const initialDelay = showSeconds ? 1000 - (Date.now() % 1000) : 60000 - (Date.now() % 60000);
     const t0 = setTimeout(() => {
       tick();
-      const id = setInterval(tick, showSeconds ? 1000 : 60000);
-      // store id on window to clear when unmounting timeout scope ends
-      (tick as any)._id = id;
+      intervalId = setInterval(tick, showSeconds ? 1000 : 60000);
     }, initialDelay);
     return () => {
       clearTimeout(t0);
-      if ((tick as any)._id) clearInterval((tick as any)._id);
+      if (intervalId) clearInterval(intervalId);
     };
   }, [liveClock, showSeconds]);
 

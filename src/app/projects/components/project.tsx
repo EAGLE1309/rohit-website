@@ -7,7 +7,7 @@ import type { ProjectMain, CaseStudyBlock, VideoBlock } from "@/lib/dashboard/qu
 import { thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ProjectsCard from "./card";
-import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { VideoPlayer } from "@/app/work/[work]/video-player";
 
 // Embed type detector
@@ -183,24 +183,22 @@ const listItemVariants = {
   },
 };
 
+const useIsDesktop = () => {
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    setIsDesktop(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return isDesktop;
+};
+
 const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
   const [selectedProject, setSelectedProject] = useState<ProjectMain | null>(null);
-  const [activeFilter, setActiveFilter] = useState<string>("all");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  // Extract unique categories
-  const categories = Array.from(new Set(data.map(project => project.category).filter(Boolean)));
-  const allFilters = ["all", ...categories];
-
-  const handleFilterClick = (filter: string) => {
-    setActiveFilter(filter);
-    setTimeout(() => {
-      const buttonElement = document.getElementById(`filter-button-${filter}`);
-      if (buttonElement) {
-        buttonElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
-    }, 0);
-  };
+  const isDesktop = useIsDesktop();
 
   const handleProjectSelect = (projectId: string) => {
     if (!projectId) { setSelectedProject(null); return; }
@@ -213,21 +211,9 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
       }, 100);
     } else setSelectedProject(null);
   };
-  // Filter and sort logic
   const filteredProjects = data
     .filter((project) => project.name)
-    .filter((project) => activeFilter === "all" ? true : project.category === activeFilter)
-    .sort((a, b) => {
-      // If both have index, sort by index (higher index first)
-      if (a.index !== undefined && b.index !== undefined) {
-        return b.index - a.index;
-      }
-      // If only one has index, prioritize the one with index
-      if (a.index !== undefined) return -1;
-      if (b.index !== undefined) return 1;
-      // If neither has index, sort alphabetically by name
-      return a.name.localeCompare(b.name);
-    });
+    .sort((a, b) => (b.index ?? -Infinity) - (a.index ?? -Infinity));
 
   // Auto-select first project on mobile
   useEffect(() => {
@@ -239,7 +225,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
 
       {/* --- LEFT PANEL (DETAILS) --- */}
       <div className="w-full flex-1 md:h-full col-span-5 overflow-hidden relative order-1 md:order-none">
-        <div className="w-full h-full overflow-y-auto scrollbar-hide p-3">
+        <div className="w-full h-full overflow-y-auto scrollbar-hide md:p-3">
           <AnimatePresence mode="wait">
             {selectedProject ? (
               <motion.div
@@ -250,17 +236,10 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 className="w-full p-3"
               >
-                <div className="w-full flex flex-col gap-8">
+                <div className="w-full flex flex-col gap-5">
 
                   {/* Project Header */}
                   <div className="w-full flex gap-3">
-                    <p className="text-3xl md:text-4xl font-medium">
-                      {(() => {
-                        const name = selectedProject?.name || "";
-                        const num = name ? String(name.split("").reduce((acc: any, c: any) => acc + c.charCodeAt(0), 0) % 100).padStart(2, "0") : "--";
-                        return <span className="text-3xl md:text-4xl font-medium">{num}.</span>;
-                      })()}
-                    </p>
                     <div className="w-full">
                       <motion.div
                         initial={{ opacity: 0, x: -20 }}
@@ -276,9 +255,12 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                   {/* About section */}
                   {selectedProject?.description && (
                     <div className="w-full flex flex-col gap-3">
-                      <div className="w-full">
-                        <p className="text-sm md:text-lg font-mono text-foreground/55">About</p>
-                      </div>
+                      {
+                        selectedProject.startDate && (
+                          <p className="font-mono">{new Date(selectedProject.startDate + "T00:00:00").toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} - {selectedProject.endDate ? new Date(selectedProject.endDate + "T00:00:00").toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : "Present"}</p>
+                        )
+                      }
+
                       <div className="w-full">
                         <motion.p
                           initial={{ opacity: 0 }}
@@ -292,29 +274,13 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                     </div>
                   )}
 
-                  {/* Project Details Section */}
-                  <div className="w-full flex flex-col gap-3">
-                    <div className="w-full">
-                      <p className="text-sm font-mono text-foreground/55 md:text-base">Project Details</p>
+                  {/* Project Details Section, hidden if hideInfo is true */}
+                  {!selectedProject?.hideInfo && (
+                    <div className="w-full flex flex-wrap gap-x-5 gap-y-1 text-sm md:text-base">
+                      {selectedProject?.service && <p><span className="font-mono text-foreground/55">Service:</span> {selectedProject.service}</p>}
+                      {selectedProject?.client && <p><span className="font-mono text-foreground/55">Client:</span> {selectedProject.client}</p>}
                     </div>
-                    <div className="w-full flex flex-col gap-2 text-sm md:text-base">
-                      <p><span className="font-mono text-foreground/55">Category : </span> {selectedProject?.category.charAt(0).toUpperCase() + selectedProject?.category.slice(1) || "None"}</p>
-                      <span className="w-1/5 border-t-2 border-foreground/35" />
-                      {selectedProject?.service && (
-                        <>
-                          <p><span className="font-mono text-foreground/55">Service : </span> {selectedProject.service}</p>
-                          <span className="w-1/5 border-t-2 border-foreground/35" />
-                        </>
-                      )}
-                      {selectedProject?.client && (
-                        <>
-                          <p><span className="font-mono text-foreground/55">Client : </span> {selectedProject.client}</p>
-                          <span className="w-1/5 border-t-2 border-foreground/35" />
-                        </>
-                      )}
-                      <p><span className="font-mono text-foreground/55">Created : </span> {new Date(selectedProject?.date || selectedProject?._createdAt || "").toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
-                    </div>
-                  </div>
+                  )}
 
                   {/* Thumbnail Preview */}
                   {selectedProject?.thumbnail && !selectedProject?.hideThumbnail && (
@@ -336,7 +302,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
 
                   {/* Case Study Content */}
                   {selectedProject?.caseStudyContent && selectedProject.caseStudyContent.length > 0 && (
-                    <div className="w-full space-y-8">
+                    <div className="w-full space-y-3">
                       {selectedProject.caseStudyContent.map((block: CaseStudyBlock) => {
                         if (block._type === "textBlock") {
                           return (
@@ -493,39 +459,50 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                           }
 
                           const videoCount = videoBlocks.length;
-                          const getGridCols = () => {
-                            if (videoCount <= 4) return 2;
-                            if (videoCount <= 6) return 3;
-                            if (videoCount <= 9) return 4;
-                            return 3;
-                          };
-                          const cols = getGridCols();
+                          const columnCount = isDesktop ? 3 : 2
+
+                          // Distribute items into columns in row-first order
+                          // e.g. 9 items, 3 cols: col0=[0,3,6], col1=[1,4,7], col2=[2,5,8]
+                          // Reading across: row0=[0,1,2], row1=[3,4,5], row2=[6,7,8] ✓
+                          const columns: VideoBlock[][] = Array.from({ length: columnCount }, () => []);
+                          videoBlocks.forEach((vb, i) => {
+                            columns[i % columnCount].push(vb);
+                          });
 
                           return (
                             <motion.div
                               key={block._key}
                               initial={{ opacity: 0, scale: 0.98 }}
                               animate={{ opacity: 1, scale: 1 }}
-                              className="w-full grid gap-4"
-                              style={{
-                                gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-                                gridAutoRows: 'auto'
-                              }}
+                              className="w-full flex gap-4"
                             >
-                              {videoBlocks.map((videoBlock) => (
-                                <div key={videoBlock._key} className="bg-foreground/10 h-fit pb-2 space-y-1">
-                                  {(videoBlock.videoUrl || videoBlock.video?.asset?.url) && (
-                                    <div className="w-full overflow-hidden">
-                                      <VideoPlayer
-                                        size="small"
-                                        videoUrl={videoBlock.videoUrl || videoBlock.video?.asset?.url}
-                                        poster={thumbnailUrl(selectedProject.thumbnail, "lg")}
-                                      />
-                                    </div>
-                                  )}
-                                  {videoBlock.caption && (
-                                    <p className="text-sm text-foreground text-center font-mono">{videoBlock.caption}</p>
-                                  )}
+                              {columns.map((col, colIdx) => (
+                                <div key={colIdx} className="flex-1 flex flex-col gap-4">
+                                  {col.map((videoBlock) => {
+                                    const originalIdx = videoBlocks.indexOf(videoBlock);
+                                    return (
+                                      <motion.div
+                                        key={videoBlock._key}
+                                        className="bg-foreground/10 pb-2 space-y-1 overflow-hidden"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: originalIdx * 0.1 }}
+                                      >
+                                        {(videoBlock.videoUrl || videoBlock.video?.asset?.url) && (
+                                          <div className="w-full overflow-hidden">
+                                            <VideoPlayer
+                                              size="small"
+                                              videoUrl={videoBlock.videoUrl || videoBlock.video?.asset?.url}
+                                              poster={videoBlock.cover ? thumbnailUrl(videoBlock.cover, "lg") : thumbnailUrl(selectedProject.thumbnail, "lg")}
+                                            />
+                                          </div>
+                                        )}
+                                        {videoBlock.caption && (
+                                          <p className="text-sm text-foreground text-center font-mono">{videoBlock.caption}</p>
+                                        )}
+                                      </motion.div>
+                                    );
+                                  })}
                                 </div>
                               ))}
                             </motion.div>
@@ -559,40 +536,78 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
                         }
 
                         if (block._type === "imageGrid") {
-                          const imageCount = block.images?.length || 0;
-                          const columnCount = imageCount === 1
-                            ? 2
+                          const images = block.images || [];
+                          const imageCount = images.length;
+                          const desktopColCount = imageCount === 1
+                            ? 1
                             : block.layout === "four-column"
                               ? 4
                               : block.layout === "three-column"
                                 ? 3
                                 : 2;
+                          const mobileColCount = Math.min(desktopColCount, 2);
+
+                          // Distribute images into columns in row-first order
+                          // e.g. 6 images, 3 cols: col0=[0,3], col1=[1,4], col2=[2,5]
+                          // Reading across: row0=[0,1,2], row1=[3,4,5] ✓
+                          const buildColumns = (cols: number) => {
+                            const result: any[][] = Array.from({ length: cols }, () => []);
+                            images.forEach((img: any, i: number) => {
+                              result[i % cols].push({ img, idx: i });
+                            });
+                            return result;
+                          };
+
+                          const desktopColumns = buildColumns(desktopColCount);
+                          const mobileColumns = mobileColCount !== desktopColCount ? buildColumns(mobileColCount) : null;
+
+                          const renderGrid = (columns: any[][], key: string) => (
+                            <>
+                              {columns.map((col, colIdx) => (
+                                <div key={`${key}-${colIdx}`} className="flex-1 flex flex-col gap-4">
+                                  {col.map(({ img, idx }: { img: any; idx: number }) => (
+                                    <motion.div
+                                      key={idx}
+                                      className="overflow-hidden"
+                                      initial={{ opacity: 0, y: 20 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      transition={{ delay: idx * 0.1 }}
+                                    >
+                                      <img
+                                        src={thumbnailUrl(img, "lg")}
+                                        alt={`Grid image ${idx + 1}`}
+                                        className="w-full h-auto object-cover hover:scale-110 transition-transform duration-700"
+                                      />
+                                    </motion.div>
+                                  ))}
+                                </div>
+                              ))}
+                            </>
+                          );
+
                           return (
                             <motion.div
                               key={block._key}
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
                               className="w-full"
-                              style={{
-                                columnCount: columnCount,
-                                columnGap: '1rem',
-                              }}
                             >
-                              {block.images && block.images.map((image: any, idx: number) => (
-                                <motion.div
-                                  key={idx}
-                                  className="overflow-hidden mb-4 break-inside-avoid"
-                                  initial={{ opacity: 0, y: 20 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: idx * 0.1 }}
-                                >
-                                  <img
-                                    src={thumbnailUrl(image, "lg")}
-                                    alt={`Grid image ${idx + 1}`}
-                                    className="w-full h-auto object-cover hover:scale-110 transition-transform duration-700"
-                                  />
-                                </motion.div>
-                              ))}
+                              {mobileColumns ? (
+                                <>
+                                  {/* Mobile: max 2 columns */}
+                                  <div className="flex gap-4 md:hidden">
+                                    {renderGrid(mobileColumns, "mobile")}
+                                  </div>
+                                  {/* Desktop: original column count */}
+                                  <div className="hidden md:flex gap-4">
+                                    {renderGrid(desktopColumns, "desktop")}
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="flex gap-4">
+                                  {renderGrid(desktopColumns, "default")}
+                                </div>
+                              )}
                             </motion.div>
                           );
                         }
@@ -660,38 +675,6 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
             </Select>
           </div>
 
-          {/* Animated Filter Bar - Hidden on mobile */}
-          <div className={`w-full border-[1.5px] border-t-[0px] border-foreground hidden md:flex ${allFilters.length > 3 ? "overflow-x-auto scrollbar-hide" : "items-center"}`}>
-            <LayoutGroup>
-              <div className={`flex ${allFilters.length > 3 ? "min-w-max" : "w-full items-center"}`}>
-                {allFilters.map((filter) => {
-                  const isActive = activeFilter === filter;
-                  return (
-                    <div
-                      key={filter}
-                      id={`filter-button-${filter}`}
-                      onClick={() => handleFilterClick(filter)}
-                      className={`relative flex items-center justify-center text-sm cursor-pointer ${allFilters.length > 3 ? "px-4 py-2 min-w-[100px]" : "flex-1 py-2"} transition-colors duration-200`}
-                    >
-                      {/* The Magic Sliding Background */}
-                      {isActive && (
-                        <motion.div
-                          layoutId="activeFilter"
-                          className="absolute inset-0 bg-foreground"
-                          transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                        />
-                      )}
-
-                      {/* Text needs relative z-index to sit on top of the motion div */}
-                      <span className={`relative z-10 ${isActive ? "text-background font-medium" : "text-foreground hover:opacity-70"}`}>
-                        {filter === "all" ? "All" : filter.charAt(0).toUpperCase() + filter.slice(1)}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </LayoutGroup>
-          </div>
         </div>
 
         {/* --- LIST AREA --- */}
@@ -713,7 +696,7 @@ const ProjectsComponent = ({ data }: { data: ProjectMain[] }) => {
           {/* Desktop Vertical List */}
           <div className="hidden md:block w-full">
             <AnimatePresence mode="wait">
-              <motion.div key={activeFilter} variants={listContainerVariants} initial="hidden" animate="visible" exit="exit" className="w-full space-y-3">
+              <motion.div key="projects-list" variants={listContainerVariants} initial="hidden" animate="visible" exit="exit" className="w-full space-y-3">
                 {filteredProjects.length === 0 ? (
                   <motion.div variants={listItemVariants} className="text-center text-foreground/60 py-10">Nothing to show here</motion.div>
                 ) : (

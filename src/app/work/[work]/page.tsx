@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getProjectById, getProjects } from "@/lib/dashboard/queries/projects";
+import { thumbnailUrl } from "@/lib/dashboard/sanity-cilent";
 import WorkDetailsComponent from "./component";
 
 type Props = {
@@ -17,11 +18,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  // Get dynamic thumbnail URL, fallback to home.png
+  const thumbnailImage = project.thumbnail
+    ? thumbnailUrl(project.thumbnail, "lg")
+    : "https://ro6it.com/home.png";
+
   return {
     title: project.name,
     description:
       project.description ||
-      `${project.name} - A creative project by Rohit Patnala. ${project.category} work showcasing visual art and creative direction.`,
+      `${project.name} - A creative project by Rohit Patnala.`,
     keywords: [project.name, ...(Array.isArray(project.category) ? project.category : [project.category]), "Rohit Patnala project", "creative work", "visual art", "RO6IT"],
     openGraph: {
       title: `${project.name} | Rohit Patnala`,
@@ -30,13 +36,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: "Rohit Patnala",
       images: [
         {
-          url: "https://ro6it.com/home.png",
+          url: thumbnailImage,
           width: 1200,
           height: 630,
           alt: `${project.name} - Project by Rohit Patnala`,
         },
       ],
       type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${project.name} | Rohit Patnala`,
+      description: project.description || `${project.name} - A creative project by Rohit Patnala (RO6IT).`,
+      images: [thumbnailImage],
     },
     alternates: {
       canonical: `https://ro6it.com/work/${work}`,

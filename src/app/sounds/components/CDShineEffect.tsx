@@ -206,6 +206,15 @@ export default function CDShineEffect({ isSpinning, size, bloomStrength = 1, blo
   const bloomStrengthRef = useRef<number>(bloomStrength);
   const bloomThresholdRef = useRef<number>(bloomThreshold);
   const rainbowStrengthRef = useRef<number>(rainbowStrength);
+  const uniformLocsRef = useRef<{
+    time: WebGLUniformLocation | null;
+    spinning: WebGLUniformLocation | null;
+    resolution: WebGLUniformLocation | null;
+    bloomStrength: WebGLUniformLocation | null;
+    bloomThreshold: WebGLUniformLocation | null;
+    rainbowStrength: WebGLUniformLocation | null;
+    spinPhase: WebGLUniformLocation | null;
+  } | null>(null);
 
   const initWebGL = useCallback(() => {
     const canvas = canvasRef.current;
@@ -258,6 +267,16 @@ export default function CDShineEffect({ isSpinning, size, bloomStrength = 1, blo
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
+    uniformLocsRef.current = {
+      time: gl.getUniformLocation(program, "u_time"),
+      spinning: gl.getUniformLocation(program, "u_spinning"),
+      resolution: gl.getUniformLocation(program, "u_resolution"),
+      bloomStrength: gl.getUniformLocation(program, "u_bloomStrength"),
+      bloomThreshold: gl.getUniformLocation(program, "u_bloomThreshold"),
+      rainbowStrength: gl.getUniformLocation(program, "u_rainbowStrength"),
+      spinPhase: gl.getUniformLocation(program, "u_spinPhase"),
+    };
+
     return true;
   }, []);
 
@@ -282,7 +301,8 @@ export default function CDShineEffect({ isSpinning, size, bloomStrength = 1, blo
     const program = programRef.current;
     const canvas = canvasRef.current;
 
-    if (!gl || !program || !canvas) return;
+    const locs = uniformLocsRef.current;
+    if (!gl || !program || !canvas || !locs) return;
 
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0, 0, 0, 0);
@@ -305,21 +325,13 @@ export default function CDShineEffect({ isSpinning, size, bloomStrength = 1, blo
     const omega = 1.256637;
     spinPhaseRef.current += spinningRef.current * omega * dt;
 
-    const timeLocation = gl.getUniformLocation(program, "u_time");
-    const spinningLocation = gl.getUniformLocation(program, "u_spinning");
-    const resolutionLocation = gl.getUniformLocation(program, "u_resolution");
-    const bloomStrengthLocation = gl.getUniformLocation(program, "u_bloomStrength");
-    const bloomThresholdLocation = gl.getUniformLocation(program, "u_bloomThreshold");
-    const rainbowStrengthLocation = gl.getUniformLocation(program, "u_rainbowStrength");
-    const spinPhaseLocation = gl.getUniformLocation(program, "u_spinPhase");
-
-    gl.uniform1f(timeLocation, time);
-    gl.uniform1f(spinningLocation, spinningRef.current);
-    gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
-    gl.uniform1f(bloomStrengthLocation, bloomStrengthRef.current);
-    gl.uniform1f(bloomThresholdLocation, bloomThresholdRef.current);
-    gl.uniform1f(rainbowStrengthLocation, rainbowStrengthRef.current);
-    gl.uniform1f(spinPhaseLocation, spinPhaseRef.current);
+    gl.uniform1f(locs.time, time);
+    gl.uniform1f(locs.spinning, spinningRef.current);
+    gl.uniform2f(locs.resolution, canvas.width, canvas.height);
+    gl.uniform1f(locs.bloomStrength, bloomStrengthRef.current);
+    gl.uniform1f(locs.bloomThreshold, bloomThresholdRef.current);
+    gl.uniform1f(locs.rainbowStrength, rainbowStrengthRef.current);
+    gl.uniform1f(locs.spinPhase, spinPhaseRef.current);
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 

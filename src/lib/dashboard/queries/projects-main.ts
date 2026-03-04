@@ -11,6 +11,7 @@ export interface VideoBlock {
   _key: string;
   video: any;
   videoUrl?: string;
+  cover?: any;
   caption?: string;
 }
 
@@ -39,10 +40,11 @@ export interface ProjectMain {
   index: number;
   name: string;
   description: string;
-  date?: string;
-  video: any;
+  startDate?: string;
+  endDate?: string;
   thumbnail: any;
   hideThumbnail?: boolean;
+  hideInfo?: boolean;
   client?: string;
   service?: string;
   category: "commercial" | "personal" | "projects" | "archives" | "none";
@@ -60,10 +62,11 @@ export const getProjectsMain = async (): Promise<ProjectMain[]> => {
       index,
       name,
       description,
-      date,
-      video,
+      startDate,
+      endDate,
       thumbnail,
       hideThumbnail,
+      hideInfo,
       client,
       service,
       category,
@@ -75,8 +78,9 @@ export const getProjectsMain = async (): Promise<ProjectMain[]> => {
         },
         _type == "videoBlock" => {
           video,
-          caption,
-          "videoUrl": video.asset->url
+          "videoUrl": video.asset->url,
+          cover,
+          caption
         },
         _type == "imageBlock" => {
           image,
@@ -106,10 +110,11 @@ export const getProjectMainById = async (id: string): Promise<ProjectMain | null
       index,
       name,
       description,
-      date,
-      video,
+      startDate,
+      endDate,
       thumbnail,
       hideThumbnail,
+      hideInfo,
       client,
       service,
       category,
@@ -121,8 +126,9 @@ export const getProjectMainById = async (id: string): Promise<ProjectMain | null
         },
         _type == "videoBlock" => {
           video,
-          caption,
-          "videoUrl": video.asset->url
+          "videoUrl": video.asset->url,
+          cover,
+          caption
         },
         _type == "imageBlock" => {
           image,
@@ -132,8 +138,7 @@ export const getProjectMainById = async (id: string): Promise<ProjectMain | null
           images,
           layout
         }
-      },
-      "videoUrl": video.asset->url
+      }
     }`,
     params: { id },
     revalidate: 300,
