@@ -183,6 +183,8 @@ export default function RootLayout({
     <ViewTransitions>
       <html lang="en" suppressHydrationWarning>
         <head>
+          <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
+          <link rel="dns-prefetch" href="https://cdn.sanity.io" />
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

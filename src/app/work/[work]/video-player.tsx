@@ -32,6 +32,7 @@ export const VideoPlayer = ({ videoUrl, poster, className, size = "default" }: V
 
   // State
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isPreloading, setIsPreloading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -45,6 +46,27 @@ export const VideoPlayer = ({ videoUrl, poster, className, size = "default" }: V
     const s = Math.floor(sec % 60);
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   }, []);
+
+  // 0. Viewport-aware metadata preload — loads video metadata when near viewport
+  useEffect(() => {
+    if (isLoaded || isPreloading) return;
+
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsPreloading(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isLoaded, isPreloading]);
 
   // 1. Fullscreen Listener
   useEffect(() => {
@@ -142,8 +164,8 @@ export const VideoPlayer = ({ videoUrl, poster, className, size = "default" }: V
       <video
         ref={videoRef}
         poster={poster}
-        src={isLoaded ? videoUrl : undefined}
-        preload={isLoaded ? "auto" : "none"}
+        src={(isLoaded || isPreloading) ? videoUrl : undefined}
+        preload={isLoaded ? "auto" : (isPreloading ? "metadata" : "none")}
         loop
         playsInline
         onClick={isLoaded ? togglePlay : handleInitialLoad}
@@ -168,7 +190,11 @@ export const VideoPlayer = ({ videoUrl, poster, className, size = "default" }: V
 
       {/* --- BIG CENTER PLAY BUTTON (Initial State) --- */}
       {!isLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center z-10 bg-black/10 hover:bg-black/20 transition-colors">
+        <div
+          className="absolute inset-0 flex items-center justify-center z-10 bg-black/10 hover:bg-black/20 transition-colors"
+          onMouseEnter={() => !isPreloading && setIsPreloading(true)}
+          onTouchStart={() => !isPreloading && setIsPreloading(true)}
+        >
           <button
             onClick={handleInitialLoad}
             className={`group/btn relative flex items-center justify-center ${playButtonSize} bg-white/20 backdrop-blur-md rounded-full border border-white/30 shadow-xl hover:scale-110 transition-transform duration-200`}
